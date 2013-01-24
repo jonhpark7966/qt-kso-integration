@@ -1444,7 +1444,7 @@ void QPathDasher::GetDashedPath(const QPainterPath& path2dash,
 {
     QList<QPolygonF> polygons = path2dash.toSubpathPolygons(QTransform(), flatness);
     for (int i = 0; i < polygons.size(); ++i)
-        GetDashedPath(polygons[i], dashedPath);
+        GetDashedPath(polygons.at(i), dashedPath);
 }
 
 void QPathDasher::GetDashedPath(const QPainterPath& path2dash,  QPainterPath& openStartPath,
@@ -1453,13 +1453,10 @@ void QPathDasher::GetDashedPath(const QPainterPath& path2dash,  QPainterPath& op
 {
     QList<QPolygonF> polygons = path2dash.toSubpathPolygons(QTransform(), flatness);
     for (int subIndex = 0; subIndex < polygons.size(); ++subIndex) {
-        if (polygons[subIndex].isClosed())
-            continue;
-
-        const QPolygonF &poly = polygons[subIndex];
-        QPointF fpt, lpt;
-        fpt = poly.front();
-        lpt = poly.back();
+        const QPolygonF &poly = polygons.at(subIndex);
+        bool bIsClosed = poly.isClosed();
+        const QPointF& fpt = poly.front();
+        const QPointF& lpt = poly.back();
 
         QPainterPath tempDashedPath;
         GetDashedPath(poly, tempDashedPath);
@@ -1467,19 +1464,21 @@ void QPathDasher::GetDashedPath(const QPainterPath& path2dash,  QPainterPath& op
         int ns = dashedPolygons.count();
         for (int n = 0; n < ns; ++n) {
             if (0 == n) {
-                QPointF tfpt = dashedPolygons[n].front();
-                if (tfpt == fpt)
-                    openStartPath.addPolygon(dashedPolygons[n]);
+                if (dashedPolygons.at(n).front() == fpt) {
+                    if (bIsClosed)
+                        openStartPath.addPolygon(dashedPolygons.at(n));
+                }
                 else 
-                    openMiddleAndClosePath.addPolygon(dashedPolygons[n]);
+                    openMiddleAndClosePath.addPolygon(dashedPolygons.at(n));
             } else if ((ns - 1) == n) {
-                QPointF tlpt = dashedPolygons[n].back();
-                if (tlpt == lpt)
-                    openEndPath.addPolygon(dashedPolygons[n]);
+                if (dashedPolygons.at(n).back() == lpt) {
+                    if (bIsClosed)
+                    openEndPath.addPolygon(dashedPolygons.at(n));
+                }
                 else
-                    openMiddleAndClosePath.addPolygon(dashedPolygons[n]);
+                    openMiddleAndClosePath.addPolygon(dashedPolygons.at(n));
             } else {
-                openMiddleAndClosePath.addPolygon(dashedPolygons[n]);
+                openMiddleAndClosePath.addPolygon(dashedPolygons.at(n));
             }
         }
     }
@@ -1824,8 +1823,10 @@ void QComplexStroker::setWidth(qreal width)
         return;
     detach();
     d_ptr->width = width;
-    if (d_ptr->width < 0)
+    if (d_ptr->width <= 0) {
+        qWarning() << "Invalid pen width: " << width;
         d_ptr->width = 1;
+    }
 }
 
 Qt::PenJoinStyle QComplexStroker::joinStyle() const
