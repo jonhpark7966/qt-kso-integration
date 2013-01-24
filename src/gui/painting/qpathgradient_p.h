@@ -601,9 +601,9 @@ public:
 	bool cross_horizontal(int y, ColorNode& cn) const
 	{
 		const qreal hy = (qreal)y;
-		const qreal max = qCeil(qMax(m_pt1.y(), m_pt2.y()));
-		const qreal min = qFloor(qMin(m_pt1.y(), m_pt2.y()));
-		if (hy > max || hy < min)
+		const qreal max = qMax(m_pt1.y(), m_pt2.y());
+		const qreal min = qMin(m_pt1.y(), m_pt2.y());
+		if (hy > max + 0.1 || hy < min - 0.1)
 		{
 			return false;
 		}
@@ -663,6 +663,16 @@ public:
 		return true;
 	}
 	
+	const QPointF& startPoint() const
+	{
+		return m_pt1;
+	}
+
+	const QPointF& endPoint() const
+	{
+		return m_pt2;
+	}
+
 private:
 	ColorType m_ctype;
 	QPointF m_pt1, m_pt2;
@@ -696,7 +706,7 @@ public:
 		if (m_ixs.size() > 1)
 		{
 			std::sort(m_ixs.begin(), m_ixs.end());
-			const int ix1 = (int)(m_ixs.front() + 0.5);
+			const int ix1 = (int)(m_ixs.front());
 			const int ix2 = (int)(m_ixs.back()  + 0.5);
 			const int strt= qMax(m_x1, ix1);
 			const int end = qMin(m_x2, ix2);
@@ -993,6 +1003,9 @@ public:
 		
 		const SuperColorBevel& bevel02 = m_bevels.front();
 		prevbi01 = bevel02.cross_horizontal(y, prev01cn);
+		// skip if the points of the triangle are on the same straight line
+		if (!isValidTriangle())
+			return;
 		if (prevbi01)
 		{
 			spanWrapper.insert(prev01cn);
@@ -1012,6 +1025,18 @@ public:
 		spanWrapper.generate();
 	}
 
+	bool isValidTriangle() const
+	{
+		QPointF firstLineP1 = m_bevels.first().startPoint();
+		QPointF firstLineP2 = m_bevels.first().endPoint();
+		QPointF lastLineP1 = m_bevels.last().startPoint();
+		QPointF lastLineP2 = m_bevels.last().endPoint();
+		if (firstLineP1 == firstLineP2 && (firstLineP1 == lastLineP1 || firstLineP1 == lastLineP2))
+			return false;
+		if (lastLineP1 == lastLineP2 && (firstLineP1 == lastLineP1 || firstLineP2 == lastLineP1))
+			return false;
+		return true;
+	}
 
 private:
 	int size() const
