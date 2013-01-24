@@ -398,6 +398,18 @@ void addFontToDatabase(QString familyName, const QString &scriptName,
     }
 }
 
+struct StoreFontParam
+{
+    int nEnumCount;
+    QString originalName;
+    QString englishName;
+    StoreFontParam(const QString& fam) : nEnumCount(0), originalName(fam)
+    {
+        if (localizedName(fam))
+            englishName = getEnglishName(fam);
+    }
+};
+
 static
 int CALLBACK
 storeFont(ENUMLOGFONTEX* f, NEWTEXTMETRICEX *textmetric, int type, LPARAM pParam)
@@ -406,14 +418,18 @@ storeFont(ENUMLOGFONTEX* f, NEWTEXTMETRICEX *textmetric, int type, LPARAM pParam
     QString script = QString::fromWCharArray(f->elfScript);
 
     FONTSIGNATURE signature = textmetric->ntmFontSig;
+    StoreFontParam* param = (StoreFontParam*)pParam;
+    if (param != NULL && !param->originalName.isEmpty()
+        && param->englishName == familyName)
+        familyName = param->originalName;
 
     // NEWTEXTMETRICEX is a NEWTEXTMETRIC, which according to the documentation is
     // identical to a TEXTMETRIC except for the last four members, which we don't use
     // anyway
     addFontToDatabase(familyName, script, (TEXTMETRIC *)textmetric, &signature, type);
     // keep on enumerating
-    if (pParam)
-        (*((int*)pParam))++;
+    if (param)
+        param->nEnumCount++;
     return 1;
 }
 
@@ -433,6 +449,7 @@ void populate_database(const QString& fam)
         return;
     }
 
+
     HDC dummy = GetDC(0);
 
     LOGFONT lf;
@@ -443,9 +460,9 @@ void populate_database(const QString& fam)
         memcpy(lf.lfFaceName, fam.utf16(), sizeof(wchar_t) * qMin(fam.length() + 1, 32));  // 32 = Windows hard-coded
     }
     lf.lfPitchAndFamily = 0;
-    int nEnumCount = 0;
+    StoreFontParam param(fam);
     EnumFontFamiliesEx(dummy, &lf,
-        (FONTENUMPROC)storeFont, (LPARAM)&nEnumCount, 0);
+        (FONTENUMPROC)storeFont, (LPARAM)&param, 0);
 
     ReleaseDC(0, dummy);
 
@@ -477,7 +494,7 @@ void populate_database(const QString& fam)
         }
     }
 
-    if (nEnumCount == 0)
+    if (param.nEnumCount == 0)
     {
         LOGFONT tlf;
         memset(&tlf, 0, sizeof(LOGFONT));
