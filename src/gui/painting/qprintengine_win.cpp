@@ -1167,6 +1167,7 @@ void QWin32PrintEnginePrivate::release()
 
     if (globalDevMode) { // Devmode comes from print dialog
         GlobalUnlock(globalDevMode);
+		GlobalFree(globalDevMode);
     } else {            // Devmode comes from initialize...
         // devMode is a part of the same memory block as pInfo so one free is enough...
         GlobalUnlock(hMem);
@@ -1645,6 +1646,21 @@ HDC QWin32PrintEngine::getDC() const
 void QWin32PrintEngine::releaseDC(HDC) const
 {
 
+}
+
+void QWin32PrintEngine::readDevmode(void* globalDevmode)
+{
+	if (globalDevmode) {
+		DEVMODE* devMode = reinterpret_cast<DEVMODE*>(globalDevmode);
+		int size = devMode->dmSize + devMode->dmDriverExtra;
+		HGLOBAL hDevMode = GlobalAlloc(GHND, size);
+		{
+			void *dest = GlobalLock(hDevMode);
+			memcpy(dest, devMode, size);
+			GlobalUnlock(hDevMode);
+			d_func()->readDevmode(hDevMode);
+		}
+	}
 }
 
 HGLOBAL *QWin32PrintEnginePrivate::createDevNames()

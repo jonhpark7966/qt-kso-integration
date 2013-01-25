@@ -247,6 +247,7 @@ public:
 #ifdef Q_WS_WIN
     HDC getDC() const;
     void releaseDC(HDC hdc) const;
+    void readDevmode(void* globalDevmode);
 #endif
 
     void setFromTo(int fromPage, int toPage);

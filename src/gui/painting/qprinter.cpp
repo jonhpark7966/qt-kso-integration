@@ -1924,6 +1924,12 @@ void QPrinter::releaseDC(HDC hdc) const
     d->printEngine->releasePrinterDC(hdc);
 }
 
+void QPrinter::readDevmode(void* globalDevmode)
+{
+    Q_D(QPrinter);
+    d->printEngine->readDevmode(globalDevmode);
+}
+
 /*!
     Returns the supported paper sizes for this printer.
 

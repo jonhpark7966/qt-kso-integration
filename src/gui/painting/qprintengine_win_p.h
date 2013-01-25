@@ -105,6 +105,8 @@ public:
     HDC getPrinterDC() const { return getDC(); }
     void releasePrinterDC(HDC dc) const { releaseDC(dc); }
 
+    void readDevmode(void* globalDevmode);
+
 private:
     friend class QPrintDialog;
     friend class QPageSetupDialog;

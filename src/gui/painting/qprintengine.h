@@ -106,6 +106,7 @@ public:
 #ifdef Q_WS_WIN
     virtual HDC getPrinterDC() const { return 0; }
     virtual void releasePrinterDC(HDC) const { }
+	virtual void readDevmode(void*) { }
 #endif
 
 };
