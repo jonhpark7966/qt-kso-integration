@@ -847,12 +847,13 @@ HPEN createGdiPen(const QPen &pen, const QColor &color, qreal penWidth)
     LOGBRUSH brush;
     brush.lbStyle = BS_SOLID;
     brush.lbColor = RGB(color.red(), color.green(), color.blue());
-	DWORD nPenWidth = qMax(1, qRound(penWidth));
+    DWORD nPenWidth = qMax(1, qRound(penWidth));
     DWORD capStyle = PS_ENDCAP_SQUARE;
     DWORD joinStyle = PS_JOIN_BEVEL;
     DWORD dashStyle = PS_SOLID;
     DWORD cStyle = 0;
     DWORD *pStyles = NULL;
+    DWORD penStyle = (nPenWidth == 1 ? PS_COSMETIC : PS_GEOMETRIC);
 
     if (pen.capStyle() == Qt::FlatCap)
         capStyle = PS_ENDCAP_FLAT;
@@ -888,15 +889,14 @@ HPEN createGdiPen(const QPen &pen, const QColor &color, qreal penWidth)
             cStyle = dashs.count();
             pStyles = new DWORD[cStyle];
             for (DWORD i = 0; i < cStyle; i++)
-                pStyles[i] = qMax(1, qRound(dashs.at(i) * penWidth));
+                pStyles[i] = qMax(1, qRound(dashs.at(i) * nPenWidth));
         }
         break;
     default:
         break;
     }
 
-    HPEN hpen = ExtCreatePen(PS_GEOMETRIC
-                            | capStyle | joinStyle | dashStyle ,
+    HPEN hpen = ExtCreatePen(penStyle | capStyle | joinStyle | dashStyle ,
                             nPenWidth, &brush, cStyle, pStyles);
     if (pStyles)
         delete pStyles;
