@@ -632,7 +632,7 @@ void QWin32PrintEngine::drawPixmap(const QRectF &targetRect,
     if (!continueCall())
         return;
 
-    const int tileSize = 2048;
+    const int tileSize = 1024;
 
     QRectF r = targetRect;
     QRectF sr = sourceRect;
