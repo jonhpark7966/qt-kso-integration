@@ -72,6 +72,11 @@
 #include "qguifunctions_wince.h"
 #endif
 
+enum {
+    GASP_GRIDFIT = 1,
+    GASP_DOGRAY = 2
+};
+
 //### mingw needed define
 #ifndef TT_PRIM_CSPLINE
 #define TT_PRIM_CSPLINE 3
@@ -225,6 +230,30 @@ void QFontEngineWin::getCMap()
     }
 }
 
+void QFontEngineWin::getGasp()
+{
+    if (ttf) {
+        QByteArray gaspTable = getSfntTable(qbswap<quint32>(MAKE_TAG('g', 'a', 's', 'p')));
+        if (!gaspTable.isEmpty()) {
+            const quint16* p = (const quint16*)gaspTable.constData();
+            quint16 version = qbswap<quint16>(*p); ++p;
+            Q_UNUSED(version);
+            quint16 numRanges = qbswap<quint16>(*p); ++p;
+            for (quint16 i = 0; i < numRanges; ++i) {
+                quint16 ppem = qbswap<quint16>(*p); ++p;
+                quint16 flag = qbswap<quint16>(*p); ++p;
+                gaspLookup.append(qMakePair(ppem, flag));
+            }
+        }
+    }
+
+    if (gaspLookup.isEmpty()) {
+        // seems the default rules GDI used
+        gaspLookup.append(qMakePair(quint16(8), quint16(GASP_DOGRAY)));
+        gaspLookup.append(qMakePair(quint16(17), quint16(GASP_GRIDFIT)));
+        gaspLookup.append(qMakePair(quint16(0xffff), quint16(GASP_GRIDFIT | GASP_DOGRAY)));
+    }
+}
 
 inline unsigned int getChar(const QChar *str, int &i, const int len)
 {
@@ -344,6 +373,7 @@ QFontEngineWin::QFontEngineWin(const QString &name, HFONT _hfont, bool stockFont
 
     cache_cost = tm.tmHeight * tm.tmAveCharWidth * 2000;
     getCMap();
+    getGasp();
 
     widthCache = 0;
     widthCacheSize = 0;
@@ -1195,7 +1225,9 @@ QImage QFontEngineWin::alphaMapForGlyph(glyph_t glyph, const QTransform &xform)
         || logfont.lfQuality == DEFAULT_QUALITY);
     if (replaceFont) {
         LOGFONT lf = logfont;
-        lf.lfQuality = ANTIALIASED_QUALITY;
+        qreal pixelSize = xform.map(QLineF(0, 0, qAbs(lf.lfHeight), 0)).length();
+        lf.lfQuality =
+            (isGrayscaleSmoothingEnabled(pixelSize)) ? ANTIALIASED_QUALITY : PROOF_QUALITY;
         font = CreateFontIndirect(&lf);
     }
     QImage::Format mask_format = QNativeImage::systemFormat();
@@ -1282,6 +1314,16 @@ QImage QFontEngineWin::alphaRGBMapForGlyph(glyph_t glyph, int margin, const QTra
     delete mask;
 
     return rgbMask;
+}
+
+bool QFontEngineWin::isGrayscaleSmoothingEnabled(qreal size)
+{
+    if (size <= 0 || size > 0xffff)
+        return false;
+    int i = 0;
+    while (gaspLookup[i].first < size)
+        ++i;
+    return (gaspLookup[i].second & GASP_DOGRAY);
 }
 
 // -------------------------------------- Multi font engine

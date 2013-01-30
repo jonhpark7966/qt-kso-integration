@@ -128,6 +128,7 @@ public:
     int         lw;
     const unsigned char *cmap;
     QByteArray cmapTable;
+    QVarLengthArray< QPair<quint16, quint16>, 4> gaspLookup;
     mutable qreal lbearing;
     mutable qreal rbearing;
     QFixed designToDevice;
@@ -146,6 +147,8 @@ private:
     QNativeImage *drawGDIGlyph(HFONT font, glyph_t, int margin, const QTransform &xform,
                                QImage::Format mask_format);
 
+	void getGasp();
+	bool isGrayscaleSmoothingEnabled(qreal size);
 };
 
 class QFontEngineMultiWin : public QFontEngineMulti
