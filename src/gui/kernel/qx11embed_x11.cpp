@@ -275,7 +275,7 @@ public:
     QTLWExtra* topData() { return d_func()->topData(); }
 };
 
-static unsigned int XEMBED_VERSION = 0;
+static long XEMBED_VERSION = 0;
 
 enum QX11EmbedMessageType {
     XEMBED_EMBEDDED_NOTIFY = 0,
