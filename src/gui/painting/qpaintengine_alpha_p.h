@@ -80,6 +80,8 @@ public:
     virtual void drawTextItem(const QPointF &p, const QTextItem &textItem);
     virtual void drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s);
 
+    virtual void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr);
+
 protected:
     QAlphaPaintEngine(QAlphaPaintEnginePrivate &data, PaintEngineFeatures devcaps = 0);
     QRegion alphaClipping() const;

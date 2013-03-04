@@ -536,6 +536,20 @@ void QPicturePaintEngine::drawTextItem(const QPointF &p , const QTextItem &ti)
     }
 }
 
+void QPicturePaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr)
+{
+	Q_D(QPicturePaintEngine);
+#ifdef QT_PICTURE_DEBUG
+	qDebug() << " -> drawMetafile():" << r;
+#endif
+	int pos;
+	SERIALIZE_CMD(QPicturePrivate::PdcDrawMetafile);
+
+	d->s << r << mf << sr;
+
+	writeCmdLength(pos, r, false);
+}
+
 void QPicturePaintEngine::updateState(const QPaintEngineState &state)
 {
     QPaintEngine::DirtyFlags flags = state.state();

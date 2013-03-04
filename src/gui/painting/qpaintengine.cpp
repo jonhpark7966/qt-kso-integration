@@ -637,6 +637,15 @@ void QPaintEngine::drawImage(const QRectF &r, const QImage &image, const QRectF 
     drawPixmap(r, pm, QRectF(QPointF(0, 0), pm.size()));
 }
 
+extern void qt_drawMetafile(QPainter *painter, const QRectF &r, const QByteArray &mf, const QRectF &sr);
+
+void QPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr)
+{
+#ifdef Q_OS_WIN
+	qt_drawMetafile(painter(), r, mf, sr);
+#endif
+}
+
 /*!
     \fn Type QPaintEngine::type() const
 

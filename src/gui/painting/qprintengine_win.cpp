@@ -57,6 +57,8 @@
 #include <private/qpicture_p.h>
 #include "QtGui/qcomplexstroker.h"
 
+#include <QLibrary>
+
 QT_BEGIN_NAMESPACE
 
 extern QPainterPath qt_regionToPath(const QRegion &region);
@@ -65,6 +67,330 @@ extern QPainterPath qt_regionToPath(const QRegion &region);
 
 static void draw_text_item_win(const QPointF &_pos, const QTextItemInt &ti, HDC hdc,
                                bool convertToText, const QTransform &xform, const QPointF &topLeft);
+
+
+typedef INT PixelFormat;
+typedef float REAL;
+
+#define    PixelFormatGDI          0x00020000 // Is a GDI-supported format
+#define    PixelFormatAlpha        0x00040000 // Has an alpha component
+#define    PixelFormatPAlpha       0x00080000 // Pre-multiplied alpha
+#define    PixelFormatCanonical    0x00200000 
+
+#define    PixelFormat24bppRGB        (8 | (24 << 8) | PixelFormatGDI)
+#define    PixelFormat32bppRGB        (9 | (32 << 8) | PixelFormatGDI)
+#define    PixelFormat32bppARGB       (10 | (32 << 8) | PixelFormatAlpha | PixelFormatGDI | PixelFormatCanonical)
+#define    PixelFormat32bppPARGB      (11 | (32 << 8) | PixelFormatAlpha | PixelFormatPAlpha | PixelFormatGDI)
+
+enum GpStatus{};
+enum TextRenderingHint
+{
+	TextRenderingHintSystemDefault = 0,            // Glyph with system default rendering hint
+	TextRenderingHintSingleBitPerPixelGridFit,     // Glyph bitmap with hinting
+	TextRenderingHintSingleBitPerPixel,            // Glyph bitmap without hinting
+	TextRenderingHintAntiAliasGridFit,             // Glyph anti-alias bitmap with hinting
+	TextRenderingHintAntiAlias,                    // Glyph anti-alias bitmap without hinting
+	TextRenderingHintClearTypeGridFit              // Glyph CT bitmap with hinting
+};
+enum QualityMode
+{
+	QualityModeInvalid   = -1,
+	QualityModeDefault   = 0,
+	QualityModeLow       = 1, // Best performance
+	QualityModeHigh      = 2  // Best rendering quality
+};
+enum InterpolationMode
+{
+	InterpolationModeInvalid          = QualityModeInvalid,
+	InterpolationModeDefault          = QualityModeDefault,
+	InterpolationModeLowQuality       = QualityModeLow,
+	InterpolationModeHighQuality      = QualityModeHigh,
+	InterpolationModeBilinear,
+	InterpolationModeBicubic,
+	InterpolationModeNearestNeighbor,
+	InterpolationModeHighQualityBilinear,
+	InterpolationModeHighQualityBicubic
+};
+
+enum CompositingQuality
+{
+	CompositingQualityInvalid          = QualityModeInvalid,
+	CompositingQualityDefault          = QualityModeDefault,
+	CompositingQualityHighSpeed        = QualityModeLow,
+	CompositingQualityHighQuality      = QualityModeHigh,
+	CompositingQualityGammaCorrected,
+	CompositingQualityAssumeLinear
+};
+enum Unit
+{
+	UnitWorld,      // 0 -- World coordinate (non-physical unit)
+	UnitDisplay,    // 1 -- Variable -- for PageTransform only
+	UnitPixel,      // 2 -- Each unit is one device pixel.
+	UnitPoint,      // 3 -- Each unit is a printer's point, or 1/72 inch.
+	UnitInch,       // 4 -- Each unit is 1 inch.
+	UnitDocument,   // 5 -- Each unit is 1/300 inch.
+	UnitMillimeter  // 6 -- Each unit is 1 millimeter.
+};
+
+typedef Unit GpUnit;
+
+class GpImage {};
+class GpBitmap : public GpImage {};
+class GpMetafile : public GpImage {};
+class GpImageAttributes {};
+class GpGraphics{};
+class GpMatrix{};
+
+extern "C" {
+	typedef BOOL (CALLBACK * ImageAbort)(VOID *);
+	typedef ImageAbort DrawImageAbort;
+	typedef ImageAbort GetThumbnailImageAbort;
+}
+
+#define WINGDIPAPI __stdcall
+#define GDIPCONST const
+
+typedef GpStatus (WINGDIPAPI *PtrGdipCreateFromHDC)(HDC hdc, GpGraphics **graphics);
+typedef GpStatus (WINGDIPAPI *PtrGdipGetImageGraphicsContext)(GpImage *image, GpGraphics **graphics);
+typedef GpStatus (WINGDIPAPI *PtrGdipCreateMetafileFromEmf)(HENHMETAFILE hEmf, BOOL deleteEmf, GpMetafile **metafile);
+typedef GpStatus (WINGDIPAPI *PtrGdipCreateBitmapFromScan0)(INT width,
+															INT height,
+															INT stride,
+															PixelFormat format,
+															BYTE* scan0,
+															GpBitmap** bitmap);
+typedef GpStatus (WINGDIPAPI *PtrGdipCreateMatrix2)(REAL m11, REAL m12, REAL m21, REAL m22, REAL dx, REAL dy, GpMatrix **matrix);
+typedef GpStatus (WINGDIPAPI *PtrGdipSetTextRenderingHint)(GpGraphics *graphics, TextRenderingHint mode);
+typedef GpStatus (WINGDIPAPI *PtrGdipSetInterpolationMode)(GpGraphics *graphics, InterpolationMode interpolationMode);
+typedef GpStatus (WINGDIPAPI *PtrGdipSetCompositingQuality)(GpGraphics *graphics, CompositingQuality compositingQuality);
+typedef GpStatus (WINGDIPAPI *PtrGdipSetPageUnit)(GpGraphics *graphics, GpUnit unit);
+typedef GpStatus (WINGDIPAPI *PtrGdipSetPageScale)(GpGraphics *graphics, REAL scale);
+typedef GpStatus (WINGDIPAPI *PtrGdipSetWorldTransform)(GpGraphics *graphics, GpMatrix *matrix);
+typedef GpStatus (WINGDIPAPI *PtrGdipDrawImageRectRect)(GpGraphics *graphics, GpImage *image, REAL dstx,
+													REAL dsty, REAL dstwidth, REAL dstheight,
+													REAL srcx, REAL srcy, REAL srcwidth, REAL srcheight,
+													GpUnit srcUnit,
+													GDIPCONST GpImageAttributes* imageAttributes,
+													DrawImageAbort callback, VOID * callbackData);
+typedef GpStatus (WINGDIPAPI *PtrGdipDeleteGraphics)(GpGraphics *graphics);
+typedef GpStatus (WINGDIPAPI *PtrGdipDisposeImage)(GpImage *image);
+typedef GpStatus (WINGDIPAPI *PtrGdipDeleteMatrix)(GpMatrix *matrix);
+
+class GdiplusManager
+{
+public:
+	static GdiplusManager* getInstance()
+	{
+		static GdiplusManager s;
+		return &s;
+	}
+
+	void CreateFromHDC(HDC hdc, GpGraphics **graphics)
+	{
+		if (GdipCreateFromHDC)
+			GdipCreateFromHDC(hdc, graphics);
+	}
+	void CreateMetafileFromEmf(HENHMETAFILE hEmf, BOOL deleteEmf, GpMetafile **metafile)
+	{
+		GdipCreateMetafileFromEmf(hEmf, deleteEmf, metafile);
+	}
+	void CreateBitmapFromScan0(INT width,
+								INT height,
+								INT stride,
+								PixelFormat format,
+								BYTE* scan0,
+								GpBitmap** bitmap)
+	{
+		if (GdipCreateBitmapFromScan0)
+			GdipCreateBitmapFromScan0(width, height, stride, format, scan0, bitmap);
+	}
+	void GetImageGraphicsContext(GpImage *image, GpGraphics **graphics)
+	{
+		if (GdipGetImageGraphicsContext)
+			GdipGetImageGraphicsContext(image, graphics);
+	}
+	void CreateMatrix2(REAL m11, REAL m12, REAL m21, REAL m22, REAL dx, REAL dy, GpMatrix **matrix)
+	{
+		if (GdipCreateMatrix2)
+			GdipCreateMatrix2(m11, m12, m21, m22, dx, dy, matrix);
+	}
+	void SetTextRenderingHint(GpGraphics *graphics, TextRenderingHint mode)
+	{
+		if (GdipSetTextRenderingHint)
+			GdipSetTextRenderingHint(graphics, mode);
+	}
+	void SetInterpolationMode(GpGraphics *graphics, InterpolationMode interpolationMode)
+	{
+		if (GdipSetInterpolationMode)
+			GdipSetInterpolationMode(graphics, interpolationMode);
+	}
+	void SetCompositingQuality(GpGraphics *graphics, CompositingQuality compositingQuality)
+	{
+		if (GdipSetCompositingQuality)
+			GdipSetCompositingQuality(graphics, compositingQuality);
+	}
+	void SetPageUnit(GpGraphics *graphics, GpUnit unit)
+	{
+		if (GdipSetPageUnit)
+			GdipSetPageUnit(graphics, unit);
+	}
+	void SetPageScale(GpGraphics *graphics, REAL scale)
+	{
+		if (GdipSetPageScale)
+			GdipSetPageScale(graphics, scale);
+	}
+	void SetWorldTransform(GpGraphics *graphics, GpMatrix *matrix)
+	{
+		if (GdipSetWorldTransform)
+			GdipSetWorldTransform(graphics, matrix);
+	}
+	void DrawImageRectRect(GpGraphics *graphics, GpImage *image, REAL dstx,
+							REAL dsty, REAL dstwidth, REAL dstheight,
+							REAL srcx, REAL srcy, REAL srcwidth, REAL srcheight,
+							GpUnit srcUnit,
+							GDIPCONST GpImageAttributes* imageAttributes,
+							DrawImageAbort callback, VOID * callbackData)
+	{
+		if (GdipDrawImageRectRect)
+			GdipDrawImageRectRect(graphics, image,
+									dstx, dsty, dstwidth, dstheight, 
+									srcx, srcy, srcwidth, srcheight,
+									srcUnit, imageAttributes,
+									callback, callbackData);
+	}
+	void DeleteGraphics(GpGraphics *graphics)
+	{
+		if (GdipDeleteGraphics)
+			GdipDeleteGraphics(graphics);
+	}
+	void DisposeImage(GpImage *image)
+	{
+		if (GdipDisposeImage)
+			GdipDisposeImage(image);
+	}
+	void DeleteMatrix(GpMatrix *matrix)
+	{
+		if (GdipDeleteMatrix)
+			GdipDeleteMatrix(matrix);
+	}
+
+private:
+	GdiplusManager()
+	{
+		QLibrary lib(QString::fromUtf8("gdiplus"));
+
+		GdipCreateFromHDC = (PtrGdipCreateFromHDC)lib.resolve("GdipCreateFromHDC");
+		GdipGetImageGraphicsContext = (PtrGdipGetImageGraphicsContext)lib.resolve("GdipGetImageGraphicsContext");
+		GdipCreateMetafileFromEmf = (PtrGdipCreateMetafileFromEmf)lib.resolve("GdipCreateMetafileFromEmf");
+		GdipCreateBitmapFromScan0 = (PtrGdipCreateBitmapFromScan0)lib.resolve("GdipCreateBitmapFromScan0");
+		GdipCreateMatrix2 = (PtrGdipCreateMatrix2)lib.resolve("GdipCreateMatrix2");
+		GdipSetTextRenderingHint = (PtrGdipSetTextRenderingHint)lib.resolve("GdipSetTextRenderingHint");
+		GdipSetInterpolationMode = (PtrGdipSetInterpolationMode)lib.resolve("GdipSetInterpolationMode");
+		GdipSetCompositingQuality = (PtrGdipSetCompositingQuality)lib.resolve("GdipSetCompositingQuality");
+		GdipSetPageUnit = (PtrGdipSetPageUnit)lib.resolve("GdipSetPageUnit");
+		GdipSetPageScale = (PtrGdipSetPageScale)lib.resolve("GdipSetPageScale");
+		GdipSetWorldTransform = (PtrGdipSetWorldTransform)lib.resolve("GdipSetWorldTransform");
+		GdipDrawImageRectRect = (PtrGdipDrawImageRectRect)lib.resolve("GdipDrawImageRectRect");
+		GdipDeleteGraphics = (PtrGdipDeleteGraphics)lib.resolve("GdipDeleteGraphics");
+		GdipDisposeImage = (PtrGdipDisposeImage)lib.resolve("GdipDisposeImage");
+		GdipDeleteMatrix = (PtrGdipDeleteMatrix)lib.resolve("GdipDeleteMatrix");
+	}
+
+private:
+	PtrGdipCreateFromHDC GdipCreateFromHDC;
+	PtrGdipGetImageGraphicsContext GdipGetImageGraphicsContext;
+	PtrGdipCreateMetafileFromEmf GdipCreateMetafileFromEmf;
+	PtrGdipCreateBitmapFromScan0 GdipCreateBitmapFromScan0;
+	PtrGdipCreateMatrix2 GdipCreateMatrix2;
+	PtrGdipSetTextRenderingHint GdipSetTextRenderingHint;
+	PtrGdipSetInterpolationMode GdipSetInterpolationMode;
+	PtrGdipSetCompositingQuality GdipSetCompositingQuality;
+	PtrGdipSetPageUnit GdipSetPageUnit;
+	PtrGdipSetPageScale GdipSetPageScale;
+	PtrGdipSetWorldTransform GdipSetWorldTransform;
+	PtrGdipDrawImageRectRect GdipDrawImageRectRect;
+	PtrGdipDeleteGraphics GdipDeleteGraphics;
+	PtrGdipDisposeImage GdipDisposeImage;
+	PtrGdipDeleteMatrix GdipDeleteMatrix;
+};
+
+void qt_drawMetafile(QPainter *painter, const QRectF &r, const QByteArray &mf, const QRectF &sr)
+{
+	GpGraphics *graphics = NULL;
+	GpMatrix *matrix = NULL;
+	GpMetafile *metafile = NULL;
+	GpBitmap *bitmap = NULL;	
+	HDC hdc = NULL;
+	GdiplusManager *pGdiplus = GdiplusManager::getInstance();
+
+	QPaintEngine *pEngine = painter->paintEngine();
+	QPaintDevice *pDev = pEngine->paintDevice();
+	if (pDev->devType() == QInternal::Image) {
+		QImage *pImgDev = static_cast<QImage *>(pDev);
+		QRect rcDst = painter->combinedTransform().mapRect(r).toRect();
+		if (!pImgDev->rect().intersects(rcDst))
+			return;
+		PixelFormat pixelFmt = PixelFormat32bppRGB;
+		switch (pImgDev->format())
+		{
+		case QImage::Format_RGB32:
+			pixelFmt = PixelFormat32bppRGB;
+			break;
+		case QImage::Format_ARGB32:
+			pixelFmt = PixelFormat32bppARGB;
+			break;
+		case QImage::Format_ARGB32_Premultiplied:
+			pixelFmt = PixelFormat32bppPARGB;
+			break;
+		default:
+			Q_ASSERT(false);
+			break;
+		}
+		pGdiplus->CreateBitmapFromScan0(pImgDev->width(),
+										pImgDev->height(),
+										pImgDev->bytesPerLine(),
+										pixelFmt,
+										(BYTE*)pImgDev->bits(),
+										&bitmap);
+
+		pGdiplus->GetImageGraphicsContext(bitmap, &graphics);
+	} else if (pEngine->type() == QPaintEngine::Windows){
+		hdc = pEngine->getDC();
+		pGdiplus->CreateFromHDC(hdc, &graphics);
+	} else {
+		qWarning("qt_drawMetafile: invalid paintDevice type!");
+		return;
+	}
+
+	HENHMETAFILE hEmf = ::SetEnhMetaFileBits(mf.size(), (const BYTE*)mf.data());
+	pGdiplus->CreateMetafileFromEmf(hEmf, TRUE, &metafile);
+
+	const QTransform &m = painter->combinedTransform();
+	pGdiplus->CreateMatrix2(m.m11(), m.m12(), m.m21(), m.m22(), m.dx(), m.dy(), &matrix);
+
+	pGdiplus->SetTextRenderingHint(graphics, TextRenderingHintClearTypeGridFit);
+	pGdiplus->SetInterpolationMode(graphics, InterpolationModeHighQualityBilinear);
+	pGdiplus->SetCompositingQuality(graphics, CompositingQualityHighQuality);
+	pGdiplus->SetPageUnit(graphics, UnitPixel);
+	pGdiplus->SetPageScale(graphics, 1.0);
+	pGdiplus->SetWorldTransform(graphics, matrix);
+	pGdiplus->DrawImageRectRect(graphics,
+								metafile,
+								r.x(), r.y(), r.width(), r.height(),
+								sr.x(), sr.y(), sr.width(), sr.height(),
+								UnitPixel, NULL, NULL, NULL);
+
+	pGdiplus->DeleteGraphics(graphics);
+	pGdiplus->DeleteMatrix(matrix);
+	pGdiplus->DisposeImage(metafile);
+	if (bitmap) {
+		Q_ASSERT(!hdc);
+		pGdiplus->DisposeImage(bitmap);
+	} else {
+		Q_ASSERT(hdc);
+		pEngine->releaseDC(hdc);
+	}
+}
 
 static const struct {
     int winSizeName;
@@ -777,6 +1103,16 @@ void QWin32PrintEngine::drawTiledPixmap(const QRectF &r, const QPixmap &pm, cons
     }
 }
 
+void QWin32PrintEngine::drawMetafile(const QRectF &targetRect,
+									const QByteArray &metafile,
+									const QRectF &sourceRect)
+{
+	QAlphaPaintEngine::drawMetafile(targetRect, metafile, sourceRect);
+	if (!continueCall())
+		return;
+	
+	qt_drawMetafile(painter(), targetRect, metafile, sourceRect);
+}
 
 void QWin32PrintEnginePrivate::composeGdiPath(const QPainterPath &path)
 {

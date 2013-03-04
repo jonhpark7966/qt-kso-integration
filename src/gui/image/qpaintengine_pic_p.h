@@ -104,6 +104,8 @@ public:
                    Qt::ImageConversionFlags flags = Qt::AutoColor);
     void drawTextItem(const QPointF &p, const QTextItem &ti);
 
+    void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr);
+
     Type type() const { return Picture; }
 
 protected:

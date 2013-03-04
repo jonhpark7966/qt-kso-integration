@@ -91,6 +91,8 @@ public:
     void setProperty(PrintEnginePropertyKey key, const QVariant &value);
     QVariant property(PrintEnginePropertyKey key) const;
 
+	void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr);
+
     bool newPage();
     bool abort();
     int metric(QPaintDevice::PaintDeviceMetric) const;

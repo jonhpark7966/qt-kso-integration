@@ -237,6 +237,8 @@ public:
     void syncState();
     inline bool isExtended() const { return extended; }
 
+    virtual void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr);
+
 protected:
     QPaintEngine(QPaintEnginePrivate &data, PaintEngineFeatures devcaps=0);
 

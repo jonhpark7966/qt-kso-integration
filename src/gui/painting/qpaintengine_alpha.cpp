@@ -284,6 +284,22 @@ void QAlphaPaintEngine::drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, 
     }
 }
 
+void QAlphaPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr)
+{
+	Q_D(QAlphaPaintEngine);
+
+	QRectF tr = d->m_transform.mapRect(r);
+	if (d->m_pass == 0) {
+		d->m_continueCall = false;
+
+		if (d->m_picengine)
+			d->m_picengine->drawMetafile(r, mf, sr);
+
+	} else {
+		d->m_continueCall = !d->fullyContained(tr);
+	}
+}
+
 QRegion QAlphaPaintEngine::alphaClipping() const
 {
     Q_D(const QAlphaPaintEngine);

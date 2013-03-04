@@ -805,6 +805,13 @@ bool QPicture::exec(QPainter *painter, QDataStream &s, int nrecords)
             }
         }
             break;
+        case QPicturePrivate::PdcDrawMetafile: {
+            QRectF sr;
+            QByteArray mf;
+            s >> r >> mf >> sr;
+            painter->drawMetafile(r, mf, sr);
+        }
+            break;
         case QPicturePrivate::PdcBegin:
             s >> ul;                        // number of records
             if (!exec(painter, s, ul))

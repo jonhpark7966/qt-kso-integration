@@ -105,6 +105,7 @@ public:
         PdcDrawWinFocusRect = 23, // rect,color
         PdcDrawTiledPixmap = 24, // rect,pixmap,point
         PdcDrawPath = 25, // path
+        PdcDrawMetafile = 26, // rect,metafile
 
         // no painting commands below PdcDrawLast.
 
