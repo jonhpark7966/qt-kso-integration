@@ -889,7 +889,7 @@ QVector<qreal> QPen::compoundArray() const
 
 void QPen::setCompoundArray(const QVector<qreal> &pattern)
 {
-    if (pattern.isEmpty() || d->compoundArray == pattern)
+    if (d->compoundArray == pattern)
         return;
     detach();
     d->compoundArray = pattern;
