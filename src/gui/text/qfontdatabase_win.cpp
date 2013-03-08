@@ -512,7 +512,7 @@ void populate_database(const QString& fam)
 
         LONG lSize = ::GetFontData(hdc, MAKE_TAG('O', 'S', '/', '2'), 0, NULL, 0); 
         BYTE* pBuf = NULL;
-        if (lSize)
+        if (lSize != GDI_ERROR && lSize != 0)
         {
             pBuf = new BYTE[lSize];
             if (GDI_ERROR != ::GetFontData(hdc, MAKE_TAG('O', 'S', '/', '2'), 0, pBuf, lSize)) 
