@@ -1002,6 +1002,10 @@ const QString qt_reg_winclass(QWidget *w)        // register window class
         icon  = true;
     }
 
+    QString winClassName = w->property("winClassName").toString();
+    if (!winClassName.isEmpty())
+        cname = winClassName;
+
 #ifndef Q_WS_WINCE
     // force CS_OWNDC when the GL graphics system is
     // used as the default renderer
