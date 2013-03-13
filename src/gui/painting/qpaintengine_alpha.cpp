@@ -284,7 +284,7 @@ void QAlphaPaintEngine::drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, 
     }
 }
 
-void QAlphaPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr)
+void QAlphaPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)
 {
 	Q_D(QAlphaPaintEngine);
 
@@ -293,7 +293,7 @@ void QAlphaPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, cons
 		d->m_continueCall = false;
 
 		if (d->m_picengine)
-			d->m_picengine->drawMetafile(r, mf, sr);
+			d->m_picengine->drawMetafile(r, mf, sr, effects);
 
 	} else {
 		d->m_continueCall = !d->fullyContained(tr);

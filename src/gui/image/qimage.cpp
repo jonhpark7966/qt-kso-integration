@@ -6658,12 +6658,19 @@ QImageEffectsPrivate::QImageEffectsPrivate()
     , hasColorKey(0)
     , hasDuotone(0)
     , hasBilevel(0)
+    , hasSubstColor(0)
+    , isGray(0)
+    , hasRecolor(0)
+    , hasAlpha(0)
     , checkBound(1)
     , colorKey(0)
     , tolerance(0)
     , bilevelThreshold(50)
     , duotoneColor1(0)
     , duotoneColor2(0)
+    , substColor(0)
+    , recolorValue(0)
+    , alphaValue(0)
     , brightness(0)
     , contrast(1)
     , m_pTransformProc(&QImageEffectsPrivate::transform_cpp)
@@ -6682,6 +6689,10 @@ void QImageEffectsPrivate::resetState()
 	hasColorKey = false;
 	hasDuotone = false;
 	hasBilevel = false;
+	hasSubstColor = false;
+	isGray = false;
+	hasRecolor = false;
+	hasAlpha = false;
 	checkBound = true;
 
 	brightness = 0;
@@ -6991,6 +7002,13 @@ void QImageEffects::setColorMatrix(const QMatrix4x4 &mtx)
     d->colorMatrix = mtx;
 }
 
+QMatrix4x4 QImageEffects::colorMatrix() const
+{
+	Q_ASSERT(d->hasColorMatirx);
+
+	return d->colorMatrix;
+}
+
 /*!
     \fn void QImageEffects::unsetColorMatrix()
     Discard the color matrix set by setColorMatrix and enable the other effects.
@@ -7017,6 +7035,19 @@ void QImageEffects::setDuotone( QRgb color1, QRgb color2 )
 	d->hasDuotone = true;
 	d->duotoneColor1 = color1;
 	d->duotoneColor2 = color2;
+}
+
+bool QImageEffects::hasDuotone() const
+{
+	return d->hasDuotone;
+}
+
+void QImageEffects::getDuotone(QRgb &color1, QRgb &color2) const
+{
+	Q_ASSERT(d->hasDuotone);
+
+	color1 = d->duotoneColor1;
+	color2 = d->duotoneColor2;
 }
 
 void QImageEffects::unsetDuotone()
@@ -7068,6 +7099,11 @@ void QImageEffects::setRemapTable(const QMap<QRgb, QRgb>& colorMap)
 	d->colorMap = colorMap;
 }
 
+QMap<QRgb, QRgb> QImageEffects::remapTable() const
+{
+	return d->colorMap;
+}
+
 void QImageEffects::setContrast(qreal contrast)
 {
 	if (d->contrast == contrast)
@@ -7090,6 +7126,10 @@ bool QImageEffects::hasEffects() const
         return (d->hasDuotone
                 || d->hasBilevel
                 || d->hasColorKey
+                || d->hasSubstColor
+                || d->isGray
+                || d->hasRecolor
+                || d->hasAlpha
                 || d->brightness != 0
                 || d->contrast != 1
                 || !d->colorMap.isEmpty());
@@ -7130,9 +7170,16 @@ bool QImageEffects::hasColorKey() const
 	return d->hasColorKey;
 }
 
+bool QImageEffects::hasBilevel() const
+{
+	return d->hasBilevel;
+}
+
 qreal QImageEffects::bilevel() const
 {
-	return d->bilevelThreshold;
+	Q_ASSERT(d->hasBilevel);
+
+	return d->bilevelThreshold / 100.0;
 }
 
 qreal QImageEffects::brightness() const
@@ -7140,13 +7187,17 @@ qreal QImageEffects::brightness() const
 	return d->brightness;
 }
 
-qreal QImageEffects::colorKey() const
+QRgb QImageEffects::colorKey() const
 {
+	Q_ASSERT(d->hasColorKey);
+
 	return d->colorKey;
 }
 
 quint8 QImageEffects::colorKeyTolerance() const
 {
+	Q_ASSERT(d->hasColorKey);
+
 	return d->tolerance;
 }
 
@@ -7154,5 +7205,162 @@ qreal QImageEffects::contrast() const
 {
 	return d->contrast;
 }
+
+void QImageEffects::setGray(bool b)
+{
+	detach();
+
+	d->isGray = b;
+}
+
+bool QImageEffects::isGray() const
+{
+	return d->isGray;
+}
+
+void QImageEffects::setSubstituteColor(QRgb clr)
+{
+	detach();
+
+	d->hasSubstColor = true;
+	d->substColor = clr;
+}
+
+void QImageEffects::unsetSubstituteColor()
+{
+	detach();
+
+	d->hasSubstColor = false;
+}
+
+bool QImageEffects::hasSubstituteColor() const
+{
+	return d->hasSubstColor;
+}
+
+QRgb QImageEffects::substituteColor() const
+{
+	Q_ASSERT(d->hasSubstColor);
+
+	return d->substColor;
+}
+
+void QImageEffects::setRecolor(QRgb clr)
+{
+	detach();
+
+	d->hasRecolor = true;
+	d->recolorValue = clr;
+}
+
+void QImageEffects::unsetRecolor()
+{
+	detach();
+
+	d->hasRecolor = false;
+}
+
+bool QImageEffects::hasRecolor() const
+{
+	return d->hasRecolor;
+}
+
+QRgb QImageEffects::recolor() const
+{
+	Q_ASSERT(d->hasRecolor);
+
+	return d->recolorValue;
+}
+
+void QImageEffects::setAlpha(QRgb clr)
+{
+	detach();
+
+	d->hasAlpha = true;
+	d->alphaValue = clr;
+}
+
+void QImageEffects::unsetAlpha()
+{
+	detach();
+
+	d->hasAlpha = false;
+}
+
+bool QImageEffects::hasAlpha() const
+{
+	return d->hasAlpha;
+}
+
+QRgb QImageEffects::alpha() const
+{
+	return d->alphaValue;
+}
+
+#if !defined(QT_NO_DATASTREAM)
+
+QDataStream &operator<<(QDataStream &s, const QImageEffects &effects)
+{
+	QImageEffects::DataPtr d = effects.data_ptr();
+	s	<< d->hasColorMatirx
+		<< d->hasColorKey
+		<< d->hasDuotone
+		<< d->hasBilevel
+		<< d->hasSubstColor
+		<< d->isGray
+		<< d->hasRecolor
+		<< d->hasAlpha
+		<< d->checkBound
+		<< d->colorKey
+		<< d->tolerance
+		<< d->bilevelThreshold
+		<< d->duotoneColor1
+		<< d->duotoneColor2
+		<< d->substColor
+		<< d->recolorValue
+		<< d->alphaValue
+		<< d->brightness
+		<< d->contrast;
+
+	int colorCount = d->colorMap.size();
+	s << colorCount;
+	if (colorCount > 0)
+		s << d->colorMap;
+
+	return s;
+}
+
+QDataStream &operator>>(QDataStream &s, QImageEffects &effects)
+{
+	QImageEffects::DataPtr d = effects.data_ptr();
+	s	>> d->hasColorMatirx
+		>> d->hasColorKey
+		>> d->hasDuotone
+		>> d->hasBilevel
+		>> d->hasSubstColor
+		>> d->isGray
+		>> d->hasRecolor
+		>> d->hasAlpha
+		>> d->checkBound
+		>> d->colorKey
+		>> d->tolerance
+		>> d->bilevelThreshold
+		>> d->duotoneColor1
+		>> d->duotoneColor2
+		>> d->substColor
+		>> d->recolorValue
+		>> d->alphaValue
+		>> d->brightness
+		>> d->contrast;
+
+	int colorCount = d->colorMap.size();
+	s >> colorCount;
+	if (colorCount > 0)
+		s >> d->colorMap;
+
+	return s;
+}
+
+#endif //QT_NO_DATASTREAM
 
 QT_END_NAMESPACE

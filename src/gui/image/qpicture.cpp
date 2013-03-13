@@ -808,8 +808,13 @@ bool QPicture::exec(QPainter *painter, QDataStream &s, int nrecords)
         case QPicturePrivate::PdcDrawMetafile: {
             QRectF sr;
             QByteArray mf;
+            bool hasEffects;
             s >> r >> mf >> sr;
-            painter->drawMetafile(r, mf, sr);
+            QImageEffects effects;
+            s >> hasEffects;
+            if (hasEffects)
+                s >> effects;
+            painter->drawMetafile(r, mf, sr, effects);
         }
             break;
         case QPicturePrivate::PdcBegin:

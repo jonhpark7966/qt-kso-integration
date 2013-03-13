@@ -536,7 +536,7 @@ void QPicturePaintEngine::drawTextItem(const QPointF &p , const QTextItem &ti)
     }
 }
 
-void QPicturePaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr)
+void QPicturePaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)
 {
 	Q_D(QPicturePaintEngine);
 #ifdef QT_PICTURE_DEBUG
@@ -546,6 +546,11 @@ void QPicturePaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, co
 	SERIALIZE_CMD(QPicturePrivate::PdcDrawMetafile);
 
 	d->s << r << mf << sr;
+	if (effects.hasEffects()) {
+		d->s << true;
+		d->s << effects;
+	} else
+		d->s << false;
 
 	writeCmdLength(pos, r, false);
 }

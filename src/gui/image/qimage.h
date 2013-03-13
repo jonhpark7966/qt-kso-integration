@@ -371,29 +371,53 @@ public:
 
     void setBilevel(qreal threshold = 0.5);
     void unsetBilevel();
+    bool hasBilevel() const;
     qreal bilevel() const;
+    void setGray(bool b);
+    bool isGray() const;
     void setBrightness(qreal brightness);
     qreal brightness() const;
+
     void setColorKey(QRgb key, quint8 tolerance = 0);
     void unsetColorKey();
     bool hasColorKey() const;
-    qreal colorKey() const;
+    QRgb colorKey() const;
     quint8 colorKeyTolerance() const;
 
     void setRemapTable(const QMap<QRgb, QRgb>& colorMap);
+    QMap<QRgb, QRgb> remapTable() const;
     void setColorMatrix(const QMatrix4x4 &mtx);
+    QMatrix4x4 colorMatrix() const;
     void unsetColorMatrix();
     void setContrast(qreal contrast);
     qreal contrast() const;
+
     void setDuotone(QRgb color1, QRgb color2);
     void unsetDuotone();
+    bool hasDuotone() const;
+    void getDuotone(QRgb &color1, QRgb &color2) const;
+
+    void setSubstituteColor(QRgb clr);
+    void unsetSubstituteColor();
+    bool hasSubstituteColor() const;
+    QRgb substituteColor() const;
+
+    void setRecolor(QRgb clr);
+    void unsetRecolor();
+    bool hasRecolor() const;
+    QRgb recolor() const;
+
+    void setAlpha(QRgb clr);
+    void unsetAlpha();
+    bool hasAlpha() const;
+    QRgb alpha() const;
 
     bool hasEffects() const;
-	void resetState();
+    void resetState();
 
     void makeEffects(uint *buffer, int length);
 
-	void detach();
+    void detach();
 
 private:
     QImageEffectsPrivate *d;
@@ -402,6 +426,11 @@ public:
     typedef QImageEffectsPrivate * DataPtr;
     inline DataPtr data_ptr() const { return d; }
 };
+
+#if !defined(QT_NO_DATASTREAM)
+Q_GUI_EXPORT QDataStream &operator<<(QDataStream &, const QImageEffects &);
+Q_GUI_EXPORT QDataStream &operator>>(QDataStream &, QImageEffects &);
+#endif
 
 QT_END_NAMESPACE
 

@@ -91,6 +91,11 @@ public:
 Q_DECLARE_TYPEINFO(QTextItem, Q_PRIMITIVE_TYPE);
 
 
+typedef void (drawMetafileFunc)(QPainter *painter, const QRectF &r,
+								const QByteArray &mf,
+								const QRectF &sr,
+								const QImageEffects &effects);
+
 class Q_GUI_EXPORT QPaintEngine
 {
     Q_DECLARE_PRIVATE(QPaintEngine)
@@ -237,13 +242,16 @@ public:
     void syncState();
     inline bool isExtended() const { return extended; }
 
-    virtual void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr);
+    virtual void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects);
+	void setDrawMetafileFunc(drawMetafileFunc *p) {pDrawMetafileFunc = p;}
+	drawMetafileFunc* getDrawMetafileFunc() {return pDrawMetafileFunc;}
 
 protected:
     QPaintEngine(QPaintEnginePrivate &data, PaintEngineFeatures devcaps=0);
 
     QPaintEngineState *state;
     PaintEngineFeatures gccaps;
+	static drawMetafileFunc *pDrawMetafileFunc;
 
     uint active : 1;
     uint selfDestruct : 1;

@@ -91,7 +91,7 @@ public:
     void setProperty(PrintEnginePropertyKey key, const QVariant &value);
     QVariant property(PrintEnginePropertyKey key) const;
 
-	void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr);
+	void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects);
 
     bool newPage();
     bool abort();

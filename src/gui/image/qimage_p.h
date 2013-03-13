@@ -161,6 +161,10 @@ public:
     bool hasColorKey;
     bool hasDuotone;
     bool hasBilevel;
+    bool hasSubstColor;
+    bool isGray;
+    bool hasRecolor;
+    bool hasAlpha;
 
     bool checkBound;
 
@@ -174,6 +178,9 @@ public:
     quint8 bilevelThreshold;
     QRgb duotoneColor1;
     QRgb duotoneColor2;
+    QRgb substColor;
+    QRgb recolorValue;
+    QRgb alphaValue;
     qreal brightness;
     qreal contrast;
     typedef void (QImageEffectsPrivate::*TransformProc)(QRgb *buffer, int length) const;

@@ -400,7 +400,7 @@ public:
     inline void drawImage(int x, int y, const QImage &image, int sx = 0, int sy = 0,
                           int sw = -1, int sh = -1, Qt::ImageConversionFlags flags = Qt::AutoColor);
 
-    void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr);
+    void drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects);
 
     void setLayoutDirection(Qt::LayoutDirection direction);
     Qt::LayoutDirection layoutDirection() const;

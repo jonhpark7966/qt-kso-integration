@@ -637,13 +637,14 @@ void QPaintEngine::drawImage(const QRectF &r, const QImage &image, const QRectF 
     drawPixmap(r, pm, QRectF(QPointF(0, 0), pm.size()));
 }
 
-extern void qt_drawMetafile(QPainter *painter, const QRectF &r, const QByteArray &mf, const QRectF &sr);
+drawMetafileFunc* QPaintEngine::pDrawMetafileFunc = NULL;
 
-void QPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr)
+void QPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)
 {
-#ifdef Q_OS_WIN
-	qt_drawMetafile(painter(), r, mf, sr);
-#endif
+	if (pDrawMetafileFunc)
+		pDrawMetafileFunc(painter(), r, mf, sr, effects);
+	else
+		qWarning() << "QPaintEngine::drawMetafile: drawMetafile function is NULL! ";
 }
 
 /*!

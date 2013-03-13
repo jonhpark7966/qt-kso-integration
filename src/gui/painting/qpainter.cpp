@@ -5796,14 +5796,14 @@ void QPainter::drawImage(const QRectF &targetRect, const QImage &image, const QR
     d->extended->drawImage(QRectF(x, y, w, h), image, QRectF(sx, sy, sw, sh), userData, flags);
 }
 
-void QPainter::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr)
+void QPainter::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)
 {
     Q_D(QPainter);
     if (!d->engine || r.isEmpty() || mf.isNull() && sr.isEmpty())
         return;
 
     d->updateState(d->state);
-    d->engine->drawMetafile(r, mf, sr);
+    d->engine->drawMetafile(r, mf, sr, effects);
 }
 
 void qt_draw_glyphs(QPainter *painter, const quint32 *glyphArray, const QPointF *positionArray,
