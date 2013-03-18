@@ -869,7 +869,7 @@ int QFontEngine::glyphCount() const
     return qFromBigEndian<quint16>(reinterpret_cast<const uchar *>(maxpTable.constData() + 4));
 }
 
-const uchar *QFontEngine::getCMap(const uchar *table, uint tableSize, bool *isSymbolFont, int *cmapSize)
+const uchar *QFontEngine::getCMap(const uchar *table, uint tableSize, bool *isSymbolFont, QTextCodec **cmapCodec, int *cmapSize)
 {
     const uchar *header = table;
     if (tableSize < 4)
@@ -890,9 +890,10 @@ const uchar *QFontEngine::getCMap(const uchar *table, uint tableSize, bool *isSy
         Invalid,
         AppleRoman,
         Symbol,
+        MicrosoftBIG5,
+        MicrosoftGB2312,
         Unicode11,
         Unicode,
-        MicrosoftGB2312,
         MicrosoftUnicode,
         MicrosoftUnicodeExtended
     };
@@ -935,6 +936,12 @@ const uchar *QFontEngine::getCMap(const uchar *table, uint tableSize, bool *isSy
                 if (score < MicrosoftGB2312) {
                     tableToUse = n;
                     score = MicrosoftGB2312;
+                }
+                break;
+            case 4: // Chinese BIG5
+                if (score < MicrosoftBIG5) {
+                    tableToUse = n;
+                    score = MicrosoftBIG5;
                 }
                 break;
             case 1:
@@ -981,6 +988,13 @@ resolveTable:
         return 0;
     *cmapSize = length;
 
+    if (score == MicrosoftGB2312 || score == MicrosoftBIG5) {
+        QTextCodec* codec = QTextCodec::codecForName(
+            score == MicrosoftGB2312 ? "GBK" : "Big5");
+        if (codec != NULL)
+	        *cmapCodec = codec;
+	}
+
     // To support symbol fonts that contain a unicode table for the symbol area
     // we check the cmap tables and fall back to symbol font unless that would
     // involve losing information from the unicode table
@@ -1024,6 +1038,28 @@ quint32 QFontEngine::getTrueTypeGlyphIndex(const uchar *cmap, uint unicode)
     if (format == 0) {
         if (unicode < 256)
             return (int) *(cmap+6+unicode);
+    } else if (format == 2) {
+        quint8 low = (quint8)unicode;
+        quint8 high = (quint8)(unicode >> 8);
+        const uchar* subHeaderKeys = cmap + 6;
+        const uchar* subHeaders = subHeaderKeys + 2 * 256;
+        const uchar* subHeader = subHeaders + qFromBigEndian<quint16>(subHeaderKeys + 2 * high);
+
+        quint16 first = qFromBigEndian<quint16>(subHeader);
+        quint16 entryCount = qFromBigEndian<quint16>(subHeader + 2);
+        low -= first;
+        if (low < 0 || low >= entryCount)
+            return 0;
+
+        qint16 idDelta = qFromBigEndian<qint16>(subHeader + 4);
+        subHeader += 6;
+        const uchar* pIndex = subHeader + qFromBigEndian<quint16>(subHeader) + 2 * low;
+        quint32 index = qFromBigEndian<quint16>(pIndex);
+        if (index != 0) {
+            index += idDelta;
+            index %= 65536;
+        }
+        return index;
     } else if (format == 4) {
         /* some fonts come with invalid cmap tables, where the last segment
            specified end = start = rangeoffset = 0xffff, delta = 0x0001

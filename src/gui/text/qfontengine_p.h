@@ -227,7 +227,7 @@ public:
     void setGlyphCache(void *key, QFontEngineGlyphCache *data);
     QFontEngineGlyphCache *glyphCache(void *key, QFontEngineGlyphCache::Type type, const QTransform &transform) const;
 
-    static const uchar *getCMap(const uchar *table, uint tableSize, bool *isSymbolFont, int *cmapSize);
+    static const uchar *getCMap(const uchar *table, uint tableSize, bool *isSymbolFont, QTextCodec **cmapCodec, int *cmapSize);
     static quint32 getTrueTypeGlyphIndex(const uchar *cmap, uint unicode);
 
     static QByteArray convertToPostscriptFontFamilyName(const QByteArray &fontFamily);

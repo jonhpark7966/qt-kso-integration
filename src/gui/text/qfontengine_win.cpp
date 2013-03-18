@@ -206,7 +206,7 @@ void QFontEngineWin::getCMap()
         cmapTable = getSfntTable(qbswap<quint32>(MAKE_TAG('c', 'm', 'a', 'p')));
         int size = 0;
         cmap = QFontEngine::getCMap(reinterpret_cast<const uchar *>(cmapTable.constData()),
-                       cmapTable.size(), &symb, &size);
+                       cmapTable.size(), &symb, &cmapCodec, &size);
     }
     if (!cmap) {
         ttf = false;
@@ -319,6 +319,15 @@ int QFontEngineWin::getGlyphIndexes(const QChar *str, int numChars, QGlyphLayout
         } else if (ttf) {
             for (; i < numChars; ++i, ++glyph_pos) {
                 unsigned int uc = getChar(str, i, numChars);
+                if (cmapCodec) {
+					QTextCodec::ConverterState state(QTextCodec::ConvertInvalidToNull);
+	                QByteArray buf = cmapCodec->fromUnicode(&str[i], 1, &state);
+	                if (buf.size() == 2) {
+	                    uc = (unsigned char)buf[0];
+	                    uc <<= 8;
+	                    uc |= (unsigned char)buf[1];
+					}
+				}
                 glyphs->glyphs[glyph_pos] = getTrueTypeGlyphIndex(cmap, uc);
             }
         } else {
@@ -351,6 +360,7 @@ QFontEngineWin::QFontEngineWin(const QString &name, HFONT _hfont, bool stockFont
     _name = name;
 
     cmap = 0;
+    cmapCodec = NULL;
     hfont = _hfont;
     logfont = lf;
     HDC hdc = shared_dc();
