@@ -215,7 +215,7 @@ bool QWin32PrintEngine::begin(QPaintDevice *pdev)
         ok = false;
     }
 
-    if (StartPage(d->hdc) <= 0) {
+    if (ok && StartPage(d->hdc) <= 0) {
         qErrnoWarning("QWin32PrintEngine::begin: StartPage failed");
         ok = false;
     }
