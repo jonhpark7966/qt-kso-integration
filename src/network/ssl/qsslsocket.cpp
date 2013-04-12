@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtNetwork module of the Qt Toolkit.
@@ -897,12 +897,7 @@ void QSslSocket::setSslConfiguration(const QSslConfiguration &configuration)
     d->configuration.peerVerifyMode = configuration.peerVerifyMode();
     d->configuration.protocol = configuration.protocol();
     d->configuration.sslOptions = configuration.d->sslOptions;
-
-    // if the CA certificates were set explicitly (either via
-    // QSslConfiguration::setCaCertificates() or QSslSocket::setCaCertificates(),
-    // we cannot load the certificates on demand
-    if (!configuration.d->allowRootCertOnDemandLoading)
-        d->allowRootCertOnDemandLoading = false;
+    d->allowRootCertOnDemandLoading = false;
 }
 
 /*!
@@ -1681,13 +1676,9 @@ void QSslSocket::startServerEncryption()
     will not emit the sslErrors() signal, and it is unnecessary to
     call this function.
 
-    \warning Be sure to always let the user inspect the errors
-    reported by the sslErrors() signal, and only call this method
-    upon confirmation from the user that proceeding is ok.
-    If there are unexpected errors, the connection should be aborted.
-    Calling this method without inspecting the actual errors will
-    most likely pose a security risk for your application. Use it
-    with great care!
+    Ignoring errors that occur during an SSL handshake should be done
+    with caution. A fundamental characteristic of secure connections
+    is that they should be established with an error free handshake.
 
     \sa sslErrors()
 */
@@ -2306,14 +2297,6 @@ QByteArray QSslSocketPrivate::peek(qint64 maxSize)
 /*!
     \internal
 */
-bool QSslSocketPrivate::rootCertOnDemandLoadingSupported()
-{
-    return s_loadRootCertsOnDemand;
-}
-
-/*!
-    \internal
-*/
 QList<QByteArray> QSslSocketPrivate::unixRootCertDirectories()
 {
     return QList<QByteArray>() <<  "/etc/ssl/certs/" // (K)ubuntu, OpenSUSE, Mandriva, MeeGo ...
@@ -2322,7 +2305,7 @@ QList<QByteArray> QSslSocketPrivate::unixRootCertDirectories()
                                << "/usr/local/ssl/" // Normal OpenSSL Tarball
                                << "/var/ssl/certs/" // AIX
                                << "/usr/local/ssl/certs/" // Solaris
-                               << "/etc/openssl/certs/" // BlackBerry
+                               << "/var/certmgr/web/user_trusted/" // BlackBerry
                                << "/opt/openssl/certs/"; // HP-UX
 }
 

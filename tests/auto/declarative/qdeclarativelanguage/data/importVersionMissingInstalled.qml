@@ -1,3 +1,3 @@
-import org.qtproject.installedtest as T
+import com.nokia.installedtest as T
 
 T.InstalledTest {}

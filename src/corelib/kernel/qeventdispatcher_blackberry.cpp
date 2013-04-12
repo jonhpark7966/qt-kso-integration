@@ -55,29 +55,7 @@
 #define qEventDispatcherDebug QT_NO_QDEBUG_MACRO()
 #endif
 
-class BpsChannelScopeSwitcher
-{
-public:
-    BpsChannelScopeSwitcher(int scopeChannel) : innerChannel(scopeChannel)
-    {
-        outerChannel = bps_channel_get_active();
-        if (outerChannel != innerChannel)
-            bps_channel_set_active(innerChannel);
-    }
-
-    ~BpsChannelScopeSwitcher()
-    {
-        if (outerChannel != innerChannel)
-            bps_channel_set_active(outerChannel);
-    }
-
-private:
-    int innerChannel;
-    int outerChannel;
-};
-
-struct bpsIOHandlerData
-{
+struct bpsIOHandlerData {
     bpsIOHandlerData()
         : count(0), readfds(0), writefds(0), exceptfds(0)
     {
@@ -123,7 +101,7 @@ static int bpsIOHandler(int fd, int io_events, void *data)
     // but this only needs to happen once if multiple files become ready at the same time
     if (firstReady) {
         qEventDispatcherDebug << "Sending bpsIOReadyDomain event";
-        // create unblock event
+        // create IO ready event
         bps_event_t *event;
         int result = bps_event_create(&event, bpsUnblockDomain, 0, NULL, NULL);
         if (result != BPS_SUCCESS) {
@@ -131,8 +109,7 @@ static int bpsIOHandler(int fd, int io_events, void *data)
             return BPS_FAILURE;
         }
 
-        // post unblock event to our thread; in this callback the bps channel is
-        // guaranteed to be the same that was active when bps_add_fd was called
+        // post unblock event to our thread
         result = bps_push_event(event);
         if (result != BPS_SUCCESS) {
             qWarning("QEventDispatcherBlackberryPrivate::QEventDispatcherBlackberry: bps_push_event() failed");
@@ -198,9 +175,6 @@ QEventDispatcherBlackberry::~QEventDispatcherBlackberry()
 void QEventDispatcherBlackberry::registerSocketNotifier(QSocketNotifier *notifier)
 {
     Q_ASSERT(notifier);
-    Q_D(QEventDispatcherBlackberry);
-
-    BpsChannelScopeSwitcher channelSwitcher(d->bps_channel);
 
     // Register the fd with bps
     int sockfd = notifier->socket();
@@ -231,6 +205,8 @@ void QEventDispatcherBlackberry::registerSocketNotifier(QSocketNotifier *notifie
         break;
     }
 
+    Q_D(QEventDispatcherBlackberry);
+
     errno = 0;
     int result = bps_add_fd(sockfd, io_events, &bpsIOHandler, d->ioData.data());
 
@@ -240,10 +216,6 @@ void QEventDispatcherBlackberry::registerSocketNotifier(QSocketNotifier *notifie
 
 void QEventDispatcherBlackberry::unregisterSocketNotifier(QSocketNotifier *notifier)
 {
-    Q_D(QEventDispatcherBlackberry);
-
-    BpsChannelScopeSwitcher channelSwitcher(d->bps_channel);
-
     // Allow the base Unix implementation to unregister the fd too
     QEventDispatcherUNIX::unregisterSocketNotifier(notifier);
 
@@ -264,6 +236,8 @@ void QEventDispatcherBlackberry::unregisterSocketNotifier(QSocketNotifier *notif
     if (!io_events)
         return;
 
+    Q_D(QEventDispatcherBlackberry);
+
     errno = 0;
     result = bps_add_fd(sockfd, io_events, &bpsIOHandler, d->ioData.data());
     if (result != BPS_SUCCESS) {
@@ -271,20 +245,16 @@ void QEventDispatcherBlackberry::unregisterSocketNotifier(QSocketNotifier *notif
     }
 }
 
-static inline int timevalToMillisecs(const timeval &tv)
-{
-    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-}
-
 int QEventDispatcherBlackberry::select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
                                        timeval *timeout)
 {
     Q_UNUSED(nfds);
-    Q_D(QEventDispatcherBlackberry);
 
-    BpsChannelScopeSwitcher channelSwitcher(d->bps_channel);
+    // Make a note of the start time
+    timeval startTime = qt_gettime();
 
     // prepare file sets for bps callback
+    Q_D(QEventDispatcherBlackberry);
     d->ioData->count = 0;
     d->ioData->readfds = readfds;
     d->ioData->writefds = writefds;
@@ -300,15 +270,15 @@ int QEventDispatcherBlackberry::select(int nfds, fd_set *readfds, fd_set *writef
     if (exceptfds)
         FD_ZERO(exceptfds);
 
-    bps_event_t *event = 0;
-    unsigned int eventCount = 0;
-
     // Convert timeout to milliseconds
     int timeoutTotal = -1;
     if (timeout)
-        timeoutTotal = timevalToMillisecs(*timeout);
+        timeoutTotal = (timeout->tv_sec * 1000) + (timeout->tv_usec / 1000);
+
     int timeoutLeft = timeoutTotal;
-    timeval startTime = qt_gettime();
+
+    bps_event_t *event = 0;
+    unsigned int eventCount = 0;
 
     // This loop exists such that we can drain the bps event queue of all native events
     // more efficiently than if we were to return control to Qt after each event. This
@@ -333,19 +303,10 @@ int QEventDispatcherBlackberry::select(int nfds, fd_set *readfds, fd_set *writef
             // Clock source is monotonic, so we can recalculate how much timeout is left
             if (timeoutTotal != -1) {
                 timeval t2 = qt_gettime();
-                timeoutLeft = timeoutTotal
-                              - (timevalToMillisecs(t2) - timevalToMillisecs(startTime));
+                timeoutLeft = timeoutTotal - ((t2.tv_sec * 1000 + t2.tv_usec / 1000)
+                                              - (startTime.tv_sec * 1000 + startTime.tv_usec / 1000));
                 if (timeoutLeft < 0)
                     timeoutLeft = 0;
-            }
-
-            timeval tnext;
-            if (d->timerList.timerWait(tnext)) {
-                int timeoutNext = timevalToMillisecs(tnext);
-                if (timeoutNext < timeoutLeft || timeoutTotal == -1) {
-                    timeoutTotal = timeoutLeft = timeoutNext;
-                    startTime = qt_gettime();
-                }
             }
         }
 

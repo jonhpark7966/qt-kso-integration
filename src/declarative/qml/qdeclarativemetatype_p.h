@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtDeclarative module of the Qt Toolkit.
@@ -59,7 +59,6 @@
 #include <QtCore/qvariant.h>
 #include <QtCore/qbitarray.h>
 #include <private/qdeclarativeglobal_p.h>
-#include <private/qdeclarativedirparser_p.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -80,8 +79,6 @@ public:
     static QDeclarativeType *qmlType(const QMetaObject *);
     static QDeclarativeType *qmlType(const QMetaObject *metaObject, const QByteArray &module, int version_major, int version_minor);
     static QDeclarativeType *qmlType(int);
-
-    static QDeclarativeDirComponents qmlComponents(const QByteArray& module, int version_major, int version_minor);
 
     static QMetaProperty defaultProperty(const QMetaObject *);
     static QMetaProperty defaultProperty(QObject *);
@@ -164,7 +161,6 @@ private:
     friend struct QDeclarativeMetaTypeData;
     friend int registerType(const QDeclarativePrivate::RegisterType &);
     friend int registerInterface(const QDeclarativePrivate::RegisterInterface &);
-    friend int registerComponent(const QDeclarativePrivate::RegisterComponent &);
     QDeclarativeType(int, const QDeclarativePrivate::RegisterInterface &);
     QDeclarativeType(int, const QDeclarativePrivate::RegisterType &);
     ~QDeclarativeType();

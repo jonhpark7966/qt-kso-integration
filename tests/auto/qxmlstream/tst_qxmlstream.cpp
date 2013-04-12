@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -568,7 +568,6 @@ private slots:
     void hasAttribute() const;
     void writeWithCodec() const;
     void writeWithUtf8Codec() const;
-    void writeWithUtf16Codec() const;
     void writeWithStandalone() const;
     void entitiesAndWhitespace_1() const;
     void entitiesAndWhitespace_2() const;
@@ -1365,27 +1364,6 @@ void tst_QXmlStream::writeWithUtf8Codec() const
     writer.writeStartDocument("1.0");
     static const char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     QVERIFY(outarray.startsWith(begin));
-}
-
-void tst_QXmlStream::writeWithUtf16Codec() const
-{
-    QByteArray outarray;
-    QXmlStreamWriter writer(&outarray);
-
-    QTextCodec *codec = QTextCodec::codecForMib(1014); // utf-16LE
-    QVERIFY(codec);
-    writer.setCodec(codec);
-
-    writer.writeStartDocument("1.0");
-    static const char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-16";  // skip potential "LE" suffix
-    const int count = sizeof(begin) - 1;    // don't include 0 terminator
-    QByteArray begin_UTF16;
-    begin_UTF16.reserve(2*(count));
-    for (int i = 0; i < count; ++i) {
-        begin_UTF16.append(begin[i]);
-        begin_UTF16.append((char)'\0');
-    }
-    QVERIFY(outarray.startsWith(begin_UTF16));
 }
 
 void tst_QXmlStream::writeWithStandalone() const

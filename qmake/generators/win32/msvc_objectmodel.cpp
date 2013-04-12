@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the qmake application of the Qt Toolkit.
@@ -311,7 +311,7 @@ VCCLCompilerTool::VCCLCompilerTool()
     :        AssemblerOutput(asmListingNone),
         BasicRuntimeChecks(runtimeBasicCheckNone),
         BrowseInformation(brInfoNone),
-        BufferSecurityCheck(unset),
+        BufferSecurityCheck(_False),
         CallingConvention(callConventionDefault),
         CompileAs(compileAsDefault),
         CompileAsManaged(managedDefault),
@@ -603,7 +603,9 @@ bool VCCLCompilerTool::parseOption(const char* option)
             CallingConvention = callConventionFastCall;
             break;
         case 's':
-            AdditionalOptions += option;
+            // Warning: following [num] is not used,
+            // were should we put it?
+            BufferSecurityCheck = _True;
             break;
         case 'y':
             EnableFunctionLevelLinking = _True;
@@ -1078,20 +1080,11 @@ bool VCCLCompilerTool::parseOption(const char* option)
         }
         found = false; break;
     case 'o':
-    {
-        const char *str = option + 2;
-        const size_t len = strlen(str);
-        if (len >= 5 && len <= 6 && strncmp(str, "penmp", 5) == 0) {
-            if (len == 5) {
-                OpenMP = _True;
-                break;
-            } else if (str[5] == '-') {
-                OpenMP = _False;
-                break;
-            }
+        if (second == 'p' && third == 'e' && fourth == 'n') {
+            OpenMP = _True;
+            break;
         }
         found = false; break;
-    }
     case 's':
         if(second == 'h' && third == 'o' && fourth == 'w') {
             ShowIncludes = _True;

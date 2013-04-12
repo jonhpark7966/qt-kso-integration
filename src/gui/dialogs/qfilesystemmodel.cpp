@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
@@ -803,8 +803,7 @@ QString QFileSystemModelPrivate::name(const QModelIndex &index) const
     if (!index.isValid())
         return QString();
     QFileSystemNode *dirNode = node(index);
-    if (fileInfoGatherer.resolveSymlinks() && !resolvedSymLinks.isEmpty() &&
-        dirNode->isSymLink(/* ignoreNtfsSymLinks = */ true)) {
+    if (dirNode->isSymLink() && fileInfoGatherer.resolveSymlinks()) {
         QString fullPath = QDir::fromNativeSeparators(filePath(index));
         if (resolvedSymLinks.contains(fullPath))
             return resolvedSymLinks[fullPath];

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -127,9 +127,8 @@ private slots:
     void mouseSelectionMode_data();
     void mouseSelectionMode();
     void dragMouseSelection();
-#ifndef QT_NO_IM
     void inputMethodHints();
-#endif
+
     void positionAt();
 
     void cursorDelegate();
@@ -142,10 +141,8 @@ private slots:
     void canPaste();
     void canPasteEmpty();
     void textInput();
-#ifndef QT_NO_IM
     void openInputPanelOnClick();
     void openInputPanelOnFocus();
-#endif
     void geometrySignals();
     void pastingRichText_QTBUG_14003();
     void implicitSize_data();
@@ -154,11 +151,10 @@ private slots:
     void implicitSizePreedit();
     void testQtQuick11Attributes();
     void testQtQuick11Attributes_data();
-#ifndef QT_NO_IM
+
     void preeditMicroFocus();
     void inputContextMouseHandler();
     void inputMethodComposing();
-#endif
     void cursorRectangleSize();
     void deselect();
 
@@ -1608,7 +1604,6 @@ void tst_qdeclarativetextedit::mouseSelectionMode()
     delete canvas;
 }
 
-#ifndef QT_NO_IM
 void tst_qdeclarativetextedit::inputMethodHints()
 {
     QDeclarativeView *canvas = createView(SRCDIR "/data/inputmethodhints.qml");
@@ -1624,7 +1619,6 @@ void tst_qdeclarativetextedit::inputMethodHints()
 
     delete canvas;
 }
-#endif
 
 void tst_qdeclarativetextedit::positionAt()
 {
@@ -1713,12 +1707,7 @@ void tst_qdeclarativetextedit::cursorDelegate()
     textEditObject->setCursorPosition(0);
     const QPoint point1 = view->mapFromScene(textEditObject->positionToRectangle(5).center());
     QTest::mouseClick(view->viewport(), Qt::LeftButton, 0, point1);
-    int textEditObjectCursorPosition = textEditObject->cursorPosition();
-#if defined(Q_OS_LINUX) && defined(QT_BUILD_INTERNAL)
-    if (textEditObjectCursorPosition == 0)
-        QEXPECT_FAIL("", "QTBUG-28109", Continue);
-#endif
-    QVERIFY(textEditObjectCursorPosition != 0);
+    QVERIFY(textEditObject->cursorPosition() != 0);
     QCOMPARE(textEditObject->cursorRectangle().x(), qRound(delegateObject->x()));
     QCOMPARE(textEditObject->cursorRectangle().y(), qRound(delegateObject->y()));
 
@@ -2070,7 +2059,7 @@ QDeclarativeView *tst_qdeclarativetextedit::createView(const QString &filename)
     canvas->setSource(QUrl::fromLocalFile(filename));
     return canvas;
 }
-#ifndef QT_NO_IM
+
 class MyInputContext : public QInputContext
 {
 public:
@@ -2333,7 +2322,7 @@ void tst_qdeclarativetextedit::openInputPanelOnFocus()
     QVERIFY(view.inputContext() == 0);
     QVERIFY(!view.testAttribute(Qt::WA_InputMethodEnabled));
 }
-#endif //QT_NO_IM
+
 void tst_qdeclarativetextedit::geometrySignals()
 {
     QDeclarativeComponent component(&engine, SRCDIR "/data/geometrySignals.qml");
@@ -2424,12 +2413,7 @@ void tst_qdeclarativetextedit::implicitSizePreedit()
     QInputMethodEvent event(text, QList<QInputMethodEvent::Attribute>());
     QCoreApplication::sendEvent(&view, &event);
 
-    bool widthLessThanImplicitWidth = textObject->width() < textObject->implicitWidth();
-#if defined(Q_OS_LINUX) && defined(QT_BUILD_INTERNAL)
-    if (!widthLessThanImplicitWidth)
-        QEXPECT_FAIL("", "QTBUG-28109", Continue);
-#endif
-    QVERIFY(widthLessThanImplicitWidth);
+    QVERIFY(textObject->width() < textObject->implicitWidth());
     QVERIFY(textObject->height() == textObject->implicitHeight());
     qreal wrappedHeight = textObject->height();
 
@@ -2490,7 +2474,6 @@ void tst_qdeclarativetextedit::testQtQuick11Attributes_data()
         << ":1 \"TextEdit.onLinkActivated\" is not available in QtQuick 1.0.\n";
 }
 
-#ifndef QT_NO_IM
 void tst_qdeclarativetextedit::preeditMicroFocus()
 {
     QString preeditText = "super";
@@ -2529,12 +2512,7 @@ void tst_qdeclarativetextedit::preeditMicroFocus()
         ic.updateReceived = false;
         ic.sendPreeditText(preeditText, i);
         currentRect = edit.inputMethodQuery(Qt::ImMicroFocus).toRect();
-        bool previousRectLessThanCurrentRect = previousRect.left() < currentRect.left();
-#if defined(Q_OS_LINUX) && defined(QT_BUILD_INTERNAL)
-        if (!previousRectLessThanCurrentRect)
-            QEXPECT_FAIL("", "QTBUG-28109", Continue);
-#endif
-        QVERIFY(previousRectLessThanCurrentRect);
+        QVERIFY(previousRect.left() < currentRect.left());
 #if defined(Q_WS_X11) || defined(Q_WS_QWS) || defined(Q_OS_SYMBIAN)
         QCOMPARE(ic.updateReceived, true);
 #endif
@@ -2701,12 +2679,7 @@ void tst_qdeclarativetextedit::inputMethodComposing()
     QCOMPARE(edit.isInputMethodComposing(), false);
 
     ic.sendEvent(QInputMethodEvent(text.mid(3), QList<QInputMethodEvent::Attribute>()));
-    bool editIsInputMethodComposing = edit.isInputMethodComposing();
-#if defined(Q_OS_LINUX) && defined(QT_BUILD_INTERNAL)
-    if (!editIsInputMethodComposing)
-        QEXPECT_FAIL("", "QTBUG-28109", Continue);
-#endif
-    QCOMPARE(editIsInputMethodComposing, true);
+    QCOMPARE(edit.isInputMethodComposing(), true);
     QCOMPARE(spy.count(), 1);
 
     ic.sendEvent(QInputMethodEvent(text.mid(12), QList<QInputMethodEvent::Attribute>()));
@@ -2717,7 +2690,6 @@ void tst_qdeclarativetextedit::inputMethodComposing()
     QCOMPARE(edit.isInputMethodComposing(), false);
     QCOMPARE(spy.count(), 2);
 }
-#endif // QT_NO_IM
 
 void tst_qdeclarativetextedit::cursorRectangleSize()
 {

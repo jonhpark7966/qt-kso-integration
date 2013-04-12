@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Olivier Goffart <ogoffart@woboq.com>
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the documentation of the Qt Toolkit.
@@ -38,69 +38,41 @@
 **
 ****************************************************************************/
 
-#include <QtCore/QThread>
-class MyObject;
-
-//! [reimpl-run]
-class WorkerThread : public QThread
-{
-    Q_OBJECT
-    void run() {
-        QString result;
-        /* expensive or blocking operation  */
-        emit resultReady(result);
-    }
-signals:
-    void resultReady(const QString &s);
-};
-
-void MyObject::startWorkInAThread()
-{
-    WorkerThread *workerThread = new WorkerThread(this);
-    connect(workerThread, SIGNAL(resultReady(QString)), this, SLOT(handleResults(QString)));
-    connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
-    workerThread->start();
-}
-//! [reimpl-run]
-
-
-//! [worker]
+//! [0]
 class Worker : public QObject
 {
     Q_OBJECT
-    QThread workerThread;
 
 public slots:
-    void doWork(const QString &parameter) {
-        // ...
-        emit resultReady(result);
+    void doWork() {
+        ...
     }
-
-signals:
-    void resultReady(const QString &result);
 };
 
-class Controller : public QObject
+void MyObject::putWorkerInAThread()
 {
-    Q_OBJECT
-    QThread workerThread;
-public:
-    Controller() {
-        Worker *worker = new Worker;
-        worker->moveToThread(&workerThread);
-        connect(workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-        connect(this, SIGNAL(operate(QString)), worker, SLOT(doWork(QString)));
-        connect(worker, SIGNAL(resultReady(QString)), this, SLOT(handleResults(QString)));
-        workerThread.start();
-    }
-    ~Controller() {
-        workerThread.quit();
-        workerThread.wait();
-    }
-public slots:
-    void handleResults(const QString &);
-signals:
-    void operate(const QString &);
-};
-//! [worker]
+    Worker *worker = new Worker;
+    QThread *workerThread = new QThread(this);
 
+    connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
+    connect(workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    worker->moveToThread(workerThread);
+
+    // Starts an event loop, and emits workerThread->started()
+    workerThread->start();
+}
+//! [0]
+
+//! [1]
+class AdvancedThreadManager : public QThread
+{
+protected:
+    void run()
+    {
+        /* ... other code to initialize thread... */
+
+        // Begin event handling
+        exec();
+    }
+};
+//! [1]

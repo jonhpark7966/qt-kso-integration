@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
@@ -125,7 +125,7 @@ QEventDispatcherUNIXPrivate::QEventDispatcherUNIXPrivate()
     }
 #elif defined(Q_OS_VXWORKS)
     char name[20];
-    qsnprintf(name, sizeof(name), "/pipe/qt_%08x", int(taskIdSelf()));
+    qsnprintf(name, sizeof(name), "/pipe/qt_%08x", int(taskIdCurrent));
 
     // make sure there is no pipe with this name
     pipeDevDelete(name, true);
@@ -165,7 +165,7 @@ QEventDispatcherUNIXPrivate::~QEventDispatcherUNIXPrivate()
     close(thread_pipe[0]);
 
     char name[20];
-    qsnprintf(name, sizeof(name), "/pipe/qt_%08x", int(taskIdSelf()));
+    qsnprintf(name, sizeof(name), "/pipe/qt_%08x", int(taskIdCurrent));
 
     pipeDevDelete(name, true);
 #else

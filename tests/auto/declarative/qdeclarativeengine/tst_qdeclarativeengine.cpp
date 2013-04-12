@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -43,7 +43,6 @@
 #include <QDeclarativeEngine>
 #include <QDeclarativeContext>
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QPointer>
 #include <QDir>
 #include <QDesktopServices>
@@ -71,7 +70,6 @@ private slots:
     void clearComponentCache();
     void outputWarningsToStandardError();
     void objectOwnership();
-    void synchronousNetworkReply();
 };
 
 void tst_qdeclarativeengine::rootContext()
@@ -328,54 +326,6 @@ void tst_qdeclarativeengine::objectOwnership()
     delete o;
     }
 
-}
-
-class MyReply : public QNetworkReply {
-
-    Q_OBJECT
-
-public:
-    MyReply() {
-        setFinished(true);
-    }
-    virtual qint64 readData(char* buffer, qint64 number) {
-        return 0;
-    }
-    virtual void abort() { }
-};
-
-class MyManager : public QNetworkAccessManager {
-
-    Q_OBJECT
-
-public:
-    MyManager(QObject *parent = 0) : QNetworkAccessManager(parent) {
-    }
-
-    QNetworkReply *createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0) {
-        return new MyReply;
-    }
-};
-
-class MyFactory : public QDeclarativeNetworkAccessManagerFactory {
-
-public:
-    QNetworkAccessManager *create(QObject *parent) {
-        return new MyManager;
-    }
-};
-
-void tst_qdeclarativeengine::synchronousNetworkReply()
-{
-    MyFactory factory;
-    QDeclarativeEngine engine;
-    engine.setNetworkAccessManagerFactory(&factory);
-    QDeclarativeComponent c(&engine, QUrl("myScheme://test.qml"));
-    // we get an error, but we only care about whether we are finished or not in this test
-    QTest::ignoreMessage(QtWarningMsg, "QDeclarativeComponent: Component is not ready");
-    c.create();
-    // reply is finished, so should not be in loading state.
-    QVERIFY(!c.isLoading());
 }
 
 QTEST_MAIN(tst_qdeclarativeengine)

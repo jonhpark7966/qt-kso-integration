@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the tools applications of the Qt Toolkit.
@@ -298,7 +298,6 @@ Configure::Configure(int& argc, char** argv)
     dictionary[ "LITTLE_ENDIAN" ]   = "yes";
     dictionary[ "FONT_CONFIG" ]     = "no";
     dictionary[ "POSIX_IPC" ]       = "no";
-    dictionary[ "QT_INOTIFY" ]      = "no";
 
     QString version;
     QFile qglobal_h(sourcePath + "/src/corelib/global/qglobal.h");
@@ -1286,12 +1285,6 @@ void Configure::parseCmdLine()
             dictionary["QT_ICONV"] = "no";
         }
 
-        else if (configCmdLine.at(i) == "-inotify") {
-            dictionary["QT_INOTIFY"] = "yes";
-        } else if (configCmdLine.at(i) == "-no-inotify") {
-            dictionary["QT_INOTIFY"] = "no";
-        }
-
         else if (configCmdLine.at(i) == "-neon") {
             dictionary["NEON"] = "yes";
         } else if (configCmdLine.at(i) == "-no-neon") {
@@ -1755,7 +1748,6 @@ void Configure::applySpecSpecifics()
         dictionary[ "FREETYPE" ]            = "system";
         dictionary[ "STACK_PROTECTOR_STRONG" ] = "auto";
         dictionary[ "SLOG2" ]                 = "auto";
-        dictionary[ "QT_INOTIFY" ]          = "yes";
     }
 }
 
@@ -1942,9 +1934,6 @@ bool Configure::displayHelp()
         desc("QT_ICONV",      "yes",     "-iconv",      "Enable support for iconv(3).");
         desc("QT_ICONV",      "yes",     "-sun-iconv",  "Enable support for iconv(3) using sun-iconv.");
         desc("QT_ICONV",      "yes",     "-gnu-iconv",  "Enable support for iconv(3) using gnu-libiconv");
-
-        desc("QT_INOTIFY",    "yes",     "-inotify",    "Enable Qt inotify(7) support.\n");
-        desc("QT_INOTIFY",    "no",      "-no-inotify", "Disable Qt inotify(7) support.\n");
 
         desc("LARGE_FILE",    "yes",   "-largefile",    "Enables Qt to access files larger than 4 GB.");
 
@@ -3023,9 +3012,6 @@ void Configure::generateOutputVars()
     else if (dictionary["QT_ICONV"] == "gnu")
         qtConfig += "gnu-libiconv";
 
-    if (dictionary["QT_INOTIFY"] == "yes")
-        qtConfig += "inotify";
-
     if (dictionary["NEON"] == "yes")
         qtConfig += "neon";
 
@@ -3247,13 +3233,10 @@ void Configure::generateCachefile()
         QTextStream configStream(&configFile);
         configStream << "CONFIG+= ";
         configStream << dictionary[ "BUILD" ];
-        if (dictionary[ "SHARED" ] == "yes") {
+        if (dictionary[ "SHARED" ] == "yes")
             configStream << " shared";
-            qtConfig << "shared";
-        } else {
+        else
             configStream << " static";
-            qtConfig << "static";
-        }
 
         if (dictionary[ "LTCG" ] == "yes")
             configStream << " ltcg";
@@ -3795,7 +3778,6 @@ void Configure::displayConfig()
     cout << "Large File support.........." << dictionary[ "LARGE_FILE" ] << endl;
     cout << "NIS support................." << dictionary[ "NIS" ] << endl;
     cout << "Iconv support..............." << dictionary[ "QT_ICONV" ] << endl;
-    cout << "Inotify support............." << dictionary[ "QT_INOTIFY" ] << endl;
     {
         QString webkit = dictionary[ "WEBKIT" ];
         if (webkit == "debug")

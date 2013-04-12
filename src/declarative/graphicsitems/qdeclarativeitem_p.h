@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtDeclarative module of the Qt Toolkit.
@@ -128,8 +128,8 @@ public:
       componentComplete(true), keepMouse(false),
       smooth(false), transformOriginDirty(true), doneEventPreHandler(false),
       inheritedLayoutMirror(false), effectiveLayoutMirror(false), isMirrorImplicit(true),
-      inheritMirrorFromParent(false), inheritMirrorFromItem(false), hadFocus(false), hadActiveFocus(false), keyHandler(0),
-      mWidth(0), mHeight(0), mImplicitWidth(0), mImplicitHeight(0), attachedLayoutDirection(0)
+      inheritMirrorFromParent(false), inheritMirrorFromItem(false), keyHandler(0),
+      mWidth(0), mHeight(0), mImplicitWidth(0), mImplicitHeight(0), attachedLayoutDirection(0), hadSubFocusItem(false)
     {
         QGraphicsItemPrivate::acceptedMouseButtons = 0;
         isDeclarativeItem = 1;
@@ -289,8 +289,6 @@ public:
     bool isMirrorImplicit:1;
     bool inheritMirrorFromParent:1;
     bool inheritMirrorFromItem:1;
-    bool hadFocus:1;
-    bool hadActiveFocus:1;
 
     QDeclarativeItemKeyFilter *keyHandler;
 
@@ -301,6 +299,7 @@ public:
 
     QDeclarativeLayoutMirroringAttached* attachedLayoutDirection;
 
+    bool hadSubFocusItem;
 
     QPointF computeTransformOrigin() const;
 
@@ -313,13 +312,21 @@ public:
     }
 
     // Reimplemented from QGraphicsItemPrivate
+    virtual void subFocusItemChange()
+    {
+        bool hasSubFocusItem = subFocusItem != 0;
+        if (((flags & QGraphicsItem::ItemIsFocusScope) || !parent) && hasSubFocusItem != hadSubFocusItem)
+            emit q_func()->activeFocusChanged(hasSubFocusItem);
+        //see also QDeclarativeItemPrivate::focusChanged
+        hadSubFocusItem = hasSubFocusItem;
+    }
+
+    // Reimplemented from QGraphicsItemPrivate
     virtual void focusScopeItemChange(bool isSubFocusItem)
     {
-        if (hadFocus != isSubFocusItem) {
-            hadFocus = isSubFocusItem;
-            emit q_func()->focusChanged(isSubFocusItem);
-        }
+        emit q_func()->focusChanged(isSubFocusItem);
     }
+
 
     // Reimplemented from QGraphicsItemPrivate
     virtual void siblingOrderChange()

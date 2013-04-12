@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -51,16 +51,6 @@
 
 
 #include "QtTest/qtestaccessible.h"
-
-// Make a widget frameless to prevent size constraints of title bars
-// from interfering (Windows).
-static inline void setFrameless(QWidget *w)
-{
-    Qt::WindowFlags flags = w->windowFlags();
-    flags |= Qt::FramelessWindowHint;
-    flags &= ~(Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-    w->setWindowFlags(flags);
-}
 
 #if defined(Q_OS_WINCE)
 extern "C" bool SystemParametersInfo(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni);
@@ -429,7 +419,6 @@ void tst_QAccessibility::eventTest()
 {
     QPushButton* button = new QPushButton(0);
     button->setObjectName(QString("Olaf"));
-    setFrameless(button);
 
     button->show();
     QVERIFY_EVENT(button, 0, QAccessible::ObjectShow);
@@ -447,15 +436,7 @@ void tst_QAccessibility::eventTest()
     button->hide();
     QVERIFY_EVENT(button, 0, QAccessible::ObjectHide);
 
-    // Destroy a visible widget
-    QTestAccessibility::clearEvents();
-    button->show();
-    QVERIFY_EVENT(button, 0, QAccessible::ObjectShow);
-
     delete button;
-
-    QVERIFY_EVENT(button, 0, QAccessible::ObjectHide);
-    QVERIFY_EVENT(button, 0, QAccessible::ObjectDestroyed);
 }
 
 void tst_QAccessibility::customWidget()
@@ -962,7 +943,6 @@ void tst_QAccessibility::navigateSlider()
 {
     {
     QSlider *slider = new QSlider(0);
-    setFrameless(slider);
     slider->setObjectName(QString("Slidy"));
     slider->show();
     QAccessibleInterface *iface = QAccessible::queryAccessibleInterface(slider);
@@ -1682,7 +1662,6 @@ void tst_QAccessibility::setText()
 void tst_QAccessibility::hideShowTest()
 {
     QWidget * const window = new QWidget();
-    window->resize(200, 200);
     QWidget * const child = new QWidget(window);
 
     QVERIFY(state(window) & QAccessible::Invisible);
@@ -2308,7 +2287,6 @@ void tst_QAccessibility::scrollBarTest()
 void tst_QAccessibility::tabTest()
 {
     QTabBar *tabBar = new QTabBar();
-    setFrameless(tabBar);
     tabBar->show();
 
     QAccessibleInterface * const interface = QAccessible::queryAccessibleInterface(tabBar);
@@ -2692,7 +2670,6 @@ void tst_QAccessibility::menuTest()
 void tst_QAccessibility::spinBoxTest()
 {
     QSpinBox * const spinBox = new QSpinBox();
-    setFrameless(spinBox);
     spinBox->show();
 
     QAccessibleInterface * const interface = QAccessible::queryAccessibleInterface(spinBox);
@@ -2723,7 +2700,6 @@ void tst_QAccessibility::spinBoxTest()
 void tst_QAccessibility::doubleSpinBoxTest()
 {
     QDoubleSpinBox *doubleSpinBox = new QDoubleSpinBox;
-    setFrameless(doubleSpinBox);
     doubleSpinBox->show();
 
     QAccessibleInterface *interface = QAccessible::queryAccessibleInterface(doubleSpinBox);
@@ -2742,27 +2718,6 @@ void tst_QAccessibility::doubleSpinBoxTest()
 
     delete doubleSpinBox;
     QTestAccessibility::clearEvents();
-}
-
-static void dumpTextDiagnostics(const QTextEdit &edit, int offset)
-{
-    qDebug() << "Incorrect result, font:" << edit.currentFont().toString();
-    QFontMetricsF fm(edit.currentFont());
-    qDebug() << "QFontMetricsF: " << fm.ascent() << fm.descent() << fm.height();
-
-    QTextBlock block = edit.document()->findBlock(offset);
-    QVERIFY(block.isValid());
-    QTextLayout *layout = block.layout();
-    QPointF layoutPosition = layout->position();
-    QTextLine line = layout->lineForTextPosition(offset);
-    qDebug() << "QTextLine:     " << line.ascent() << line.descent() << line.height() << line.leading();
-    qDebug() << block.text();
-
-    // Reported to only be a problem on Ubuntu Oneiric. Verify that.
-#if defined(Q_WS_X11) && defined(UBUNTU_ONEIRIC)
-    qDebug() << "UBUNTU_ONEIRIC";
-#endif
-
 }
 
 void tst_QAccessibility::textEditTest()
@@ -2788,47 +2743,13 @@ void tst_QAccessibility::textEditTest()
     QCOMPARE(endOffset, 30);
     QCOMPARE(iface->text(QAccessible::Value, 6), QString());
     QCOMPARE(iface->textInterface()->characterCount(), 31);
-    QFontMetrics fm(edit.currentFont());
-
-    // Test for
-    // QAccessibleTextInterface::characterRect() and
-    ///QAccessibleTextInterface::offsetAtPoint()
-    struct {
-        int offset;
-        char ch;
-    } testdata[] = {
-        {0, 'h'},
-        {4, 'o'},
-        // skip space, it might be too narrow to reliably hit it
-        {6, 'w'}
-    };
-
-    const int expectedHeight = fm.height();   //ascent + descent + 1
-
-    for (int i = 0; i < 3; ++i) {
-        int offset = testdata[i].offset;
-        QRect rect = iface->textInterface()->characterRect(offset, QAccessible2::RelativeToParent);
-        QVERIFY(rect.isValid());
-        const QSize actualSize = rect.size();
-        const int widthDelta = actualSize.width() - fm.width(QChar(testdata[i].ch));
-        const int heightDelta = actualSize.height() - expectedHeight;
-        // The deltas should really be 0, but it seems that it fails for some fonts
-        // Dump some diagnostics if that is the case
-        if (heightDelta || widthDelta)
-            dumpTextDiagnostics(edit, offset);
-
-        QVERIFY(qAbs(widthDelta) <= 1);
-
-        if (qAbs(heightDelta) == 1) {
-            qDebug() << "Result is off by one, accepted. (" << actualSize.height() << expectedHeight << ")";
-        } else {
-            QCOMPARE(actualSize.height(), expectedHeight);
-        }
-        // Width must be >= 3 in order for rect.center() to not end up on one of the edges. They are not reliable.
-        if (rect.width() >= 3) {
-            QCOMPARE(iface->textInterface()->offsetAtPoint(rect.center(), QAccessible2::RelativeToParent), offset);
-        }
-    }
+    QFontMetrics fm(edit.font());
+#if defined(Q_WS_X11) && defined(UBUNTU_ONEIRIC)
+    QEXPECT_FAIL("", "QTBUG-26499", Abort);
+#endif
+    QCOMPARE(iface->textInterface()->characterRect(0, QAccessible2::RelativeToParent).size(), QSize(fm.width("h"), fm.height()));
+    QCOMPARE(iface->textInterface()->characterRect(5, QAccessible2::RelativeToParent).size(), QSize(fm.width(" "), fm.height()));
+    QCOMPARE(iface->textInterface()->characterRect(6, QAccessible2::RelativeToParent).size(), QSize(fm.width("w"), fm.height()));
 
     iface->editableTextInterface()->copyText(6, 11);
     QCOMPARE(QApplication::clipboard()->text(), QLatin1String("world"));
@@ -3414,7 +3335,6 @@ void tst_QAccessibility::dialogButtonBoxTest()
     QDialogButtonBox box(QDialogButtonBox::Reset |
                          QDialogButtonBox::Help |
                          QDialogButtonBox::Ok, Qt::Horizontal);
-    setFrameless(&box);
 
 
     // Test up and down navigation
@@ -3466,7 +3386,6 @@ void tst_QAccessibility::dialTest()
 {
     {
     QDial dial;
-    setFrameless(&dial);
     dial.setValue(20);
     QCOMPARE(dial.value(), 20);
     dial.show();
@@ -4557,7 +4476,6 @@ void tst_QAccessibility::labelTest()
 {
     QString text = "Hello World";
     QLabel *label = new QLabel(text);
-    setFrameless(label);
     label->show();
 
 #if defined(Q_WS_X11)

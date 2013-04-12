@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
@@ -2986,7 +2986,6 @@ public:
     uint wroteSomething :1;
     uint hasError :1;
     uint autoFormatting :1;
-    uint isCodecASCIICompatible :1;
     QByteArray autoFormattingIndent;
     NamespaceDeclaration emptyNamespace;
     int lastNamespaceDeclaration;
@@ -2995,7 +2994,6 @@ public:
     QTextCodec *codec;
     QTextEncoder *encoder;
 #endif
-    void checkIfASCIICompatibleCodec();
 
     NamespaceDeclaration &findNamespace(const QString &namespaceUri, bool writeDeclaration = false, bool noDefault = false);
     void writeNamespaceDeclaration(const NamespaceDeclaration &namespaceDeclaration);
@@ -3017,7 +3015,6 @@ QXmlStreamWriterPrivate::QXmlStreamWriterPrivate(QXmlStreamWriter *q)
     codec = QTextCodec::codecForMib(106); // utf8
     encoder = codec->makeEncoder(QTextCodec::IgnoreHeader); // no byte order mark for utf8
 #endif
-    checkIfASCIICompatibleCodec();
     inStartElement = inEmptyElement = false;
     wroteSomething = false;
     hasError = false;
@@ -3025,18 +3022,6 @@ QXmlStreamWriterPrivate::QXmlStreamWriterPrivate(QXmlStreamWriter *q)
     lastNamespaceDeclaration = 1;
     autoFormatting = false;
     namespacePrefixCount = 0;
-}
-
-void QXmlStreamWriterPrivate::checkIfASCIICompatibleCodec()
-{
-#ifndef QT_NO_TEXTCODEC
-    Q_ASSERT(encoder);
-    // assumes ASCII-compatibility for all 8-bit encodings
-    const QByteArray bytes = encoder->fromUnicode(QLatin1String(" "));
-    isCodecASCIICompatible = (bytes.count() == 1);
-#else
-    isCodecASCIICompatible = true;
-#endif
 }
 
 void QXmlStreamWriterPrivate::write(const QStringRef &s)
@@ -3107,20 +3092,18 @@ void QXmlStreamWriterPrivate::writeEscaped(const QString &s, bool escapeWhitespa
     write(escaped);
 }
 
-// Converts from ASCII to output encoding
+// ASCII only!
 void QXmlStreamWriterPrivate::write(const char *s, int len)
 {
     if (device) {
         if (hasError)
             return;
-        if (isCodecASCIICompatible) {
-            if (device->write(s, len) != len)
-                hasError = true;
-            return;
-        }
-    }
-
-    write(QString::fromLatin1(s, len));
+        if (device->write(s, len) != len)
+            hasError = true;
+    } else if (stringDevice) {
+        stringDevice->append(QString::fromLatin1(s, len));
+    } else
+        qWarning("QXmlStreamWriter: No device");
 }
 
 void QXmlStreamWriterPrivate::writeNamespaceDeclaration(const NamespaceDeclaration &namespaceDeclaration) {
@@ -3302,7 +3285,6 @@ void QXmlStreamWriter::setCodec(QTextCodec *codec)
         d->codec = codec;
         delete d->encoder;
         d->encoder = codec->makeEncoder(QTextCodec::IgnoreHeader); // no byte order mark for utf8
-        d->checkIfASCIICompatibleCodec();
     }
 }
 

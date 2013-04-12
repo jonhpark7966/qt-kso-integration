@@ -44,7 +44,6 @@
 #include "qbbscreen.h"
 #include "qbbrootwindow.h"
 #include "qbbwindow.h"
-#include "qbbcursor.h"
 
 #include <QDebug>
 #include <QtCore/QThread>
@@ -112,8 +111,7 @@ QBBScreen::QBBScreen(screen_context_t context, screen_display_t display, int scr
       mUsingOpenGL(false),
       mPrimaryDisplay(screenIndex == 0),
       mKeyboardHeight(0),
-      mScreenIndex(screenIndex),
-      mCursor(new QBBCursor(this))
+      mScreenIndex(screenIndex)
 {
 #if defined(QBBSCREEN_DEBUG)
     qDebug() << "QBBScreen::QBBScreen";
@@ -141,13 +139,9 @@ QBBScreen::QBBScreen(screen_context_t context, screen_display_t display, int scr
     mCurrentGeometry = mStartGeometry = QRect(0, 0, val[0], val[1]);
 
     // Cache size of this display in millimeters
-    mStartPhysicalSize = determineScreenSize(mDisplay, mPrimaryDisplay);
+    const QSize screenSize = determineScreenSize(mDisplay, mPrimaryDisplay);
 
-    // swap physical dimensions when rotated orthogonally
-    if (mStartRotation == 90 || mStartRotation == 270)
-        mStartPhysicalSize.transpose();
-
-    mCurrentPhysicalSize = mStartPhysicalSize;
+    mCurrentPhysicalSize = mStartPhysicalSize = screenSize;
 
     // We only create the root window if we are not the primary display.
     if (mPrimaryDisplay)
@@ -493,23 +487,6 @@ void QBBScreen::onWindowPost(QBBWindow* window)
     }
 }
 
-void QBBScreen::adjustOrientation()
-{
-    if (!mPrimaryDisplay)
-        return;
-
-    bool ok = false;
-    const int rotation = qgetenv("ORIENTATION").toInt(&ok);
-
-    if (ok)
-        setRotation(rotation);
-}
-
-QPlatformCursor * QBBScreen::cursor() const
-{
-    return mCursor;
-}
-
 void QBBScreen::keyboardHeightChanged(int height)
 {
     if (height == mKeyboardHeight)
@@ -533,23 +510,6 @@ void QBBScreen::removeOverlayWindow(screen_window_t window)
         updateHierarchy();
 }
 
-void QBBScreen::windowGroupStateChanged(const QByteArray &id, Qt::WindowState state)
-{
-#if defined(QBBSCREEN_DEBUG)
-    qDebug() << Q_FUNC_INFO;
-#endif
-
-    if (!rootWindow() || id != rootWindow()->groupName())
-        return;
-
-    QWidget * const window = topMostChildWindow();
-
-    if (!window)
-        return;
-
-    QWindowSystemInterface::handleWindowStateChanged(window, state);
-}
-
 void QBBScreen::activateWindowGroup(const QByteArray &id)
 {
 #if defined(QBBSCREEN_DEBUG)
@@ -559,12 +519,13 @@ void QBBScreen::activateWindowGroup(const QByteArray &id)
     if (!rootWindow() || id != rootWindow()->groupName())
         return;
 
-    QWidget * const window = topMostChildWindow();
-
-    if (!window)
-        return;
-
-    QWindowSystemInterface::handleWindowActivated(window);
+    if (!mChildren.isEmpty()) {
+        // We're picking up the last window of the list here
+        // because this list is ordered by stacking order.
+        // Last window is effectively the one on top.
+        QWidget * const window = mChildren.last()->widget();
+        QWindowSystemInterface::handleWindowActivated(window);
+    }
 }
 
 void QBBScreen::deactivateWindowGroup(const QByteArray &id)
@@ -577,19 +538,6 @@ void QBBScreen::deactivateWindowGroup(const QByteArray &id)
         return;
 
     QWindowSystemInterface::handleWindowActivated(0);
-}
-
-QWidget * QBBScreen::topMostChildWindow() const
-{
-    if (!mChildren.isEmpty()) {
-
-        // We're picking up the last window of the list here
-        // because this list is ordered by stacking order.
-        // Last window is effectively the one on top.
-        return mChildren.last()->widget();
-    }
-
-    return 0;
 }
 
 QT_END_NAMESPACE

@@ -190,10 +190,7 @@ void QBBClipboard::setMimeData(QMimeData *data, QClipboard::Mode mode)
     if (mode != QClipboard::Clipboard)
         return;
 
-    if (m_mimeData == data)
-        return;
-
-    if (m_mimeData->userMimeData() && m_mimeData->userMimeData() == data)
+    if (data == m_mimeData || data == m_mimeData->userMimeData())
         return;
 
     empty_clipboard();
@@ -223,6 +220,7 @@ void QBBClipboard::setMimeData(QMimeData *data, QClipboard::Mode mode)
             m_mimeData->addFormatToCheck(format);
     }
 
+    emitChanged(QClipboard::Clipboard);
 }
 
 QMimeData* QBBClipboard::mimeData(QClipboard::Mode mode)

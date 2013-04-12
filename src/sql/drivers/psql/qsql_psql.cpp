@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtSql module of the Qt Toolkit.
@@ -120,21 +120,14 @@ inline void qPQfreemem(void *buffer)
 class QPSQLDriverPrivate
 {
 public:
-    QPSQLDriverPrivate(QPSQLDriver *qq) : q(qq), connection(0), isUtf8(false), pro(QPSQLDriver::Version6), sn(0), pendingNotifyCheck(false) {}
-    QPSQLDriver *q;
+    QPSQLDriverPrivate() : connection(0), isUtf8(false), pro(QPSQLDriver::Version6), sn(0) {}
     PGconn *connection;
     bool isUtf8;
     QPSQLDriver::Protocol pro;
     QSocketNotifier *sn;
     QStringList seid;
-    mutable bool pendingNotifyCheck;
 
     void appendTables(QStringList &tl, QSqlQuery &t, QChar type);
-    PGresult * exec(const char * stmt) const;
-    PGresult * exec(const QString & stmt) const;
-    QPSQLDriver::Protocol getPSQLVersion();
-    bool setEncodingUtf8();
-    void setDatestyle();
 };
 
 void QPSQLDriverPrivate::appendTables(QStringList &tl, QSqlQuery &t, QChar type)
@@ -161,21 +154,6 @@ void QPSQLDriverPrivate::appendTables(QStringList &tl, QSqlQuery &t, QChar type)
     }
 }
 
-PGresult * QPSQLDriverPrivate::exec(const char * stmt) const
-{
-    PGresult *result = PQexec(connection, stmt);
-    if (seid.size() && !pendingNotifyCheck) {
-        pendingNotifyCheck = true;
-        QMetaObject::invokeMethod(q, "_q_handleNotification", Qt::QueuedConnection, Q_ARG(int,0));
-    }
-    return result;
-}
-
-PGresult * QPSQLDriverPrivate::exec(const QString & stmt) const
-{
-    return exec(isUtf8 ? stmt.toUtf8().constData() : stmt.toLocal8Bit().constData());
-}
-
 class QPSQLResultPrivate
 {
 public:
@@ -192,14 +170,10 @@ public:
 };
 
 static QSqlError qMakeError(const QString& err, QSqlError::ErrorType type,
-                            const QPSQLDriverPrivate *p, PGresult* result = 0)
+                            const QPSQLDriverPrivate *p)
 {
     const char *s = PQerrorMessage(p->connection);
     QString msg = p->isUtf8 ? QString::fromUtf8(s) : QString::fromLocal8Bit(s);
-    if (result) {
-      const char *sCode = PQresultErrorField(result, PG_DIAG_SQLSTATE);
-      msg += QString::fromLatin1("(%1)").arg(QString::fromLatin1(sCode));
-    }
     return QSqlError(QLatin1String("QPSQL: ") + err, msg, type);
 }
 
@@ -221,7 +195,7 @@ bool QPSQLResultPrivate::processResults()
         return true;
     }
     q->setLastError(qMakeError(QCoreApplication::translate("QPSQLResult",
-                    "Unable to create query"), QSqlError::StatementError, driver, result));
+                    "Unable to create query"), QSqlError::StatementError, driver));
     return false;
 }
 
@@ -274,7 +248,9 @@ static QVariant::Type qDecodePSQLType(int t)
 static void qDeallocatePreparedStmt(QPSQLResultPrivate *d)
 {
     const QString stmt = QLatin1String("DEALLOCATE ") + d->preparedStmtId;
-    PGresult *result = d->driver->exec(stmt);
+    PGresult *result = PQexec(d->driver->connection,
+                              d->driver->isUtf8 ? stmt.toUtf8().constData()
+                                                : stmt.toLocal8Bit().constData());
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
         qWarning("Unable to free statement: %s", PQerrorMessage(d->driver->connection));
@@ -452,7 +428,9 @@ bool QPSQLResult::reset (const QString& query)
         return false;
     if (!driver()->isOpen() || driver()->isOpenError())
         return false;
-    d->result = d->driver->exec(query);
+    d->result = PQexec(d->driver->connection,
+                       d->driver->isUtf8 ? query.toUtf8().constData()
+                                         : query.toLocal8Bit().constData());
     return d->processResults();
 }
 
@@ -583,11 +561,13 @@ bool QPSQLResult::prepare(const QString &query)
     const QString stmtId = qMakePreparedStmtId();
     const QString stmt = QString::fromLatin1("PREPARE %1 AS ").arg(stmtId).append(qReplacePlaceholderMarkers(query));
 
-    PGresult *result = d->driver->exec(stmt);
+    PGresult *result = PQexec(d->driver->connection,
+                              d->driver->isUtf8 ? stmt.toUtf8().constData()
+                                                : stmt.toLocal8Bit().constData());
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK) {
         setLastError(qMakeError(QCoreApplication::translate("QPSQLResult",
-                                "Unable to prepare statement"), QSqlError::StatementError, d->driver, result));
+                                "Unable to prepare statement"), QSqlError::StatementError, d->driver));
         PQclear(result);
         d->preparedStmtId.clear();
         return false;
@@ -612,24 +592,26 @@ bool QPSQLResult::exec()
     else
         stmt = QString::fromLatin1("EXECUTE %1 (%2)").arg(d->preparedStmtId).arg(params);
 
-    d->result = d->driver->exec(stmt);
+    d->result = PQexec(d->driver->connection,
+                       d->driver->isUtf8 ? stmt.toUtf8().constData()
+                                         : stmt.toLocal8Bit().constData());
 
     return d->processResults();
 }
 
 ///////////////////////////////////////////////////////////////////
 
-bool QPSQLDriverPrivate::setEncodingUtf8()
+static bool setEncodingUtf8(PGconn* connection)
 {
-    PGresult* result = exec("SET CLIENT_ENCODING TO 'UNICODE'");
+    PGresult* result = PQexec(connection, "SET CLIENT_ENCODING TO 'UNICODE'");
     int status = PQresultStatus(result);
     PQclear(result);
     return status == PGRES_COMMAND_OK;
 }
 
-void QPSQLDriverPrivate::setDatestyle()
+static void setDatestyle(PGconn* connection)
 {
-    PGresult* result = exec("SET DATESTYLE TO 'ISO'");
+    PGresult* result = PQexec(connection, "SET DATESTYLE TO 'ISO'");
     int status =  PQresultStatus(result);
     if (status != PGRES_COMMAND_OK)
         qWarning("%s", PQerrorMessage(connection));
@@ -680,10 +662,10 @@ static QPSQLDriver::Protocol qMakePSQLVersion(int vMaj, int vMin)
     return QPSQLDriver::VersionUnknown;
 }
 
-QPSQLDriver::Protocol QPSQLDriverPrivate::getPSQLVersion()
+static QPSQLDriver::Protocol getPSQLVersion(PGconn* connection)
 {
     QPSQLDriver::Protocol serverVersion = QPSQLDriver::Version6;
-    PGresult* result = exec("select version()");
+    PGresult* result = PQexec(connection, "select version()");
     int status = PQresultStatus(result);
     if (status == PGRES_COMMAND_OK || status == PGRES_TUPLES_OK) {
         QString val = QString::fromAscii(PQgetvalue(result, 0, 0));
@@ -706,7 +688,7 @@ QPSQLDriver::Protocol QPSQLDriverPrivate::getPSQLVersion()
                 //Client version before QPSQLDriver::Version9 only supports escape mode for bytea type,
                 //but bytea format is set to hex by default in PSQL 9 and above. So need to force the
                 //server use the old escape mode when connects to the new server with old client library.
-                result = exec("SET bytea_output=escape; ");
+                result = PQexec(connection, "SET bytea_output=escape; ");
                 status = PQresultStatus(result);
             } else if (serverVersion == QPSQLDriver::VersionUnknown) {
                 serverVersion = clientVersion;
@@ -741,7 +723,7 @@ QPSQLDriver::QPSQLDriver(PGconn *conn, QObject *parent)
     init();
     d->connection = conn;
     if (conn) {
-        d->pro = d->getPSQLVersion();
+        d->pro = getPSQLVersion(d->connection);
         setOpen(true);
         setOpenError(false);
     }
@@ -749,7 +731,7 @@ QPSQLDriver::QPSQLDriver(PGconn *conn, QObject *parent)
 
 void QPSQLDriver::init()
 {
-    d = new QPSQLDriverPrivate(this);
+    d = new QPSQLDriverPrivate();
 }
 
 QPSQLDriver::~QPSQLDriver()
@@ -841,9 +823,9 @@ bool QPSQLDriver::open(const QString & db,
         return false;
     }
 
-    d->pro = d->getPSQLVersion();
-    d->isUtf8 = d->setEncodingUtf8();
-    d->setDatestyle();
+    d->pro = getPSQLVersion(d->connection);
+    d->isUtf8 = setEncodingUtf8(d->connection);
+    setDatestyle(d->connection);
 
     setOpen(true);
     setOpenError(false);
@@ -880,11 +862,11 @@ bool QPSQLDriver::beginTransaction()
         qWarning("QPSQLDriver::beginTransaction: Database not open");
         return false;
     }
-    PGresult* res = d->exec("BEGIN");
+    PGresult* res = PQexec(d->connection, "BEGIN");
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK) {
-        setLastError(qMakeError(tr("Could not begin transaction"),
-                                QSqlError::TransactionError, d, res));
         PQclear(res);
+        setLastError(qMakeError(tr("Could not begin transaction"),
+                                QSqlError::TransactionError, d));
         return false;
     }
     PQclear(res);
@@ -897,7 +879,7 @@ bool QPSQLDriver::commitTransaction()
         qWarning("QPSQLDriver::commitTransaction: Database not open");
         return false;
     }
-    PGresult* res = d->exec("COMMIT");
+    PGresult* res = PQexec(d->connection, "COMMIT");
 
     bool transaction_failed = false;
 
@@ -915,9 +897,9 @@ bool QPSQLDriver::commitTransaction()
     }
 
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK || transaction_failed) {
-        setLastError(qMakeError(tr("Could not commit transaction"),
-                                QSqlError::TransactionError, d, res));
         PQclear(res);
+        setLastError(qMakeError(tr("Could not commit transaction"),
+                                QSqlError::TransactionError, d));
         return false;
     }
     PQclear(res);
@@ -930,10 +912,10 @@ bool QPSQLDriver::rollbackTransaction()
         qWarning("QPSQLDriver::rollbackTransaction: Database not open");
         return false;
     }
-    PGresult* res = d->exec("ROLLBACK");
+    PGresult* res = PQexec(d->connection, "ROLLBACK");
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK) {
         setLastError(qMakeError(tr("Could not rollback transaction"),
-                                QSqlError::TransactionError, d, res));
+                                QSqlError::TransactionError, d));
         PQclear(res);
         return false;
     }
@@ -1313,13 +1295,12 @@ bool QPSQLDriver::subscribeToNotificationImplementation(const QString &name)
 
     int socket = PQsocket(d->connection);
     if (socket) {
-        // Add the name to the list of subscriptions here so that QSQLDriverPrivate::exec knows
-        // to check for notifications immediately after executing the LISTEN
-        d->seid << name;
         QString query = QLatin1String("LISTEN ") + escapeIdentifier(name, QSqlDriver::TableName);
-        PGresult *result = d->exec(query);
-        if (PQresultStatus(result) != PGRES_COMMAND_OK) {
-            setLastError(qMakeError(tr("Unable to subscribe"), QSqlError::StatementError, d, result));
+        if (PQresultStatus(PQexec(d->connection,
+                                  d->isUtf8 ? query.toUtf8().constData()
+                                            : query.toLocal8Bit().constData())
+                          ) != PGRES_COMMAND_OK) {
+            setLastError(qMakeError(tr("Unable to subscribe"), QSqlError::StatementError, d));
             return false;
         }
 
@@ -1327,11 +1308,9 @@ bool QPSQLDriver::subscribeToNotificationImplementation(const QString &name)
             d->sn = new QSocketNotifier(socket, QSocketNotifier::Read);
             connect(d->sn, SIGNAL(activated(int)), this, SLOT(_q_handleNotification(int)));
         }
-    } else {
-        qWarning("QPSQLDriver::subscribeToNotificationImplementation: PQsocket didn't return a valid socket to listen on");
-        return false;
     }
 
+    d->seid << name;
     return true;
 }
 
@@ -1349,9 +1328,11 @@ bool QPSQLDriver::unsubscribeFromNotificationImplementation(const QString &name)
     }
 
     QString query = QLatin1String("UNLISTEN ") + escapeIdentifier(name, QSqlDriver::TableName);
-    PGresult *result = d->exec(query);
-    if (PQresultStatus(result) != PGRES_COMMAND_OK) {
-        setLastError(qMakeError(tr("Unable to unsubscribe"), QSqlError::StatementError, d, result));
+    if (PQresultStatus(PQexec(d->connection,
+                              d->isUtf8 ? query.toUtf8().constData()
+                                        : query.toLocal8Bit().constData())
+                      ) != PGRES_COMMAND_OK) {
+        setLastError(qMakeError(tr("Unable to unsubscribe"), QSqlError::StatementError, d));
         return false;
     }
 
@@ -1373,7 +1354,6 @@ QStringList QPSQLDriver::subscribedToNotificationsImplementation() const
 
 void QPSQLDriver::_q_handleNotification(int)
 {
-    d->pendingNotifyCheck = false;
     PQconsumeInput(d->connection);
 
     PGnotify *notify = 0;

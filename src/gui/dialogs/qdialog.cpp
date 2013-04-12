@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
@@ -69,8 +69,6 @@ extern bool qt_wince_is_smartphone(); //is defined in qguifunctions_wce.cpp
 #   include "qfontdialog.h"
 #   include "qwizard.h"
 #   include "private/qt_s60_p.h"
-#elif defined(Q_OS_BLACKBERRY)
-#   include "qmessagebox.h"
 #endif
 
 #if defined(Q_WS_S60)
@@ -533,18 +531,12 @@ int QDialog::exec()
 #endif //Q_WS_WINCE_WM
 
     bool showSystemDialogFullScreen = false;
-
 #ifdef Q_OS_SYMBIAN
     if (qobject_cast<QFileDialog *>(this) || qobject_cast<QFontDialog *>(this) ||
         qobject_cast<QWizard *>(this)) {
         showSystemDialogFullScreen = true;
     }
 #endif // Q_OS_SYMBIAN
-
-#ifdef Q_OS_BLACKBERRY
-    if (!qobject_cast<QMessageBox *>(this))
-        showSystemDialogFullScreen = true;
-#endif // Q_OS_BLACKBERRY
 
     if (showSystemDialogFullScreen) {
         setWindowFlags(windowFlags() | Qt::WindowSoftkeysVisibleHint);

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtOpenGL module of the Qt Toolkit.
@@ -654,8 +654,6 @@ public:
     QOpenGLPaintEnginePrivate()
         : opacity(1)
         , composition_mode(QPainter::CompositionMode_SourceOver)
-        , has_pen(false)
-        , has_brush(false)
         , has_fast_pen(false)
         , use_stencil_method(false)
         , dirty_drawable_texture(false)

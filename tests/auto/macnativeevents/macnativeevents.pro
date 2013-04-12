@@ -13,5 +13,4 @@ SOURCES += qnativeevents.cpp qnativeevents_mac.cpp
 SOURCES += expectedeventlist.cpp nativeeventlist.cpp
 SOURCES += tst_macnativeevents.cpp
 
-CONFIG += insignificant_test #QTBUG-28830
 requires(mac)

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -1763,9 +1763,9 @@ void tst_QMdiArea::tileSubWindows()
     QTRY_COMPARE(workspace.viewport()->rect().size(), expectedViewportSize);
 
     // Not enough space for all sub-windows to be visible -> provide scroll bars.
-    workspace.resize(160, 150);
+    workspace.resize(150, 150);
     qApp->processEvents();
-    QTRY_COMPARE(workspace.size(), QSize(160, 150));
+    QTRY_COMPARE(workspace.size(), QSize(150, 150));
 
     // Horizontal scroll bar.
     QScrollBar *hBar = workspace.horizontalScrollBar();

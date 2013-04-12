@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -552,9 +552,7 @@ void tst_qdeclarativexmlhttprequest::send_ignoreData()
         object->setProperty("url", "http://127.0.0.1:14445/testdocument.html");
         component.completeCreate();
 
-        bool objectProperty = object->property("dataOK").toBool();
-        QEXPECT_FAIL("", "QTBUG-28004", Continue);
-        QTRY_VERIFY(objectProperty == true);
+        QTRY_VERIFY(object->property("dataOK").toBool() == true);
 
         delete object;
     }

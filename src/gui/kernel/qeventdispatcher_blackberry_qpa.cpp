@@ -66,9 +66,10 @@ static bool sendWindowSystemEvents(QAbstractEventDispatcher *eventDispatcher, QE
             break;
         }
 
-        // in contrast to the common QPA version we don't put window system events
-        // into the event filter here, instead native bps events are filtered in
-        // QEventDispatcherBlackberry::select()
+        if (eventDispatcher->filterEvent(event)) {
+            delete event;
+            continue;
+        }
 
         nevents++;
 

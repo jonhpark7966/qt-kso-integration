@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -64,12 +64,6 @@ QRunnable *createTask(FunctionPointer pointer)
 class tst_QThreadPool : public QObject
 {
     Q_OBJECT
-public:
-    tst_QThreadPool();
-    ~tst_QThreadPool();
-
-    static QMutex *functionTestMutex;
-
 private slots:
     void runFunction();
     void createThreadRunFunction();
@@ -98,23 +92,7 @@ private slots:
     void waitForDoneTimeout();
     void destroyingWaitsForTasksToFinish();
     void stressTest();
-
-private:
-    QMutex m_functionTestMutex;
 };
-
-
-QMutex *tst_QThreadPool::functionTestMutex = 0;
-
-tst_QThreadPool::tst_QThreadPool()
-{
-    tst_QThreadPool::functionTestMutex = &m_functionTestMutex;
-}
-
-tst_QThreadPool::~tst_QThreadPool()
-{
-    tst_QThreadPool::functionTestMutex = 0;
-}
 
 int testFunctionCount;
 
@@ -136,19 +114,19 @@ void noSleepTestFunction()
 
 void sleepTestFunctionMutex()
 {
-    Q_ASSERT(tst_QThreadPool::functionTestMutex);
+    static QMutex testMutex;
     QTest::qSleep(1000);
-    tst_QThreadPool::functionTestMutex->lock();
+    testMutex.lock();
     ++testFunctionCount;
-    tst_QThreadPool::functionTestMutex->unlock();
+    testMutex.unlock();
 }
 
 void noSleepTestFunctionMutex()
 {
-    Q_ASSERT(tst_QThreadPool::functionTestMutex);
-    tst_QThreadPool::functionTestMutex->lock();
+    static QMutex testMutex;
+    testMutex.lock();
     ++testFunctionCount;
-    tst_QThreadPool::functionTestMutex->unlock();
+    testMutex.unlock();
 }
 
 void tst_QThreadPool::runFunction()

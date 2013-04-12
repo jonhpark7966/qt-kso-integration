@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -71,9 +71,7 @@ private slots:
     void setMaxWindowRect();
     void initialGeometry();
     void WA_PaintOnScreen();
-#ifndef QT_NO_QWS_MULTIPROCESS
     void toplevelMove();
-#endif
     void dontFlushUnitializedWindowSurfaces();
     void task188025_data();
     void task188025();
@@ -391,7 +389,6 @@ void tst_QWSWindowSystem::WA_PaintOnScreen()
     VERIFY_COLOR(rect, QColor(Qt::red));
 }
 
-#ifndef QT_NO_QWS_MULTIPROCESS
 class DummyMoveSurface : public QWSSharedMemSurface
 {
 public:
@@ -510,7 +507,6 @@ void tst_QWSWindowSystem::toplevelMove()
     }
     delete screen;
 }
-#endif //QT_NO_QWS_MULTIPROCESS
 
 static void fillWindowSurface(QWidget *w, const QColor &color)
 {

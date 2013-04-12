@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
@@ -44,11 +44,11 @@
 
 #include <stddef.h>
 
-#define QT_VERSION_STR   "4.8.5"
+#define QT_VERSION_STR   "4.8.4"
 /*
    QT_VERSION is (major << 16) + (minor << 8) + patch.
 */
-#define QT_VERSION 0x040805
+#define QT_VERSION 0x040804
 /*
    can be used like #if (QT_VERSION >= QT_VERSION_CHECK(4, 4, 0))
 */
@@ -427,7 +427,6 @@ namespace QT_NAMESPACE {}
 
 #if defined(Q_CC_MSVC) && _MSC_VER >= 1600
 #      define Q_COMPILER_RVALUE_REFS
-#      define Q_COMPILER_AUTO_FUNCTION
 #      define Q_COMPILER_AUTO_TYPE
 #      define Q_COMPILER_LAMBDA
 #      define Q_COMPILER_DECLTYPE
@@ -529,7 +528,6 @@ namespace QT_NAMESPACE {}
 #    if (__GNUC__ * 100 + __GNUC_MINOR__) >= 404
        /* C++0x features supported in GCC 4.4: */
 #      define Q_COMPILER_VARIADIC_TEMPLATES
-#      define Q_COMPILER_AUTO_FUNCTION
 #      define Q_COMPILER_AUTO_TYPE
 #      define Q_COMPILER_EXTERN_TEMPLATES
 #      define Q_COMPILER_DEFAULT_DELETE_MEMBERS

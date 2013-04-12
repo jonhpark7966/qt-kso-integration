@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtDeclarative module of the Qt Toolkit.
@@ -529,32 +529,37 @@ void QDeclarativeMouseArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             curLocalPos = event->scenePos();
         }
 
+        const int dragThreshold = QApplication::startDragDistance();
+        qreal dx = qAbs(curLocalPos.x() - startLocalPos.x());
+        qreal dy = qAbs(curLocalPos.y() - startLocalPos.y());
+
         if (keepMouseGrab() && d->stealMouse)
             d->drag->setActive(true);
 
         bool dragX = drag()->axis() & QDeclarativeDrag::XAxis;
         bool dragY = drag()->axis() & QDeclarativeDrag::YAxis;
 
-        const qreal x = dragX
-                ? qBound(d->drag->xmin(), d->startX + curLocalPos.x() - startLocalPos.x(), d->drag->xmax())
-                : d->startX;
-        const qreal y = dragY
-                ? qBound(d->drag->ymin(), d->startY + curLocalPos.y() - startLocalPos.y(), d->drag->ymax())
-                : d->startY;
-
-        if (d->drag->active()) {
-            if (dragX && dragY)
-                d->drag->target()->setPos(x, y);
-            else if (dragX)
-                d->drag->target()->setX(x);
-            else if (dragY)
-                d->drag->target()->setY(y);
+        if (dragX && d->drag->active()) {
+            qreal x = (curLocalPos.x() - startLocalPos.x()) + d->startX;
+            if (x < drag()->xmin())
+                x = drag()->xmin();
+            else if (x > drag()->xmax())
+                x = drag()->xmax();
+            drag()->target()->setX(x);
+        }
+        if (dragY && d->drag->active()) {
+            qreal y = (curLocalPos.y() - startLocalPos.y()) + d->startY;
+            if (y < drag()->ymin())
+                y = drag()->ymin();
+            else if (y > drag()->ymax())
+                y = drag()->ymax();
+            drag()->target()->setY(y);
         }
 
         if (!keepMouseGrab()) {
-            const int dragThreshold = QApplication::startDragDistance();
-
-            if (qAbs(x - d->startX) > dragThreshold || qAbs(y - d->startY) > dragThreshold) {
+            if ((!dragY && dy < dragThreshold && dragX && dx > dragThreshold)
+                || (!dragX && dx < dragThreshold && dragY && dy > dragThreshold)
+                || (dragX && dragY && (dx > dragThreshold || dy > dragThreshold))) {
                 setKeepMouseGrab(true);
                 d->stealMouse = true;
             }

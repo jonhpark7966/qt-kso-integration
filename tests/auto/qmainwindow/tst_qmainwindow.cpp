@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -140,7 +140,6 @@ private slots:
     void saveState();
     void restoreState();
     void restoreStateFromPreviousVersion();
-    void restoreStateDockWidgetBug();
     void createPopupMenu();
     void iconSizeChanged();
     void toolButtonStyleChanged();
@@ -154,7 +153,6 @@ private slots:
     void dockWidgetSize();
     void QTBUG2774_stylechange();
     void toggleUnifiedTitleAndToolBarOnMac();
-    void QTBUG19207_toggleUnifiedTitleAndToolBarOnMacMultipleWindows();
     void QTBUG21378_animationFinished();
 };
 
@@ -1287,46 +1285,6 @@ void tst_QMainWindow::restoreState()
     QVERIFY(mw.restoreState(state, 1));
 }
 
-/*
-    QWidget::setStylesheet() generates QEvent::StyleChange event, which will
-    cause the function QDockAreaLayout::fitLayout() to be called before the layout
-    of MainWindow is activated. This will force the size of dock widgets
-    and the central widget to be calculated using the wrong geometry, which will
-    break the state restored by QMainWindow::restoreState().
-*/
-void tst_QMainWindow::restoreStateDockWidgetBug()
-{
-    QByteArray state;
-
-    //save state
-    {
-        QMainWindow mw1;
-        QDockWidget *dw1 = new  QDockWidget();
-        dw1->setObjectName("Left DockWidget");
-        mw1.addDockWidget(Qt::LeftDockWidgetArea, dw1);
-        mw1.setCentralWidget(new QTextEdit());
-        mw1.show();
-        QApplication::processEvents();
-        dw1->setFixedWidth(101);
-        QApplication::processEvents();
-
-        state = mw1.saveState();
-    }
-
-    //restore state
-    QMainWindow mw2;
-    QDockWidget *dw2 = new  QDockWidget();
-    dw2->setObjectName("Left DockWidget");
-    mw2.addDockWidget(Qt::LeftDockWidgetArea, dw2);
-    mw2.setCentralWidget(new QTextEdit());
-    mw2.restoreState(state);
-    mw2.setStyleSheet("color:red");
-    mw2.show();
-    QApplication::processEvents();
-
-    QCOMPARE(dw2->width(), 101);
-}
-
 //tests the restoration of the previous versions of window settings
 void tst_QMainWindow::restoreStateFromPreviousVersion()
 {
@@ -1853,32 +1811,6 @@ void tst_QMainWindow::toggleUnifiedTitleAndToolBarOnMac()
     QVERIFY(frameGeometry.topLeft() == mw.frameGeometry().topLeft());
     mw.setUnifiedTitleAndToolBarOnMac(true);
     QVERIFY(frameGeometry.topLeft() == mw.frameGeometry().topLeft());
-#else
-    QSKIP("Mac specific test", SkipAll);
-#endif
-}
-
-void tst_QMainWindow::QTBUG19207_toggleUnifiedTitleAndToolBarOnMacMultipleWindows()
-{
-#ifdef Q_OS_MAC
-    QMainWindow mw;
-    QToolBar *tb = new QToolBar;
-    tb->addAction("Test");
-    mw.addToolBar(tb);
-    mw.setUnifiedTitleAndToolBarOnMac(true);
-    mw.show();
-
-    QMainWindow mw2;
-    QToolBar *tb2 = new QToolBar;
-    tb2->addAction("Test");
-    mw2.addToolBar(tb2);
-    mw2.setUnifiedTitleAndToolBarOnMac(true);
-    mw2.show();
-
-    // the third call should trigger an assertion failure in -[NSToolbar _itemAtIndex:]
-    mw.setUnifiedTitleAndToolBarOnMac(false);
-    mw.setUnifiedTitleAndToolBarOnMac(true);
-    mw.setUnifiedTitleAndToolBarOnMac(false);
 #else
     QSKIP("Mac specific test", SkipAll);
 #endif

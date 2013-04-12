@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
@@ -1410,13 +1410,6 @@ QLayoutItem *QFormLayout::takeAt(int index)
     QLayoutItem *i = item->item;
     item->item = 0;
     delete item;
-
-    if (QLayout *l = i->layout()) {
-        // sanity check in case the user passed something weird to QObject::setParent()
-        if (l->parent() == this)
-            l->setParent(0);
-    }
-
     return i;
 }
 

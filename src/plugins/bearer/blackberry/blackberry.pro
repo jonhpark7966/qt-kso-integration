@@ -14,6 +14,8 @@ SOURCES += qbbengine.cpp \
            ../qnetworksession_impl.cpp \
            main.cpp
 
+OTHER_FILES += blackberry.json
+
 QTDIR_build:DESTDIR = $$QT_BUILD_TREE/plugins/bearer
 target.path += $$[QT_INSTALL_PLUGINS]/bearer
 INSTALLS += target

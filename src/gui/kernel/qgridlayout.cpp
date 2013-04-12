@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
@@ -156,20 +156,15 @@ public:
             return 0;
     }
     inline QLayoutItem *takeAt(int index) {
-        Q_Q(QGridLayout);
+        QLayoutItem *item = 0;
         if (index < things.count()) {
-            if (QGridBox *b = things.takeAt(index)) {
-                QLayoutItem *item = b->takeItem();
-                if (QLayout *l = item->layout()) {
-                    // sanity check in case the user passed something weird to QObject::setParent()
-                    if (l->parent() == q)
-                        l->setParent(0);
-                }
+            QGridBox *b = things.takeAt(index);
+            if (b) {
+                item = b->takeItem();
                 delete b;
-                return item;
             }
         }
-        return 0;
+        return item;
     }
 
     void getItemPosition(int index, int *row, int *column, int *rowSpan, int *columnSpan) {

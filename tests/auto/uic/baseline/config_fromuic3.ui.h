@@ -1,7 +1,7 @@
 /*
 *********************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the test suite of the Qt Toolkit.
@@ -44,7 +44,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'config_fromuic3.ui'
 **
-** Created by: Qt User Interface Compiler version 4.8.5
+** Created: Thu Dec 17 12:48:42 2009
+**      by: Qt User Interface Compiler version 4.6.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/

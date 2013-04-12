@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtDeclarative module of the Qt Toolkit.
@@ -326,14 +326,10 @@ void QDeclarativeCompiler::genLiteralAssignment(const QMetaProperty &prop,
     instr.line = v->location.start.line;
     if (prop.isEnumType()) {
         int value;
-        if (v->value.isNumber()) { //Number saved from earlier check - not valid in testLiteralAssignment
-            value = v->value.asNumber();
-        } else {
-            if (prop.isFlagType())
-                value = prop.enumerator().keysToValue(string.toUtf8().constData());
-            else
-                value = prop.enumerator().keyToValue(string.toUtf8().constData());
-        }
+        if (prop.isFlagType()) {
+            value = prop.enumerator().keysToValue(string.toUtf8().constData());
+        } else
+            value = prop.enumerator().keyToValue(string.toUtf8().constData());
 
         instr.type = QDeclarativeInstruction::StoreInteger;
         instr.storeInteger.propertyIndex = prop.propertyIndex();
@@ -2205,12 +2201,6 @@ bool QDeclarativeCompiler::buildPropertyLiteralAssignment(QDeclarativeParser::Pr
     return true;
 }
 
-struct StaticQtMetaObject : public QObject
-{
-    static const QMetaObject *get()
-        { return &static_cast<StaticQtMetaObject*> (0)->staticQtMetaObject; }
-};
-
 bool QDeclarativeCompiler::testQualifiedEnumAssignment(const QMetaProperty &prop,
                                               QDeclarativeParser::Object *obj,
                                               QDeclarativeParser::Value *v,
@@ -2243,32 +2233,20 @@ bool QDeclarativeCompiler::testQualifiedEnumAssignment(const QMetaProperty &prop
             objTypeName = objType->qmlTypeName();
     }
 
-    if (!type && typeName != QLatin1String("Qt"))
+    if (!type || objTypeName != type->qmlTypeName())
         return true;
 
     QString enumValue = parts.at(1);
-    int value = -1;
-
-    if (type && objTypeName == type->qmlTypeName()) {
-        if (prop.isFlagType()) {
-            value = prop.enumerator().keysToValue(enumValue.toUtf8().constData());
-        } else {
-            value = prop.enumerator().keyToValue(enumValue.toUtf8().constData());
-        }
-    } else {
-        QByteArray enumName = enumValue.toUtf8();
-        //Special case for Qt object
-        const QMetaObject *metaObject = type ? type->metaObject() : StaticQtMetaObject::get();
-        for (int ii = metaObject->enumeratorCount() - 1; value == -1 && ii >= 0; --ii) {
-            QMetaEnum e = metaObject->enumerator(ii);
-            value = e.keyToValue(enumName.constData());
-        }
-    }
+    int value;
+    if (prop.isFlagType()) {
+        value = prop.enumerator().keysToValue(enumValue.toUtf8().constData());
+    } else
+        value = prop.enumerator().keyToValue(enumValue.toUtf8().constData());
     if (value == -1)
         return true;
 
     v->type = Value::Literal;
-    v->value = QDeclarativeParser::Variant((double)value);
+    v->value = QDeclarativeParser::Variant(enumValue);
     *isAssignment = true;
 
     return true;

@@ -369,7 +369,6 @@ void QBBIntegration::createDisplay(screen_display_t display, int screenIndex)
 {
     QBBScreen *screen = new QBBScreen(mContext, display, screenIndex);
     mScreens.append(screen);
-    screen->adjustOrientation();
 
     QObject::connect(mScreenEventHandler, SIGNAL(newWindowCreated(screen_window_t)),
                   screen, SLOT(newWindowCreated(screen_window_t)));
@@ -379,8 +378,6 @@ void QBBIntegration::createDisplay(screen_display_t display, int screenIndex)
     QObject::connect(mNavigatorEventHandler, SIGNAL(rotationChanged(int)), screen, SLOT(setRotation(int)));
     QObject::connect(mNavigatorEventHandler, SIGNAL(windowGroupActivated(QByteArray)), screen, SLOT(activateWindowGroup(QByteArray)));
     QObject::connect(mNavigatorEventHandler, SIGNAL(windowGroupDeactivated(QByteArray)), screen, SLOT(deactivateWindowGroup(QByteArray)));
-    QObject::connect(mNavigatorEventHandler, SIGNAL(windowGroupStateChanged(QByteArray,Qt::WindowState)),
-            screen, SLOT(windowGroupStateChanged(QByteArray,Qt::WindowState)));
 }
 
 void QBBIntegration::removeDisplay(QBBScreen *screen)

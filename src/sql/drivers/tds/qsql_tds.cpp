@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtSql module of the Qt Toolkit.
@@ -135,11 +135,10 @@ QSqlError qMakeError(const QString& err, QSqlError::ErrorType type, int errNo = 
 class QTDSDriverPrivate
 {
 public:
-    QTDSDriverPrivate(): login(0), initialized(false) {}
+    QTDSDriverPrivate(): login(0) {}
     LOGINREC* login;  // login information
     QString hostName;
     QString db;
-    bool initialized;
 };
 
 
@@ -535,7 +534,6 @@ QVariant QTDSDriver::handle() const
 void QTDSDriver::init()
 {
     d = new QTDSDriverPrivate();
-    d->initialized = (dbinit() == SUCCEED);
     // the following two code-lines will fail compilation on some FreeTDS versions
     // just comment them out if you have FreeTDS (you won't get any errors and warnings then)
     dberrhandle((QERRHANDLE)qTdsErrHandler);
@@ -577,7 +575,7 @@ bool QTDSDriver::open(const QString & db,
 {
     if (isOpen())
         close();
-    if (!d->initialized) {
+    if (!dbinit()) {
         setOpenError(true);
         return false;
     }

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtDeclarative module of the Qt Toolkit.
@@ -452,13 +452,6 @@ bool QDeclarativeImportsPrivate::add(const QDeclarativeDirComponents &qmldircomp
             set.insert(prefix,(s=new QDeclarativeImportedNamespace));
     }
 
-    bool appendInstead = false;
-    if (importType == QDeclarativeScriptParser::Import::Implicit) {
-        //Treat same as a File import, but lower precedence
-        appendInstead = true;
-        importType = QDeclarativeScriptParser::Import::File;
-    }
-
     QString url = uri;
     bool versionFound = false;
     if (importType == QDeclarativeScriptParser::Import::Library) {
@@ -528,9 +521,6 @@ bool QDeclarativeImportsPrivate::add(const QDeclarativeDirComponents &qmldircomp
 
         if (QDeclarativeMetaType::isModule(uri.toUtf8(), vmaj, vmin))
             versionFound = true;
-
-        //Load any type->file mappings registered for this uri
-        qmldircomponents << QDeclarativeMetaType::qmlComponents(uri.toUtf8(), vmaj, vmin);
 
         if (!versionFound && qmldircomponents.isEmpty()) {
             if (errorString) {
@@ -609,21 +599,12 @@ bool QDeclarativeImportsPrivate::add(const QDeclarativeDirComponents &qmldircomp
         }
     }
 
-    if (appendInstead) {
-        s->uris.append(uri);
-        s->urls.append(url);
-        s->majversions.append(vmaj);
-        s->minversions.append(vmin);
-        s->isLibrary.append(importType == QDeclarativeScriptParser::Import::Library);
-        s->qmlDirComponents.append(qmldircomponents);
-    } else {
-        s->uris.prepend(uri);
-        s->urls.prepend(url);
-        s->majversions.prepend(vmaj);
-        s->minversions.prepend(vmin);
-        s->isLibrary.prepend(importType == QDeclarativeScriptParser::Import::Library);
-        s->qmlDirComponents.prepend(qmldircomponents);
-    }
+    s->uris.prepend(uri);
+    s->urls.prepend(url);
+    s->majversions.prepend(vmaj);
+    s->minversions.prepend(vmin);
+    s->isLibrary.prepend(importType == QDeclarativeScriptParser::Import::Library);
+    s->qmlDirComponents.prepend(qmldircomponents);
     return true;
 }
 
