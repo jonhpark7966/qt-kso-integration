@@ -172,6 +172,7 @@ public:
     int colorMatrixInt[4][4];
     QRgb colorKey;
     ColorMap colorMap;
+    ColorMap brushColorMap;
     quint8 tolerance;
     quint8 colorKeyLow[3];
     quint8 colorKeyHight[3];

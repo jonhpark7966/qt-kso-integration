@@ -386,6 +386,9 @@ public:
 
     void setRemapTable(const QMap<QRgb, QRgb>& colorMap);
     QMap<QRgb, QRgb> remapTable() const;
+	void setBrushRemapTable(const QMap<QRgb, QRgb>& colorMap);
+	QMap<QRgb, QRgb> brushRemapTable() const;
+
     void setColorMatrix(const QMatrix4x4 &mtx);
     QMatrix4x4 colorMatrix() const;
     void unsetColorMatrix();
