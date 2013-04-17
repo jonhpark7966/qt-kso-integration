@@ -206,8 +206,6 @@ private:
     int freeKey;
     QHash<QString, QPixmapCache::Key> cacheKeys;
     bool t;
-
-    mutable QMutex mutex;
 };
 
 QT_BEGIN_INCLUDE_NAMESPACE
@@ -247,7 +245,6 @@ QPMCache::~QPMCache()
 */
 bool QPMCache::flushDetachedPixmaps(bool nt)
 {
-    QMutexLocker _locker(&mutex);
     int mc = maxCost();
     setMaxCost(nt ? totalCost() * 3 / 4 : totalCost() -1);
     setMaxCost(mc);
@@ -270,7 +267,6 @@ bool QPMCache::flushDetachedPixmaps(bool nt)
 
 void QPMCache::timerEvent(QTimerEvent *)
 {
-    QMutexLocker _locker(&mutex);
     bool nt = totalCost() == ps;
     if (!flushDetachedPixmaps(nt)) {
         killTimer(theid);
@@ -285,7 +281,6 @@ void QPMCache::timerEvent(QTimerEvent *)
 
 QPixmap *QPMCache::object(const QString &key) const
 {
-    QMutexLocker _locker(&mutex);
     QPixmapCache::Key cacheKey = cacheKeys.value(key);
     if (!cacheKey.d || !cacheKey.d->isValid) {
         const_cast<QPMCache *>(this)->cacheKeys.remove(key);
@@ -301,7 +296,6 @@ QPixmap *QPMCache::object(const QString &key) const
 
 QPixmap *QPMCache::object(const QPixmapCache::Key &key) const
 {
-    QMutexLocker _locker(&mutex);
     Q_ASSERT(key.d->isValid);
     QPixmap *ptr = QCache<QPixmapCache::Key, QPixmapCacheEntry>::object(key);
     //We didn't find the pixmap in the cache, the key is not valid anymore
@@ -312,7 +306,6 @@ QPixmap *QPMCache::object(const QPixmapCache::Key &key) const
 
 bool QPMCache::insert(const QString& key, const QPixmap &pixmap, int cost)
 {
-    QMutexLocker _locker(&mutex);
     QPixmapCache::Key cacheKey;
     QPixmapCache::Key oldCacheKey = cacheKeys.value(key);
     //If for the same key we add already a pixmap we should delete it
@@ -340,7 +333,6 @@ bool QPMCache::insert(const QString& key, const QPixmap &pixmap, int cost)
 
 QPixmapCache::Key QPMCache::insert(const QPixmap &pixmap, int cost)
 {
-    QMutexLocker _locker(&mutex);
     QPixmapCache::Key cacheKey = createKey();
     bool success = QCache<QPixmapCache::Key, QPixmapCacheEntry>::insert(cacheKey, new QPixmapCacheEntry(cacheKey, pixmap), cost);
     if (success) {
@@ -357,7 +349,6 @@ QPixmapCache::Key QPMCache::insert(const QPixmap &pixmap, int cost)
 
 bool QPMCache::replace(const QPixmapCache::Key &key, const QPixmap &pixmap, int cost)
 {
-    QMutexLocker _locker(&mutex);
     Q_ASSERT(key.d->isValid);
     //If for the same key we had already an entry so we should delete the pixmap and use the new one
     QCache<QPixmapCache::Key, QPixmapCacheEntry>::remove(key);
@@ -380,7 +371,6 @@ bool QPMCache::replace(const QPixmapCache::Key &key, const QPixmap &pixmap, int 
 
 bool QPMCache::remove(const QString &key)
 {
-    QMutexLocker _locker(&mutex);
     QPixmapCache::Key cacheKey = cacheKeys.value(key);
     //The key was not in the cache
     if (!cacheKey.d)
@@ -391,13 +381,11 @@ bool QPMCache::remove(const QString &key)
 
 bool QPMCache::remove(const QPixmapCache::Key &key)
 {
-    QMutexLocker _locker(&mutex);
     return QCache<QPixmapCache::Key, QPixmapCacheEntry>::remove(key);
 }
 
 void QPMCache::resizeKeyArray(int size)
 {
-    QMutexLocker _locker(&mutex);
     if (size <= keyArraySize || size == 0)
         return;
     keyArray = q_check_ptr(reinterpret_cast<int *>(realloc(keyArray,
@@ -409,7 +397,6 @@ void QPMCache::resizeKeyArray(int size)
 
 QPixmapCache::Key QPMCache::createKey()
 {
-    QMutexLocker _locker(&mutex);
     if (freeKey == keyArraySize)
         resizeKeyArray(keyArraySize ? keyArraySize << 1 : 2);
     int id = freeKey;
@@ -422,7 +409,6 @@ QPixmapCache::Key QPMCache::createKey()
 
 void QPMCache::releaseKey(const QPixmapCache::Key &key)
 {
-    QMutexLocker _locker(&mutex);
     if (key.d->key > keyArraySize || key.d->key <= 0)
         return;
     key.d->key--;
@@ -434,7 +420,6 @@ void QPMCache::releaseKey(const QPixmapCache::Key &key)
 
 void QPMCache::clear()
 {
-    QMutexLocker _locker(&mutex);
     free(keyArray);
     keyArray = 0;
     freeKey = 0;
@@ -455,7 +440,6 @@ QPixmapCache::KeyData* QPMCache::getKeyData(QPixmapCache::Key *key)
 
 QList< QPair<QString,QPixmap> > QPMCache::allPixmaps() const
 {
-    QMutexLocker _locker(&mutex);
     QList< QPair<QString,QPixmap> > r;
     QHash<QString, QPixmapCache::Key>::const_iterator it = cacheKeys.begin();
     while (it != cacheKeys.end()) {
