@@ -6703,6 +6703,7 @@ void QImageEffectsPrivate::resetState()
 	colorMatrixInt[0][0] = colorMatrixInt[1][1] = colorMatrixInt[2][2] = colorMatrixInt[3][3] = base_scale;
 
 	colorMap.clear();
+	brushColorMap.clear();
 }
 
 QMatrix4x4 QImageEffectsPrivate::createDuotoneMatrix(const QRgb clr1, const QRgb clr2) const
@@ -7104,6 +7105,21 @@ QMap<QRgb, QRgb> QImageEffects::remapTable() const
 	return d->colorMap;
 }
 
+void QImageEffects::setBrushRemapTable(const QMap<QRgb, QRgb>& colorMap)
+{
+	if (colorMap == d->brushColorMap)
+		return;
+
+	detach();
+
+	d->brushColorMap = colorMap;
+}
+
+QMap<QRgb, QRgb> QImageEffects::brushRemapTable() const
+{
+	return d->brushColorMap;
+}
+
 void QImageEffects::setContrast(qreal contrast)
 {
 	if (d->contrast == contrast)
@@ -7132,7 +7148,8 @@ bool QImageEffects::hasEffects() const
                 || d->hasAlpha
                 || d->brightness != 0
                 || d->contrast != 1
-                || !d->colorMap.isEmpty());
+                || !d->colorMap.isEmpty()
+				|| !d->brushColorMap.isEmpty());
 }
 
 void QImageEffects::resetState() 
@@ -7327,6 +7344,11 @@ QDataStream &operator<<(QDataStream &s, const QImageEffects &effects)
 	if (colorCount > 0)
 		s << d->colorMap;
 
+	colorCount = d->brushColorMap.size();
+	s << colorCount;
+	if (colorCount > 0)
+		s << d->brushColorMap;
+
 	return s;
 }
 
@@ -7357,6 +7379,11 @@ QDataStream &operator>>(QDataStream &s, QImageEffects &effects)
 	s >> colorCount;
 	if (colorCount > 0)
 		s >> d->colorMap;
+
+	colorCount = d->brushColorMap.size();
+	s >> colorCount;
+	if (colorCount > 0)
+		s >> d->brushColorMap;
 
 	return s;
 }
