@@ -128,6 +128,7 @@ public:
     int         lw;
     const unsigned char *cmap;
     QByteArray cmapTable;
+    QTextCodec* cmapCodec;
     QVarLengthArray< QPair<quint16, quint16>, 4> gaspLookup;
     mutable qreal lbearing;
     mutable qreal rbearing;
