@@ -277,6 +277,16 @@ void QCustomLineAnchor::setFlatness(qreal flatness)
     }
     return;
 }
+
+QPainterPath QCustomLineAnchor::capPath() const
+{
+    if (isValid())
+    {
+        return m_cap->GetCapPath();
+    }
+    return QPainterPath();
+}
+
 bool QCustomLineAnchor::isValid() const
 {
     if (m_cap)

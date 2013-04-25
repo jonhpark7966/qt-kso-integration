@@ -47,6 +47,8 @@ public:
 
     void setFlatness(qreal flatness);
 
+    QPainterPath capPath() const;
+
     bool isValid() const;
 
     bool operator==(const QCustomLineAnchor &p) const;
