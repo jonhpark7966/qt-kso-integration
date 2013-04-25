@@ -634,6 +634,9 @@ void QPaintEngine::drawImage(const QRectF &r, const QImage &image, const QRectF 
         im = im.copy(qFloor(sr.x()), qFloor(sr.y()),
                      qCeil(sr.width()), qCeil(sr.height()));
     QPixmap pm = QPixmap::fromImage(im, flags);
+    if (pm.isNull())
+        return;
+
     drawPixmap(r, pm, QRectF(QPointF(0, 0), pm.size()));
 }
 
