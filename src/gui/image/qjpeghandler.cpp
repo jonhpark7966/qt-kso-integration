@@ -412,9 +412,30 @@ static bool read_jpeg_image(QImage *outImage,
                     uchar *in = rows[0] + clip.x() * 4;
                     QRgb *out = (QRgb*)outImage->scanLine(y);
                     for (int i = 0; i < clip.width(); ++i) {
+                        // Try to fix R, G, B in restrain (58, 255), (38, 255), (0, 205), this was a color approached by ps, with microsoft wscRGB.cdmp
+                        // we have no way to use ICC profiles here, cause' the original data decoded from YCCK to RGB was already wrong, propbably a mistake
+                        // by fixing the DCT errors. (in ycck_cmyk_convert, the maxium value could be 260, which should always below 255)
+                        // I found that only the R channel could probably be fixed by a linear restrain. But the G, B channel was all wrong, and a completly
+                        // chaos. It should be a bad idea to use libjpeg to decode any YCCK/CMYK datas, see jdcolor.c
+                        // See reference, intel YCCK_RGB conversions: http://software.intel.com/sites/products/documentation/hpc/ipp/ippi/ippi_ch15/functn_YCCKToCMYK_JPEG.html#functn_YCCKToCMYK_JPEG
+                        // Something might be useful, see topic: http://www.hackerfactor.com/blog/index.php?/archives/464-K-is-the-New-Black.html
+
                         int k = in[3];
-                        *out++ = qRgb(k * in[0] / 255, k * in[1] / 255,
-                                      k * in[2] / 255);
+
+                        /* original mix */
+                        int r = k * in[0] / 255, g = k * in[1] / 255, b = k * in[2] / 255;
+
+                        // Besides, we should try to keep the white - black - gray colors here, fix these colors would make the whole picture turn yellow.
+                        bool isGray = (r-g)*(r-g) + (g-b)*(g-b) + (r-b)*(r-b) < 1200;
+
+                        if (!isGray)
+                        {
+                            r = (r + 58) * 255 / 313;
+                            g = (g + 38) * 255 / 293;
+                            b = b * 205 / 255;
+                        }
+
+                        *out++ = qRgb(r, g, b);
                         in += 4;
                     }
                 } else if (info->output_components == 1) {
