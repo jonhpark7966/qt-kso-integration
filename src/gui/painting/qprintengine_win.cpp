@@ -202,7 +202,8 @@ bool QWin32PrintEngine::begin(QPaintDevice *pdev)
     if (d->printToFile && d->fileName.isEmpty())
         d->fileName = d->port;
 
-    d->devMode->dmCopies = d->num_copies;
+    if (d->devMode)
+        d->devMode->dmCopies = d->num_copies;
 
     DOCINFO di;
     memset(&di, 0, sizeof(DOCINFO));
