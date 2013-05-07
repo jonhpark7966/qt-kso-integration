@@ -381,7 +381,7 @@ QFontEngineWin::QFontEngineWin(const QString &name, HFONT _hfont, bool stockFont
         ZeroMemory(&tm, sizeof(TEXTMETRIC));
     }
 
-    cache_cost = 4 * 1024 /*QFontCache::min_cost*/ * 1024 / 8;
+    cache_cost = 4 * 1024 /*QFontCache::min_cost*/ * 1024 / 16;
     getCMap();
     getGasp();
 
