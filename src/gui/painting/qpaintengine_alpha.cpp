@@ -325,7 +325,10 @@ void QAlphaPaintEngine::flushAndInit(bool init)
         QRegion region = d->m_alphargn;
         // just use the bounding rect if it's a complex region..
         QVector<QRect> rects = d->m_alphargn.rects();
+
+        bool isComplexRegion = false;
         if (rects.size() > 10) {
+            isComplexRegion = true;
             QRect br = d->m_alphargn.boundingRect();
             d->m_alphargn = QRegion(br);
             rects.clear();
@@ -353,7 +356,9 @@ void QAlphaPaintEngine::flushAndInit(bool init)
         d->m_cliprgn = QRegion();
         d->resetState(painter());
 
-        painter()->setClipRegion(region);
+        // some printers does not support complex clip region
+        if (!isComplexRegion)
+            painter()->setClipRegion(region);
         // fill in the alpha images
         for (int i=0; i<rects.size(); ++i)
             d->drawAlphaImage(rects.at(i));
