@@ -1015,6 +1015,7 @@ void QDockWidgetPrivate::setWindowState(bool floating, bool unplug, const QRect 
     bool wasFloating = q->isFloating();
     bool hidden = q->isHidden();
 
+	q->setUpdatesEnabled(false);
     if (q->isVisible())
         q->hide();
 
@@ -1050,7 +1051,9 @@ void QDockWidgetPrivate::setWindowState(bool floating, bool unplug, const QRect 
     if (!hidden)
         q->show();
 
-    if (floating != wasFloating) {
+	q->setUpdatesEnabled(true);
+
+	if (floating != wasFloating) {
         emit q->topLevelChanged(floating);
         if (!floating && parent) {
             QMainWindowLayout *mwlayout = qt_mainwindow_layout(qobject_cast<QMainWindow *>(q->parentWidget()));

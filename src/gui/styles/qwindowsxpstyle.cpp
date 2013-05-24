@@ -1444,7 +1444,7 @@ case PE_Frame:
                 // pGetThemeInt(theme.handle(), partId, stateId, TMT_BORDERCOLOR, &borderSize);
 
                 // Inner white border
-                p->setPen(QPen(option->palette.base().color(), 1));
+                p->setPen(QPen(Qt::white, 1));
                 p->drawRect(option->rect.adjusted(1, 1, -2, -2));
                 // Outer dark border
                 p->setPen(QPen(bordercolor, 1));
