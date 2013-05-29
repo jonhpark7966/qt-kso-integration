@@ -425,8 +425,10 @@ int QHttpNetworkReplyPrivate::gunzipBodyPartially(QByteArray &compressed, QByteA
             // and fall through
         case Z_DATA_ERROR:
         case Z_MEM_ERROR:
-            inflateEnd(&inflateStrm);
-            initInflate = false;
+            if (initInflate) {
+                inflateEnd(&inflateStrm);
+                initInflate = false;
+            }
             return ret;
         }
         have = sizeof(out) - inflateStrm.avail_out;
@@ -442,8 +444,10 @@ int QHttpNetworkReplyPrivate::gunzipBodyPartially(QByteArray &compressed, QByteA
 
 void QHttpNetworkReplyPrivate::gunzipBodyPartiallyEnd()
 {
-    inflateEnd(&inflateStrm);
-    initInflate = false;
+    if (initInflate) {
+        inflateEnd(&inflateStrm);
+        initInflate = false;
+    }
 }
 
 #endif
