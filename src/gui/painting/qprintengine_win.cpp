@@ -353,6 +353,8 @@ void QWin32PrintEngine::drawTextItem(const QPointF &p, const QTextItem &textItem
     bool fallBack = state->pen().brush().style() != Qt::SolidPattern
                     || qAlpha(brushColor) != 0xff
                     || d->txop >= QTransform::TxProject
+                    || d->matrix.m11() < 0
+                    || d->matrix.m22() < 0
                     || ti.fontEngine->type() != QFontEngine::Win;
 
 
