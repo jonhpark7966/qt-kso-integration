@@ -1260,7 +1260,7 @@ void QWin32PrintEnginePrivate::updateOrigin()
     }
 }
 
-static WORD calcPaperSizeForHP5100(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize)
+static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize)
 {
     Q_ASSERT(paperSizes && paperTypes);
 
@@ -1340,6 +1340,12 @@ QString getPrinterName(const QString& printName)
         ::ClosePrinter(hPrinter);
 
     return strDriverName;
+}
+
+bool isHPPcl6(const QString& driverName)
+{
+    return (driverName.indexOf("HP ", 0, Qt::CaseInsensitive) != -1
+        && driverName.indexOf("PCL 6", 0, Qt::CaseInsensitive) != -1);
 }
 
 void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &value)
@@ -1526,14 +1532,12 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
 
             if (d->devMode->dmPaperSize == DMPAPER_USER)
             {
-                QString driverName = getPrinterName(d->name);
-                if (!QString::compare(driverName, QString::fromAscii("HP LaserJet 5100 PCL 6"), Qt::CaseInsensitive) ||
-                    !QString::compare(driverName, QString::fromAscii("HP LaserJet 400 M401 PCL 6"), Qt::CaseInsensitive))
+                if (isHPPcl6(getPrinterName(d->name)))    
                 {
                     // in 0.1mm
                     QSizeF wantedSize(d->paper_size.width() / 72 * 254 - 42.5,
                         d->paper_size.height() / 72 * 254 - 42.5);
-                    d->devMode->dmPaperSize = calcPaperSizeForHP5100(papersizes, papers, (int)size, wantedSize);
+                    d->devMode->dmPaperSize = matchToFitPresetPaper(papersizes, papers, (int)size, wantedSize);
                 }
             }
 
