@@ -2879,6 +2879,9 @@ QTextItemInt QTextItemInt::midItem(QFontEngine *fontEngine, int firstGlyphIndex,
         int char_start = ti.chars - chars;
         while (char_start + ti.num_chars < num_chars && ti.logClusters[ti.num_chars] - logClusterOffset < end)
             ++ti.num_chars;
+    } else if (chars) {
+        ti.chars = chars + firstGlyphIndex;
+        ti.num_chars = numGlyphs;
     }
     return ti;
 }
