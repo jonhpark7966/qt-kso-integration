@@ -1260,7 +1260,7 @@ void QWin32PrintEnginePrivate::updateOrigin()
     }
 }
 
-static WORD calcPaperSizeForHP5100(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize)
+static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize, bool HPUniversalPcl)
 {
     Q_ASSERT(paperSizes && paperTypes);
 
@@ -1290,7 +1290,7 @@ static WORD calcPaperSizeForHP5100(POINT *paperSizes, WORD *paperTypes, int coun
         }
     }
 
-    if (env_dl_idx != -1 && paperSizes[env_dl_idx].x > wantedSize.width()
+    if (!HPUniversalPcl && env_dl_idx != -1 && paperSizes[env_dl_idx].x > wantedSize.width()
         && paperSizes[env_dl_idx].y > wantedSize.height())
         return paperTypes[env_dl_idx];
 
@@ -1308,7 +1308,7 @@ static WORD calcPaperSizeForHP5100(POINT *paperSizes, WORD *paperTypes, int coun
     return DMPAPER_USER;
 }
 
-QString getPrinterName(const QString& printName)
+static QString getPrinterName(const QString& printName)
 {
     QString strDriverName;
     HANDLE hPrinter = NULL;
@@ -1340,6 +1340,17 @@ QString getPrinterName(const QString& printName)
         ::ClosePrinter(hPrinter);
 
     return strDriverName;
+}
+
+static bool isHPPcl(const QString& driverName)
+{
+    return (driverName.indexOf(QString::fromAscii("HP "), 0, Qt::CaseInsensitive) != -1
+        && driverName.indexOf(QString::fromAscii("PCL"), 0, Qt::CaseInsensitive) != -1);
+}
+
+static bool isHPUniversalPcl(const QString& driverName)
+{
+    return (driverName.indexOf(QString::fromAscii("HP Universal Printing PCL"), 0, Qt::CaseInsensitive) != -1);
 }
 
 void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &value)
@@ -1526,14 +1537,14 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
 
             if (d->devMode->dmPaperSize == DMPAPER_USER)
             {
-                QString driverName = getPrinterName(d->name);
-                if (!QString::compare(driverName, QString::fromAscii("HP LaserJet 5100 PCL 6"), Qt::CaseInsensitive) ||
-                    !QString::compare(driverName, QString::fromAscii("HP LaserJet 400 M401 PCL 6"), Qt::CaseInsensitive))
+                const QString driverName = getPrinterName(d->name);
+                if (isHPPcl(driverName))
                 {
                     // in 0.1mm
                     QSizeF wantedSize(d->paper_size.width() / 72 * 254 - 42.5,
                         d->paper_size.height() / 72 * 254 - 42.5);
-                    d->devMode->dmPaperSize = calcPaperSizeForHP5100(papersizes, papers, (int)size, wantedSize);
+                    bool bHPUniversalPcl = isHPUniversalPcl(driverName);
+                    d->devMode->dmPaperSize = matchToFitPresetPaper(papersizes, papers, (int)size, wantedSize, bHPUniversalPcl);
                 }
             }
 
