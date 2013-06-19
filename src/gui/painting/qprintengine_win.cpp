@@ -1260,7 +1260,30 @@ void QWin32PrintEnginePrivate::updateOrigin()
     }
 }
 
-static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize, bool HPUniversalPcl)
+static bool isHPPcl(const QString& driverName)
+{
+    return (driverName.indexOf(QString::fromAscii("HP "), 0, Qt::CaseInsensitive) != -1
+        && driverName.indexOf(QString::fromAscii("PCL"), 0, Qt::CaseInsensitive) != -1);
+}
+
+static bool isHPUniversalPcl(const QString& driverName)
+{
+    return (driverName.indexOf(QString::fromAscii("HP Universal Printing PCL"), 0, Qt::CaseInsensitive) != -1);
+}
+
+static bool isHPUniversalPs(const QString& driverName)
+{
+    return (driverName.indexOf(QString::fromAscii("HP Universal Printing PS"), 0, Qt::CaseInsensitive) != -1);
+}
+
+static bool isHPHB(const QString& driverName)
+{
+    return driverName.startsWith(QString::fromAscii("HP "), Qt::CaseInsensitive) &&
+        driverName.endsWith(QString::fromAscii("HB"), Qt::CaseInsensitive);
+}
+
+
+static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize, const QString& driverName)
 {
     Q_ASSERT(paperSizes && paperTypes);
 
@@ -1268,6 +1291,7 @@ static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count
     int a4_idx = -1;
     int a3_idx = -1;
     int letter_idx = -1;
+    int statment_idx = -1;
 
     for (int i = 0; i < count; i++)
     {
@@ -1285,12 +1309,17 @@ static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count
         case DMPAPER_LETTER:
             letter_idx = i;
             break;
+        case DMPAPER_STATEMENT:
+            statment_idx = i;
+            break;
         default:
             break;
         }
     }
 
-    if (!HPUniversalPcl && env_dl_idx != -1 && paperSizes[env_dl_idx].x > wantedSize.width()
+    bool hpUniversalPS = isHPUniversalPs(driverName);
+
+    if (!isHPUniversalPcl(driverName) && !hpUniversalPS && env_dl_idx != -1 && paperSizes[env_dl_idx].x > wantedSize.width()
         && paperSizes[env_dl_idx].y > wantedSize.height())
         return paperTypes[env_dl_idx];
 
@@ -1302,8 +1331,12 @@ static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count
         && paperSizes[a3_idx].y > wantedSize.height())
         return paperTypes[a3_idx];
 
-    if (letter_idx != -1)
+
+    if (!hpUniversalPS && letter_idx != -1)
         return paperTypes[letter_idx];
+
+    if (hpUniversalPS && statment_idx != -1)
+        return paperTypes[statment_idx];
 
     return DMPAPER_USER;
 }
@@ -1340,17 +1373,6 @@ static QString getPrinterName(const QString& printName)
         ::ClosePrinter(hPrinter);
 
     return strDriverName;
-}
-
-static bool isHPPcl(const QString& driverName)
-{
-    return (driverName.indexOf(QString::fromAscii("HP "), 0, Qt::CaseInsensitive) != -1
-        && driverName.indexOf(QString::fromAscii("PCL"), 0, Qt::CaseInsensitive) != -1);
-}
-
-static bool isHPUniversalPcl(const QString& driverName)
-{
-    return (driverName.indexOf(QString::fromAscii("HP Universal Printing PCL"), 0, Qt::CaseInsensitive) != -1);
 }
 
 void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &value)
@@ -1538,13 +1560,13 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
             if (d->devMode->dmPaperSize == DMPAPER_USER)
             {
                 const QString driverName = getPrinterName(d->name);
-                if (isHPPcl(driverName))
+
+                if(isHPPcl(driverName) || isHPUniversalPs(driverName) || isHPHB(driverName))
                 {
                     // in 0.1mm
                     QSizeF wantedSize(d->paper_size.width() / 72 * 254 - 42.5,
                         d->paper_size.height() / 72 * 254 - 42.5);
-                    bool bHPUniversalPcl = isHPUniversalPcl(driverName);
-                    d->devMode->dmPaperSize = matchToFitPresetPaper(papersizes, papers, (int)size, wantedSize, bHPUniversalPcl);
+                    d->devMode->dmPaperSize = matchToFitPresetPaper(papersizes, papers, (int)size, wantedSize, driverName);
                 }
             }
 
