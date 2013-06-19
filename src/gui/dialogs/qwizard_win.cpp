@@ -229,8 +229,9 @@ void QVistaBackButton::paintEvent(QPaintEvent *)
         state = WIZ_NAV_BB_PRESSED;
     else if (underMouse())
         state = WIZ_NAV_BB_HOT;
-
-   pDrawThemeBackground(theme, p.paintEngine()->getDC(), WIZ_NAV_BACKBUTTON, state, &clipRect, &clipRect); 
+   HDC hdc = p.paintEngine()->getDC();
+   pDrawThemeBackground(theme, hdc, WIZ_NAV_BACKBUTTON, state, &clipRect, &clipRect); 
+   p.paintEngine()->releaseDC(hdc);
 }
 
 /******************************************************************************
@@ -349,6 +350,7 @@ void QVistaHelper::drawTitleBar(QPainter *painter)
         DrawIconEx(hdc, rect.left(), rect.top(), hIcon, 0, 0, 0, NULL, DI_NORMAL | DI_COMPAT);
         DestroyIcon(hIcon);
     }
+    painter->paintEngine()->releaseDC(hdc);
 }
 
 void QVistaHelper::setTitleBarIconAndCaptionVisible(bool visible)

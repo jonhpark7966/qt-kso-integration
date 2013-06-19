@@ -632,13 +632,16 @@ void QWindowsXPStylePrivate::drawBackground(XPThemeData &themeData)
         translucentToplevel = win->testAttribute(Qt::WA_TranslucentBackground);
     }
 
-    bool useFallback = painter->paintEngine()->getDC() == 0
+    HDC hdc = painter->paintEngine()->getDC();
+    bool useFallback = hdc == 0
                        || painter->opacity() != 1.0
                        || themeData.rotate
                        || complexXForm
                        || themeData.mirrorVertically
                        || (themeData.mirrorHorizontally && pDrawThemeBackgroundEx == 0)
                        || translucentToplevel;
+
+    painter->paintEngine()->releaseDC(hdc);
 
     if (!useFallback)
         drawBackgroundDirectly(themeData);
@@ -721,6 +724,7 @@ void QWindowsXPStylePrivate::drawBackgroundDirectly(XPThemeData &themeData)
         pDrawThemeBackground(themeData.handle(), dc, themeData.partId, themeData.stateId, &(drawRECT), &(drawOptions.rcClip));
     }
     SelectClipRgn(dc, 0);
+    painter->paintEngine()->releaseDC(dc);
 }
 
 /*! \internal
