@@ -498,21 +498,6 @@ void QGtkStylePrivate::initGtkWidgets() const
         return;
     }
 
-    static QString themeName;
-    if (!gtkWidgetMap()->contains("GtkWindow") && themeName.isEmpty()) {
-        themeName = getThemeName();
-
-        if (themeName.isEmpty()) {
-            qWarning("QGtkStyle was unable to detect the current GTK+ theme.");
-            return;
-        } else if (themeName == QLS("Qt") || themeName == QLS("Qt4")) {
-            // Due to namespace conflicts with Qt3 and obvious recursion with Qt4,
-            // we cannot support the GTK_Qt Gtk engine
-            qWarning("QGtkStyle cannot be used together with the GTK_Qt engine.");
-            return;
-        }
-    }
-
     if (QGtkStylePrivate::gtk_init) {
         // Gtk will set the Qt error handler so we have to reset it afterwards
         x11ErrorHandler qt_x_errhandler = XSetErrorHandler(0);
@@ -544,7 +529,17 @@ void QGtkStylePrivate::initGtkWidgets() const
             addWidget(QGtkStylePrivate::gtk_radio_button_new(NULL));
             addWidget(QGtkStylePrivate::gtk_combo_box_new());
             addWidget(QGtkStylePrivate::gtk_combo_box_entry_new());
-            addWidget(QGtkStylePrivate::gtk_entry_new());
+            GtkWidget *entry = QGtkStylePrivate::gtk_entry_new();
+            // gtk-im-context-none is supported in gtk+ since 2.19.5
+            // and also exists in gtk3
+            // http://git.gnome.org/browse/gtk+/tree/gtk/gtkimmulticontext.c?id=2.19.5#n33
+            // reason that we don't use gtk-im-context-simple here is,
+            // gtk-im-context-none has less overhead, and 2.19.5 is
+            // relatively old. and even for older gtk+, it will fallback
+            // to gtk-im-context-simple if gtk-im-context-none doesn't
+            // exists.
+            g_object_set(entry, "im-module", "gtk-im-context-none", NULL);
+            addWidget(entry);
             addWidget(QGtkStylePrivate::gtk_frame_new(NULL));
             addWidget(QGtkStylePrivate::gtk_expander_new(""));
             addWidget(QGtkStylePrivate::gtk_statusbar_new());
@@ -649,37 +644,21 @@ bool QGtkStylePrivate::getGConfBool(const QString &key, bool fallback)
 QString QGtkStylePrivate::getThemeName()
 {
     QString themeName;
-    // We try to parse the gtkrc file first
-    // primarily to avoid resolving Gtk functions if
-    // the KDE 3 "Qt" style is currently in use
-    QString rcPaths = QString::fromLocal8Bit(qgetenv("GTK2_RC_FILES"));
-    if (!rcPaths.isEmpty()) {
-        QStringList paths = rcPaths.split(QLS(":"));
-        foreach (const QString &rcPath, paths) {
-            if (!rcPath.isEmpty()) {
-                QFile rcFile(rcPath);
-                if (rcFile.exists() && rcFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                    QTextStream in(&rcFile);
-                    while(!in.atEnd()) {
-                        QString line = in.readLine();
-                        if (line.contains(QLS("gtk-theme-name"))) {
-                            line = line.right(line.length() - line.indexOf(QLatin1Char('=')) - 1);
-                            line.remove(QLatin1Char('\"'));
-                            line = line.trimmed();
-                            themeName = line;
-                            break;
-                        }
-                    }
-                }
+    // Read the theme name from GtkSettings
+    if (QGtkStylePrivate::gtk_settings_get_default)
+    {
+        GtkSettings *settings = QGtkStylePrivate::gtk_settings_get_default();
+        if (settings)
+        {
+            gchararray value = NULL;
+            g_object_get(settings, "gtk-theme-name", &value, NULL);
+            if (value)
+            {
+                themeName = QString::fromUtf8(value);
+                g_free(value);
             }
-            if (!themeName.isEmpty())
-                break;
         }
     }
-
-    // Fall back to gconf
-    if (themeName.isEmpty() && resolveGConf())
-        themeName = getGConfString(QLS("/desktop/gnome/interface/gtk_theme"));
 
     return themeName;
 }
