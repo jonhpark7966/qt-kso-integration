@@ -283,10 +283,21 @@ struct QTexturedBrushData : public QBrushData
         m_data.expand.l = m_data.expand.r = m_data.expand.t = m_data.expand.b = 0;
     }
 
+	void setDestRect(const QRectF& destRect)
+	{
+		m_textureDestRect = destRect;
+	}
+
+	void getDestRect(QRectF& destRect)
+	{
+		destRect = m_textureDestRect;
+	}
+
     QPixmap *m_pixmap;
     QImage m_image;
     bool m_has_pixmap_texture;
     Qt::TextureWrapMode m_wrapMode;
+	QRectF m_textureDestRect;
 
     union {
         struct {
@@ -1069,6 +1080,34 @@ void QBrush::setTextureScale(qreal scaleX, qreal scaleY)
     data->setTextureScale(scaleX, scaleY);
 }
 
+void QBrush::setTextureDestRect(const QRectF& rct)
+{
+	//m_textureDestRect = rct;
+	if (d->style != Qt::TexturePattern)
+	{
+		qWarning("Not a TexturePattern with tile mode");
+		return;
+	}
+
+	int a=0;
+	detach(Qt::TexturePattern);
+
+	QTexturedBrushData *data  = static_cast<QTexturedBrushData*>(d.data());
+	data->setDestRect(rct);
+}
+
+void QBrush::getTextureDestRect(QRectF& rct) const
+{
+	//rct = m_textureDestRect;
+	if (d->style != Qt::TexturePattern)
+	{
+		qWarning("Not a TexturePattern with tile mode");
+		return;
+	}
+
+	QTexturedBrushData *data  = static_cast<QTexturedBrushData*>(d.data());
+	data->getDestRect(rct);
+}
 /*!
     Set the texture brush to the expand mode and set the offset
     Note:the current brush's style must be TexturePattern

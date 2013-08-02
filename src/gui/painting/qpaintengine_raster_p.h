@@ -314,7 +314,7 @@ public:
                               int *dashIndex, qreal *dashOffset, bool *inDash);
     void rasterize(QT_FT_Outline *outline, ProcessSpans callback, QSpanData *spanData, QRasterBuffer *rasterBuffer);
     void rasterize(QT_FT_Outline *outline, ProcessSpans callback, void *userData, QRasterBuffer *rasterBuffer);
-    void updateMatrixData(QSpanData *spanData, const QBrush &brush, const QTransform &brushMatrix);
+    void updateMatrixData(QSpanData *spanData, const QBrush &brush, const QTransform &brushMatrix, const QTransform& trans = QTransform());
 
     void systemStateChanged();
 

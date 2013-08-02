@@ -964,7 +964,20 @@ static QMatrix qt_getAdjustMatrix(const QBrush &brush, const QRectF &rc)
         }
 
         QRectF textureRect = brush.textureImage().rect();
-        textureRect = brush.matrix().mapRect(textureRect);
+		{
+			QPointF topLeft = textureRect.topLeft();
+			QPointF topRight = textureRect.topRight();
+			QPointF bottomLeft = textureRect.bottomLeft();
+
+			QPointF topLeftAfterMap = brush.matrix().map(topLeft);
+			QPointF topRightAfterMap = brush.matrix().map(topRight);
+			QPointF bottomLeftAfterMap = brush.matrix().map(bottomLeft);
+
+			QLineF horizontal(topLeftAfterMap, topRightAfterMap);
+			QLineF vertical(topLeftAfterMap, bottomLeftAfterMap);
+			textureRect = QRectF(0, 0, horizontal.length(), vertical.length());
+		}
+
         if (brush.textureWrapMode() == Qt::TextureStretching) {
             qreal l, r, t, b;
             brush.getTextureStretchingOffset(l, r, t, b);
@@ -998,15 +1011,19 @@ void QRasterPaintEngine::updateBrush(const QBrush &brush, const QRectF &rc/* = Q
         // must set matrix prior to setup, as the path gradient brush uses it...
         s->brushData.setup(brush, s->intOpacity, s->composition_mode);
     } else {
-        QMatrix mtx = qt_getAdjustMatrix(brush, rc);
+		QRectF destRct;
+		brush.getTextureDestRect(destRct);
+		if (destRct.isEmpty())
+			destRct = rc;
+        QMatrix mtx = qt_getAdjustMatrix(brush, destRct);
 
         s->brushData.setup(brush, s->intOpacity, s->composition_mode);
 
         if (s->fillFlags & DirtyTransform
             || brush.transform().type() >= QTransform::TxNone)
-            d_func()->updateMatrixData(&s->brushData, brush, QTransform(mtx) * d->brushMatrix());
+            d_func()->updateMatrixData(&s->brushData, brush, d->brushMatrix(), QTransform(mtx));
 
-        s->lastRect = rc;
+        s->lastRect = destRct;
     }
 
     s->lastBrush = brush;
@@ -1248,7 +1265,7 @@ void QRasterPaintEnginePrivate::systemStateChanged()
     q->state()->pixmapFlags |= QPaintEngine::DirtyClipRegion;
 }
 
-void QRasterPaintEnginePrivate::updateMatrixData(QSpanData *spanData, const QBrush &b, const QTransform &m)
+void QRasterPaintEnginePrivate::updateMatrixData(QSpanData *spanData, const QBrush &b, const QTransform &m, const QTransform& trans)
 {
     if (b.d->style == Qt::NoBrush || b.d->style == Qt::SolidPattern)
         return;
@@ -1257,7 +1274,7 @@ void QRasterPaintEnginePrivate::updateMatrixData(QSpanData *spanData, const QBru
     bool bilinear = q->state()->flags.bilinear;
 
     if (b.d->transform.type() > QTransform::TxNone) { // FALCON: optimize
-        spanData->setupMatrix(b.transform() * m, bilinear);
+        spanData->setupMatrix(trans * b.transform() * m, bilinear);
     } else {
         if (m.type() <= QTransform::TxTranslate) {
             // specialize setupMatrix for translation matrices

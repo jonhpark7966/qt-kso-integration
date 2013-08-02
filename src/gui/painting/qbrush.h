@@ -123,6 +123,9 @@ public:
     void getTextureScale(qreal &scaleX, qreal &scaleY) const;
     void setTextureScale(qreal scaleX, qreal scaleY);
 
+    void setTextureDestRect(const QRectF& rct);
+    void getTextureDestRect(QRectF& rct) const;
+
     //for TexturePattern brush with TextureWrapMode == TextureWrapModeExpand
     void setTextureStretching(qreal left = 0, qreal right = 0, qreal top = 0, qreal bottom = 0);
     void getTextureStretchingOffset(qreal &left, qreal &right, qreal &top, qreal &bottom) const;
