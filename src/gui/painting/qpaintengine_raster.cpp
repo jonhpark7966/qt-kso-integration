@@ -964,19 +964,6 @@ static QMatrix qt_getAdjustMatrix(const QBrush &brush, const QRectF &rc)
         }
 
         QRectF textureRect = brush.textureImage().rect();
-		{
-			QPointF topLeft = textureRect.topLeft();
-			QPointF topRight = textureRect.topRight();
-			QPointF bottomLeft = textureRect.bottomLeft();
-
-			QPointF topLeftAfterMap = brush.matrix().map(topLeft);
-			QPointF topRightAfterMap = brush.matrix().map(topRight);
-			QPointF bottomLeftAfterMap = brush.matrix().map(bottomLeft);
-
-			QLineF horizontal(topLeftAfterMap, topRightAfterMap);
-			QLineF vertical(topLeftAfterMap, bottomLeftAfterMap);
-			textureRect = QRectF(0, 0, horizontal.length(), vertical.length());
-		}
 
         if (brush.textureWrapMode() == Qt::TextureStretching) {
             qreal l, r, t, b;
