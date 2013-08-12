@@ -1260,53 +1260,6 @@ void QWin32PrintEnginePrivate::updateOrigin()
     }
 }
 
-static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize)
-{
-    Q_ASSERT(paperSizes && paperTypes);
-    if (count < 1)
-        return DMPAPER_USER;
-
-    int env_dl_idx = -1;
-    int a4_idx = -1;
-    int a3_idx = -1;
-
-    for (int i = 0; i < count; i++)
-    {
-        switch(paperTypes[i])
-        {
-        case DMPAPER_ENV_DL:
-            env_dl_idx = i;
-            break;
-        case DMPAPER_A4:
-            a4_idx = i;
-            break;
-        case DMPAPER_A3:
-            a3_idx = i;
-            break;
-        case DMPAPER_USER:
-            //this printer supports user defined paper
-            return DMPAPER_USER;
-        default:
-            break;
-        }
-    }
-
-    if (env_dl_idx != -1 && paperSizes[env_dl_idx].x > wantedSize.width()
-        && paperSizes[env_dl_idx].y > wantedSize.height())
-        return paperTypes[env_dl_idx];
-
-    if (a4_idx != -1 && paperSizes[a4_idx].x > wantedSize.width()
-        && paperSizes[a4_idx].y > wantedSize.height())
-        return paperTypes[a4_idx];
-
-    if (a3_idx != -1 && paperSizes[a3_idx].x > wantedSize.width()
-        && paperSizes[a3_idx].y > wantedSize.height())
-        return paperTypes[a3_idx];
-
-    return paperTypes[0];
-}
-
-
 void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &value)
 {
     Q_D(QWin32PrintEngine);
@@ -1458,8 +1411,8 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
             size = DeviceCapabilities((const wchar_t *)d->name.utf16(),
                 (const wchar_t *)d->port.utf16(), DC_PAPERSIZE, (wchar_t *)papersizes, d->devMode);
 
-            const qreal EXACT_ERROR_SUM = 0.5 * 72/25.4; // 0.5 mm
-            const qreal ACCEPTABLE_ERROR_SUM = 4.2 * 72/25.4; // 4.2 mm
+            const qreal EXACT_ERROR_SUM = 0.55 * 72/25.4; // 0.55 mm
+            const qreal ACCEPTABLE_ERROR_SUM = 4.25 * 72/25.4; // 4.25 mm
 
             DWORD nIndex;
             for (nIndex = 0; nIndex < size; nIndex++)
@@ -1487,14 +1440,6 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
                         break;
                     }
                 }
-            }
-
-            if (d->devMode->dmPaperSize == DMPAPER_USER)
-            {
-                // in 0.1mm
-                QSizeF wantedSize(d->paper_size.width() / 72 * 254 - 42.5,
-                    d->paper_size.height() / 72 * 254 - 42.5);
-                d->devMode->dmPaperSize = matchToFitPresetPaper(papersizes, papers, (int)size, wantedSize);
             }
 
             delete [] papersizes;
