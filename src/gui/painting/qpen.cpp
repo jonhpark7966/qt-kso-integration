@@ -917,7 +917,7 @@ const QCustomLineAnchor &QPen::startAnchor() const
 void QPen::setStartAnchor(const QCustomLineAnchor &anchor)
 {
     detach();
-    d->startAnchorStyle = Qt::CustomAnchor;
+    d->startAnchorStyle = anchor.isValid() ? Qt::CustomAnchor : Qt::SquareAnchor;
     d->startAnchor = anchor;
 }
 
@@ -943,7 +943,7 @@ const QCustomLineAnchor &QPen::endAnchor() const
 void QPen::setEndAnchor(const QCustomLineAnchor &anchor)
 {
     detach();
-    d->endAnchorStyle = Qt::CustomAnchor;
+    d->endAnchorStyle = anchor.isValid() ? Qt::CustomAnchor : Qt::SquareAnchor;
     d->endAnchor = anchor;
 }
 
