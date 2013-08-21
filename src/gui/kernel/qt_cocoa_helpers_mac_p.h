@@ -125,7 +125,7 @@ enum {
 
 Qt::MouseButtons qt_mac_get_buttons(int buttons);
 Qt::MouseButton qt_mac_get_button(EventMouseButton button);
-void macWindowFade(void * /*OSWindowRef*/ window, float durationSeconds = 0.15);
+Q_GUI_EXPORT void macWindowFade(void * /*OSWindowRef*/ window, float durationSeconds = 0.15);
 bool macWindowIsTextured(void * /*OSWindowRef*/ window);
 void macWindowToolbarShow(const QWidget *widget, bool show );
 void macWindowToolbarSet( void * /*OSWindowRef*/ window, void* toolbarRef );
