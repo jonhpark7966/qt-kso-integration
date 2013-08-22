@@ -4,7 +4,7 @@ QT         =
 DEFINES   += QT_BUILD_CORE_LIB QT_BUILD_XML_LIB QT_BUILD_GUI_LIB QT_NO_USING_NAMESPACE
 win32-msvc*|win32-icc:QMAKE_LFLAGS += /BASE:0x67000000
 irix-cc*:QMAKE_CXXFLAGS += -no_prelink -ptused
-
+win32-msvc*:QMAKE_USE_PGO = yes
 win32-borland {
         QMAKE_CFLAGS_WARN_ON        += -w-use
         QMAKE_CXXFLAGS_WARN_ON        += -w-use

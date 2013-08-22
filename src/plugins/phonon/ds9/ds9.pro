@@ -9,6 +9,8 @@ TARGET = phonon_ds9
 DEFINES += PHONON_MAKE_QT_ONLY_BACKEND
 PHONON_DS9_DIR = $$QT_SOURCE_TREE/src/3rdparty/phonon/ds9
 
+win32-msvc*:QMAKE_USE_PGO = yes
+
 # Input
 HEADERS += \
            $$PHONON_DS9_DIR/abstractvideorenderer.h \

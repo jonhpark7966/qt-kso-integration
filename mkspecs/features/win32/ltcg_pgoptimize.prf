@@ -1,0 +1,10 @@
+win32 {
+	CONFIG(release, debug|release) {
+		!isEmpty(QMAKE_USE_PGO) {
+			QMAKE_CFLAGS *= $$QMAKE_CFLAGS_LTCG
+			QMAKE_CXXFLAGS *= $$QMAKE_CXXFLAGS_LTCG
+			QMAKE_LFLAGS *= $$QMAKE_LFLAGS_LTCG_PGO
+		}
+	}
+}
+
