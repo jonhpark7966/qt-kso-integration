@@ -1,4 +1,4 @@
 CONFIG   += console
-QT       -= gui
-QT       += xml
+#QT       -= gui
+#QT       += xml
 SOURCES  += main.cpp

@@ -19,7 +19,7 @@ win32: {
 
 QT = core
 QT += network
-embedded: QT += gui
+#embedded: QT += gui
 
 wince*: {
    addFiles.sources = \

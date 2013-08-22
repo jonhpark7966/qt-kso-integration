@@ -1,12 +1,12 @@
 TARGET     = QtSvg
 QPRO_PWD   = $$PWD
-QT         = core gui
+QT         = core
 DEFINES   += QT_BUILD_SVG_LIB
 DEFINES   += QT_NO_USING_NAMESPACE
 win32-msvc*|win32-icc:QMAKE_LFLAGS += /BASE:0x66000000
 solaris-cc*:QMAKE_CXXFLAGS_RELEASE -= -O2
 
-unix:QMAKE_PKGCONFIG_REQUIRES = QtCore QtGui
+unix:QMAKE_PKGCONFIG_REQUIRES = QtCore
 
 include(../qbase.pri)
 

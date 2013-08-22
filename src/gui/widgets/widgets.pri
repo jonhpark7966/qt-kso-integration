@@ -1,170 +1,170 @@
 # Qt widgets module
 
 HEADERS += \
-        widgets/qbuttongroup.h \
-        widgets/qabstractbutton.h \
-        widgets/qabstractbutton_p.h \
-        widgets/qabstractslider.h \
-        widgets/qabstractslider_p.h \
-        widgets/qabstractspinbox.h \
-        widgets/qabstractspinbox_p.h \
-        widgets/qcalendartextnavigator_p.h \
-        widgets/qcalendarwidget.h \
-        widgets/qcheckbox.h \
-        widgets/qcombobox.h \
-        widgets/qcombobox_p.h \
-        widgets/qcommandlinkbutton.h \
-        widgets/qdatetimeedit.h \
-        widgets/qdatetimeedit_p.h \
-        widgets/qdial.h \
-        widgets/qdialogbuttonbox.h \
-        widgets/qdockwidget.h \
-        widgets/qdockwidget_p.h \
-        widgets/qdockarealayout_p.h \
-        widgets/qfontcombobox.h \
-        widgets/qframe.h \
-        widgets/qframe_p.h \
-        widgets/qgroupbox.h \
-        widgets/qlabel.h \
-        widgets/qlabel_p.h \
-        widgets/qlcdnumber.h \
-        widgets/qlineedit.h \
-        widgets/qlineedit_p.h \
-        widgets/qlinecontrol_p.h \
-        widgets/qmainwindow.h \
-        widgets/qmainwindowlayout_p.h \
-        widgets/qmdiarea.h \
-        widgets/qmdiarea_p.h \
-        widgets/qmdisubwindow.h \
-        widgets/qmdisubwindow_p.h \
-        widgets/qmenu.h \
-        widgets/qmenu_p.h \
-        widgets/qmenubar.h \
-        widgets/qmenubar_p.h \
-        widgets/qmenudata.h \
-        widgets/qprogressbar.h \
-        widgets/qpushbutton.h \
-        widgets/qpushbutton_p.h \
-        widgets/qradiobutton.h \
-        widgets/qrubberband.h \
-        widgets/qscrollbar.h \
-        widgets/qscrollarea_p.h \
-        widgets/qsizegrip.h \
-        widgets/qslider.h \
-        widgets/qspinbox.h \
-        widgets/qsplashscreen.h \
-        widgets/qsplitter.h \
-        widgets/qsplitter_p.h \
-        widgets/qstackedwidget.h \
-        widgets/qstatusbar.h \
-        widgets/qtabbar.h \
-        widgets/qtabbar_p.h \
-        widgets/qtabwidget.h \
-        widgets/qtextedit.h \
-        widgets/qtextedit_p.h \
-        widgets/qtextbrowser.h \
-        widgets/qtoolbar.h \
-        widgets/qtoolbar_p.h \
-        widgets/qtoolbaritemwidget.h \
-        widgets/qtoolbarlayout_p.h \
-        widgets/qtoolbarextension_p.h \
-        widgets/qtoolbarseparator_p.h \
-        widgets/qtoolbox.h \
-        widgets/qtoolbutton.h \
-        widgets/qvalidator.h \
-        widgets/qabstractscrollarea.h \
-        widgets/qabstractscrollarea_p.h \
-        widgets/qwidgetresizehandler_p.h \
-        widgets/qfocusframe.h \
-        widgets/qscrollarea.h \
-        widgets/qworkspace.h \
-        widgets/qwidgetanimator_p.h \
-        widgets/qtoolbararealayout_p.h \
-        widgets/qplaintextedit.h \
-        widgets/qplaintextedit_p.h \
-        widgets/qprintpreviewwidget.h
+        $$PWD/qbuttongroup.h \
+        $$PWD/qabstractbutton.h \
+        $$PWD/qabstractbutton_p.h \
+        $$PWD/qabstractslider.h \
+        $$PWD/qabstractslider_p.h \
+        $$PWD/qabstractspinbox.h \
+        $$PWD/qabstractspinbox_p.h \
+        $$PWD/qcalendartextnavigator_p.h \
+        $$PWD/qcalendarwidget.h \
+        $$PWD/qcheckbox.h \
+        $$PWD/qcombobox.h \
+        $$PWD/qcombobox_p.h \
+        $$PWD/qcommandlinkbutton.h \
+        $$PWD/qdatetimeedit.h \
+        $$PWD/qdatetimeedit_p.h \
+        $$PWD/qdial.h \
+        $$PWD/qdialogbuttonbox.h \
+        $$PWD/qdockwidget.h \
+        $$PWD/qdockwidget_p.h \
+        $$PWD/qdockarealayout_p.h \
+        $$PWD/qfontcombobox.h \
+        $$PWD/qframe.h \
+        $$PWD/qframe_p.h \
+        $$PWD/qgroupbox.h \
+        $$PWD/qlabel.h \
+        $$PWD/qlabel_p.h \
+        $$PWD/qlcdnumber.h \
+        $$PWD/qlineedit.h \
+        $$PWD/qlineedit_p.h \
+        $$PWD/qlinecontrol_p.h \
+        $$PWD/qmainwindow.h \
+        $$PWD/qmainwindowlayout_p.h \
+        $$PWD/qmdiarea.h \
+        $$PWD/qmdiarea_p.h \
+        $$PWD/qmdisubwindow.h \
+        $$PWD/qmdisubwindow_p.h \
+        $$PWD/qmenu.h \
+        $$PWD/qmenu_p.h \
+        $$PWD/qmenubar.h \
+        $$PWD/qmenubar_p.h \
+        $$PWD/qmenudata.h \
+        $$PWD/qprogressbar.h \
+        $$PWD/qpushbutton.h \
+        $$PWD/qpushbutton_p.h \
+        $$PWD/qradiobutton.h \
+        $$PWD/qrubberband.h \
+        $$PWD/qscrollbar.h \
+        $$PWD/qscrollarea_p.h \
+        $$PWD/qsizegrip.h \
+        $$PWD/qslider.h \
+        $$PWD/qspinbox.h \
+        $$PWD/qsplashscreen.h \
+        $$PWD/qsplitter.h \
+        $$PWD/qsplitter_p.h \
+        $$PWD/qstackedwidget.h \
+        $$PWD/qstatusbar.h \
+        $$PWD/qtabbar.h \
+        $$PWD/qtabbar_p.h \
+        $$PWD/qtabwidget.h \
+        $$PWD/qtextedit.h \
+        $$PWD/qtextedit_p.h \
+        $$PWD/qtextbrowser.h \
+        $$PWD/qtoolbar.h \
+        $$PWD/qtoolbar_p.h \
+        $$PWD/qtoolbaritemwidget.h \
+        $$PWD/qtoolbarlayout_p.h \
+        $$PWD/qtoolbarextension_p.h \
+        $$PWD/qtoolbarseparator_p.h \
+        $$PWD/qtoolbox.h \
+        $$PWD/qtoolbutton.h \
+        $$PWD/qvalidator.h \
+        $$PWD/qabstractscrollarea.h \
+        $$PWD/qabstractscrollarea_p.h \
+        $$PWD/qwidgetresizehandler_p.h \
+        $$PWD/qfocusframe.h \
+        $$PWD/qscrollarea.h \
+        $$PWD/qworkspace.h \
+        $$PWD/qwidgetanimator_p.h \
+        $$PWD/qtoolbararealayout_p.h \
+        $$PWD/qplaintextedit.h \
+        $$PWD/qplaintextedit_p.h \
+        $$PWD/qprintpreviewwidget.h
 SOURCES += \
-        widgets/qabstractbutton.cpp \
-        widgets/qabstractslider.cpp \
-        widgets/qabstractspinbox.cpp \
-        widgets/qcalendarwidget.cpp \
-        widgets/qcheckbox.cpp \
-        widgets/qcombobox.cpp \
-        widgets/qcommandlinkbutton.cpp \
-        widgets/qdatetimeedit.cpp \
-        widgets/qdial.cpp \
-        widgets/qdialogbuttonbox.cpp \
-        widgets/qdockwidget.cpp \
-        widgets/qdockarealayout.cpp \
-        widgets/qeffects.cpp \
-        widgets/qfontcombobox.cpp \
-        widgets/qframe.cpp \
-        widgets/qgroupbox.cpp \
-        widgets/qlabel.cpp \
-        widgets/qlcdnumber.cpp \
-        widgets/qlineedit_p.cpp \
-        widgets/qlineedit.cpp \
-        widgets/qlinecontrol.cpp \
-        widgets/qmainwindow.cpp \
-        widgets/qmainwindowlayout.cpp \
-        widgets/qmdiarea.cpp \
-        widgets/qmdisubwindow.cpp \
-        widgets/qmenu.cpp \
-        widgets/qmenubar.cpp \
-        widgets/qmenudata.cpp \
-        widgets/qprogressbar.cpp \
-        widgets/qpushbutton.cpp \
-        widgets/qradiobutton.cpp \
-        widgets/qrubberband.cpp \
-        widgets/qscrollbar.cpp \
-        widgets/qsizegrip.cpp \
-        widgets/qslider.cpp \
-        widgets/qspinbox.cpp \
-        widgets/qsplashscreen.cpp \
-        widgets/qsplitter.cpp \
-        widgets/qstackedwidget.cpp \
-        widgets/qstatusbar.cpp \
-        widgets/qtabbar.cpp \
-        widgets/qtabwidget.cpp \
-        widgets/qtextedit.cpp \
-        widgets/qtextbrowser.cpp \
-        widgets/qtoolbar.cpp \
-        widgets/qtoolbarlayout.cpp \
-        widgets/qtoolbarextension.cpp \
-        widgets/qtoolbarseparator.cpp \
-        widgets/qtoolbox.cpp \
-        widgets/qtoolbutton.cpp \
-        widgets/qvalidator.cpp \
-        widgets/qabstractscrollarea.cpp \
-        widgets/qwidgetresizehandler.cpp \
-        widgets/qfocusframe.cpp \
-        widgets/qscrollarea.cpp \
-        widgets/qworkspace.cpp \
-        widgets/qwidgetanimator.cpp \
-        widgets/qtoolbararealayout.cpp \
-        widgets/qplaintextedit.cpp \
-        widgets/qprintpreviewwidget.cpp
+        $$PWD/qabstractbutton.cpp \
+        $$PWD/qabstractslider.cpp \
+        $$PWD/qabstractspinbox.cpp \
+        $$PWD/qcalendarwidget.cpp \
+        $$PWD/qcheckbox.cpp \
+        $$PWD/qcombobox.cpp \
+        $$PWD/qcommandlinkbutton.cpp \
+        $$PWD/qdatetimeedit.cpp \
+        $$PWD/qdial.cpp \
+        $$PWD/qdialogbuttonbox.cpp \
+        $$PWD/qdockwidget.cpp \
+        $$PWD/qdockarealayout.cpp \
+        $$PWD/qeffects.cpp \
+        $$PWD/qfontcombobox.cpp \
+        $$PWD/qframe.cpp \
+        $$PWD/qgroupbox.cpp \
+        $$PWD/qlabel.cpp \
+        $$PWD/qlcdnumber.cpp \
+        $$PWD/qlineedit_p.cpp \
+        $$PWD/qlineedit.cpp \
+        $$PWD/qlinecontrol.cpp \
+        $$PWD/qmainwindow.cpp \
+        $$PWD/qmainwindowlayout.cpp \
+        $$PWD/qmdiarea.cpp \
+        $$PWD/qmdisubwindow.cpp \
+        $$PWD/qmenu.cpp \
+        $$PWD/qmenubar.cpp \
+        $$PWD/qmenudata.cpp \
+        $$PWD/qprogressbar.cpp \
+        $$PWD/qpushbutton.cpp \
+        $$PWD/qradiobutton.cpp \
+        $$PWD/qrubberband.cpp \
+        $$PWD/qscrollbar.cpp \
+        $$PWD/qsizegrip.cpp \
+        $$PWD/qslider.cpp \
+        $$PWD/qspinbox.cpp \
+        $$PWD/qsplashscreen.cpp \
+        $$PWD/qsplitter.cpp \
+        $$PWD/qstackedwidget.cpp \
+        $$PWD/qstatusbar.cpp \
+        $$PWD/qtabbar.cpp \
+        $$PWD/qtabwidget.cpp \
+        $$PWD/qtextedit.cpp \
+        $$PWD/qtextbrowser.cpp \
+        $$PWD/qtoolbar.cpp \
+        $$PWD/qtoolbarlayout.cpp \
+        $$PWD/qtoolbarextension.cpp \
+        $$PWD/qtoolbarseparator.cpp \
+        $$PWD/qtoolbox.cpp \
+        $$PWD/qtoolbutton.cpp \
+        $$PWD/qvalidator.cpp \
+        $$PWD/qabstractscrollarea.cpp \
+        $$PWD/qwidgetresizehandler.cpp \
+        $$PWD/qfocusframe.cpp \
+        $$PWD/qscrollarea.cpp \
+        $$PWD/qworkspace.cpp \
+        $$PWD/qwidgetanimator.cpp \
+        $$PWD/qtoolbararealayout.cpp \
+        $$PWD/qplaintextedit.cpp \
+        $$PWD/qprintpreviewwidget.cpp
 
 !embedded:mac {
-    HEADERS += widgets/qmacnativewidget_mac.h \
-               widgets/qmaccocoaviewcontainer_mac.h
-    OBJECTIVE_HEADERS += widgets/qcocoatoolbardelegate_mac_p.h \ 
-                         widgets/qcocoamenu_mac_p.h
-    OBJECTIVE_SOURCES += widgets/qmenu_mac.mm \
-                         widgets/qmaccocoaviewcontainer_mac.mm \
-                         widgets/qcocoatoolbardelegate_mac.mm \
-                         widgets/qmainwindowlayout_mac.mm \
-                         widgets/qmacnativewidget_mac.mm \
-                         widgets/qcocoamenu_mac.mm
+    HEADERS += $$PWD/qmacnativewidget_mac.h \
+               $$PWD/qmaccocoaviewcontainer_mac.h
+    OBJECTIVE_HEADERS += $$PWD/qcocoatoolbardelegate_mac_p.h \ 
+                         $$PWD/qcocoamenu_mac_p.h
+    OBJECTIVE_SOURCES += $$PWD/qmenu_mac.mm \
+                         $$PWD/qmaccocoaviewcontainer_mac.mm \
+                         $$PWD/qcocoatoolbardelegate_mac.mm \
+                         $$PWD/qmainwindowlayout_mac.mm \
+                         $$PWD/qmacnativewidget_mac.mm \
+                         $$PWD/qcocoamenu_mac.mm
 }
 
 wince*: {
-    SOURCES += widgets/qmenu_wince.cpp
-    HEADERS += widgets/qmenu_wince_resource_p.h
-    RC_FILE = widgets/qmenu_wince.rc
+    SOURCES += $$PWD/qmenu_wince.cpp
+    HEADERS += $$PWD/qmenu_wince_resource_p.h
+    RC_FILE = $$PWD/qmenu_wince.rc
     !static: QMAKE_WRITE_DEFAULT_RC = 1
 }
 
 symbian: {
-    SOURCES += widgets/qmenu_symbian.cpp
+    SOURCES += $$PWD/qmenu_symbian.cpp
 }

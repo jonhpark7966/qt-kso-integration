@@ -9,7 +9,7 @@ RESOURCES = icons.qrc
 
 TARGET = bearercloud
 
-QT = core gui network svg
+QT = core network svg
 
 CONFIG += console
 

@@ -44,6 +44,7 @@
 #include "glfunctions.h"
 
 #include <QPainter>
+#include <QGraphicsView>
 #include <QtOpenGL>
 
 static const char qt_default_vertex_code[] =

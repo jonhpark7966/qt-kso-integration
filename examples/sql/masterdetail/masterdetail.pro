@@ -7,7 +7,7 @@ SOURCES   = dialog.cpp \
             mainwindow.cpp
 
 QT += sql
-QT += xml
+#QT += xml
 
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/sql/masterdetail

@@ -1,10 +1,10 @@
 TARGET = QtMultimedia
 QPRO_PWD = $$PWD
-QT = core gui
+QT = core
 
 DEFINES += QT_BUILD_MULTIMEDIA_LIB QT_NO_USING_NAMESPACE
 
-unix:QMAKE_PKGCONFIG_REQUIRES = QtCore QtGui
+unix:QMAKE_PKGCONFIG_REQUIRES = QtCore
 
 include(../qbase.pri)
 

@@ -4,97 +4,97 @@
 # Qt kernel module
 
 HEADERS += \
-        image/qbitmap.h \
-        image/qicon.h \
-        image/qicon_p.h \
-        image/qiconloader_p.h \
-        image/qiconengine.h \
-        image/qiconengineplugin.h \
-        image/qimage.h \
-        image/qimage_p.h \
-        image/qimageiohandler.h \
-        image/qimagereader.h \
-        image/qimagewriter.h \
-        image/qmovie.h \
-        image/qnativeimage_p.h \
-        image/qpaintengine_pic_p.h \
-        image/qpicture.h \
-        image/qpicture_p.h \
-        image/qpictureformatplugin.h \
-        image/qpixmap.h \
-        image/qpixmap_raster_p.h \
-        image/qpixmapcache.h \
-        image/qpixmapcache_p.h \
-        image/qpixmapdata_p.h \
-        image/qpixmapdatafactory_p.h \
-        image/qpixmapfilter_p.h \
-        image/qimagepixmapcleanuphooks_p.h \
-        image/qvolatileimage_p.h \
-        image/qvolatileimagedata_p.h \
-        image/qnativeimagehandleprovider_p.h
+        $$PWD/qbitmap.h \
+        $$PWD/qicon.h \
+        $$PWD/qicon_p.h \
+        $$PWD/qiconloader_p.h \
+        $$PWD/qiconengine.h \
+        $$PWD/qiconengineplugin.h \
+        $$PWD/qimage.h \
+        $$PWD/qimage_p.h \
+        $$PWD/qimageiohandler.h \
+        $$PWD/qimagereader.h \
+        $$PWD/qimagewriter.h \
+        $$PWD/qmovie.h \
+        $$PWD/qnativeimage_p.h \
+        $$PWD/qpaintengine_pic_p.h \
+        $$PWD/qpicture.h \
+        $$PWD/qpicture_p.h \
+        $$PWD/qpictureformatplugin.h \
+        $$PWD/qpixmap.h \
+        $$PWD/qpixmap_raster_p.h \
+        $$PWD/qpixmapcache.h \
+        $$PWD/qpixmapcache_p.h \
+        $$PWD/qpixmapdata_p.h \
+        $$PWD/qpixmapdatafactory_p.h \
+        $$PWD/qpixmapfilter_p.h \
+        $$PWD/qimagepixmapcleanuphooks_p.h \
+        $$PWD/qvolatileimage_p.h \
+        $$PWD/qvolatileimagedata_p.h \
+        $$PWD/qnativeimagehandleprovider_p.h
 
 SOURCES += \
-        image/qbitmap.cpp \
-        image/qicon.cpp \
-        image/qiconloader.cpp \
-        image/qimage.cpp \
-        image/qimageiohandler.cpp \
-        image/qimagereader.cpp \
-        image/qimagewriter.cpp \
-        image/qpaintengine_pic.cpp \
-        image/qpicture.cpp \
-        image/qpictureformatplugin.cpp \
-        image/qpixmap.cpp \
-        image/qpixmapcache.cpp \
-        image/qpixmapdata.cpp \
-        image/qpixmapdatafactory.cpp \
-        image/qpixmapfilter.cpp \
-        image/qiconengine.cpp \
-        image/qiconengineplugin.cpp \
-        image/qmovie.cpp \
-        image/qpixmap_raster.cpp \
-        image/qnativeimage.cpp \
-        image/qimagepixmapcleanuphooks.cpp \
-        image/qvolatileimage.cpp
+        $$PWD/qbitmap.cpp \
+        $$PWD/qicon.cpp \
+        $$PWD/qiconloader.cpp \
+        $$PWD/qimage.cpp \
+        $$PWD/qimageiohandler.cpp \
+        $$PWD/qimagereader.cpp \
+        $$PWD/qimagewriter.cpp \
+        $$PWD/qpaintengine_pic.cpp \
+        $$PWD/qpicture.cpp \
+        $$PWD/qpictureformatplugin.cpp \
+        $$PWD/qpixmap.cpp \
+        $$PWD/qpixmapcache.cpp \
+        $$PWD/qpixmapdata.cpp \
+        $$PWD/qpixmapdatafactory.cpp \
+        $$PWD/qpixmapfilter.cpp \
+        $$PWD/qiconengine.cpp \
+        $$PWD/qiconengineplugin.cpp \
+        $$PWD/qmovie.cpp \
+        $$PWD/qpixmap_raster.cpp \
+        $$PWD/qnativeimage.cpp \
+        $$PWD/qimagepixmapcleanuphooks.cpp \
+        $$PWD/qvolatileimage.cpp
 
 win32 {
-    SOURCES += image/qpixmap_win.cpp
+    SOURCES += $$PWD/qpixmap_win.cpp
 }
 else:embedded {
-    SOURCES += image/qpixmap_qws.cpp
+    SOURCES += $$PWD/qpixmap_qws.cpp
 }
 else:x11 {
-    HEADERS += image/qpixmap_x11_p.h
-    SOURCES += image/qpixmap_x11.cpp
+    HEADERS += $$PWD/qpixmap_x11_p.h
+    SOURCES += $$PWD/qpixmap_x11.cpp
 }
 else:mac {
-    HEADERS += image/qpixmap_mac_p.h
-    SOURCES += image/qpixmap_mac.cpp
+    HEADERS += $$PWD/qpixmap_mac_p.h
+    SOURCES += $$PWD/qpixmap_mac.cpp
 }
 else:symbian {
-    HEADERS += image/qpixmap_raster_symbian_p.h
-    SOURCES += image/qpixmap_raster_symbian.cpp
+    HEADERS += $$PWD/qpixmap_raster_symbian_p.h
+    SOURCES += $$PWD/qpixmap_raster_symbian.cpp
 }
 
 !symbian|contains(S60_VERSION, 3.1)|contains(S60_VERSION, 3.2) {
-    SOURCES += image/qvolatileimagedata.cpp
+    SOURCES += $$PWD/qvolatileimagedata.cpp
 }
 else {
-    SOURCES += image/qvolatileimagedata_symbian.cpp
+    SOURCES += $$PWD/qvolatileimagedata_symbian.cpp
 }
 
 # Built-in image format support
 HEADERS += \
-        image/qbmphandler_p.h \
-        image/qppmhandler_p.h \
-        image/qxbmhandler_p.h \
-        image/qxpmhandler_p.h
+        $$PWD/qbmphandler_p.h \
+        $$PWD/qppmhandler_p.h \
+        $$PWD/qxbmhandler_p.h \
+        $$PWD/qxpmhandler_p.h
 
 SOURCES += \
-        image/qbmphandler.cpp \
-        image/qppmhandler.cpp \
-        image/qxbmhandler.cpp \
-        image/qxpmhandler.cpp
+        $$PWD/qbmphandler.cpp \
+        $$PWD/qppmhandler.cpp \
+        $$PWD/qxbmhandler.cpp \
+        $$PWD/qxpmhandler.cpp
 
 !contains(QT_CONFIG, no-png):include($$PWD/qpnghandler.pri)
 else:DEFINES *= QT_NO_IMAGEFORMAT_PNG
@@ -105,7 +105,7 @@ contains(QT_CONFIG, tiff):include($$PWD/qtiffhandler.pri)
 contains(QT_CONFIG, gif):include($$PWD/qgifhandler.pri)
 
 # SIMD
-NEON_SOURCES += image/qimage_neon.cpp
-SSE2_SOURCES += image/qimage_sse2.cpp
-SSE4_SOURCES += image/qimage_sse4.cpp
-SSSE3_SOURCES += image/qimage_ssse3.cpp
+NEON_SOURCES += $$PWD/qimage_neon.cpp
+SSE2_SOURCES += $$PWD/qimage_sse2.cpp
+SSE4_SOURCES += $$PWD/qimage_sse4.cpp
+SSSE3_SOURCES += $$PWD/qimage_ssse3.cpp

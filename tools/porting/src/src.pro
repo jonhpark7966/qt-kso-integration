@@ -6,7 +6,7 @@ build_all:!build_pass {
     CONFIG -= build_all
     CONFIG += release
 }
-QT = xml core
+QT = core
 DEPENDPATH += .
 TARGET =qt3to4
 DESTDIR = ../../../bin

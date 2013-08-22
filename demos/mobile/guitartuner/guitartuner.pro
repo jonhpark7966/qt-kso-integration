@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core
 
 TARGET = guitartuner
 TEMPLATE = app

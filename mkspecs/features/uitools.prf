@@ -1,4 +1,4 @@
-QT += xml
+#QT += xml
 qt:load(qt)
 
 # Include the correct version of the UiLoader library

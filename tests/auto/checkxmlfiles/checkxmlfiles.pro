@@ -2,7 +2,7 @@ load(qttest_p4)
 SOURCES += tst_checkxmlfiles.cpp \
            ../qxmlquery/TestFundament.cpp
 CONFIG += qtestlib
-QT -= gui
+#QT -= gui
 
 include (../xmlpatterns.pri)
 

@@ -1,4 +1,4 @@
-QT += xml
+#QT += xml
 TEMPLATE = app
 TARGET = qhelpconverter
 DESTDIR = ../../../../bin

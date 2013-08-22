@@ -1,7 +1,7 @@
 load(qttest_p4)
 
 include(../src/src.pri)
-QT -= gui
+#QT -= gui
 
 DEFINES	+= QSHAREDMEMORY_DEBUG
 DEFINES	+= QSYSTEMSEMAPHORE_DEBUG
@@ -19,14 +19,14 @@ TARGET = ../tst_qsharedmemory
 
 wince*:{
 requires(contains(QT_CONFIG,script))
-QT += gui script
+QT += script
 addFiles.sources = $$OUT_PWD/../../lackey/lackey.exe ../../lackey/scripts
 addFiles.path = .
 DEPLOYMENT += addFiles
 DEFINES += SRCDIR=\\\".\\\"
 }else:symbian{
 requires(contains(QT_CONFIG,script))
-QT += gui script
+QT += script
 addFiles.sources = ../../lackey/scripts
 addFiles.path = /data/qsharedmemorytemp/lackey
 addBin.sources = lackey.exe

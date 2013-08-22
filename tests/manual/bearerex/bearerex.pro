@@ -2,7 +2,6 @@ TEMPLATE = app
 TARGET = BearerEx
 
 QT += core \
-      gui \
       network
 
 FORMS += detailedinfodialog.ui

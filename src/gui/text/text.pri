@@ -1,130 +1,130 @@
 # Qt kernel module
 
 HEADERS += \
-	text/qfont.h \
-	text/qfontdatabase.h \
-	text/qfontengine_p.h \
-	text/qfontengineglyphcache_p.h \
-	text/qfontinfo.h \
-	text/qfontmetrics.h \
-	text/qfont_p.h \
-	text/qfontsubset_p.h \
-	text/qtextcontrol_p.h \
-	text/qtextcontrol_p_p.h \
-	text/qtextengine_p.h \
-	text/qtextlayout.h \
-	text/qtextformat.h \
-	text/qtextformat_p.h \
-	text/qtextobject.h \
-	text/qtextobject_p.h \
-	text/qtextoption.h \
-	text/qfragmentmap_p.h \
-	text/qtextdocument.h \
-	text/qtextdocument_p.h \
-	text/qtexthtmlparser_p.h \
-	text/qabstracttextdocumentlayout.h \
-	text/qtextdocumentlayout_p.h \
-	text/qtextcursor.h \
-	text/qtextcursor_p.h \
-	text/qtextdocumentfragment.h \
-	text/qtextdocumentfragment_p.h \
-	text/qtextimagehandler_p.h \
-	text/qtexttable.h \
-	text/qtextlist.h \
-	text/qsyntaxhighlighter.h \
-	text/qtextdocumentwriter.h \
-	text/qcssparser_p.h \
-	text/qtexttable_p.h \
-	text/qzipreader_p.h \
-	text/qzipwriter_p.h \
-	text/qtextodfwriter_p.h \
-	text/qstatictext_p.h \
-	text/qstatictext.h
+	$$PWD/qfont.h \
+	$$PWD/qfontdatabase.h \
+	$$PWD/qfontengine_p.h \
+	$$PWD/qfontengineglyphcache_p.h \
+	$$PWD/qfontinfo.h \
+	$$PWD/qfontmetrics.h \
+	$$PWD/qfont_p.h \
+	$$PWD/qfontsubset_p.h \
+	$$PWD/qtextcontrol_p.h \
+	$$PWD/qtextcontrol_p_p.h \
+	$$PWD/qtextengine_p.h \
+	$$PWD/qtextlayout.h \
+	$$PWD/qtextformat.h \
+	$$PWD/qtextformat_p.h \
+	$$PWD/qtextobject.h \
+	$$PWD/qtextobject_p.h \
+	$$PWD/qtextoption.h \
+	$$PWD/qfragmentmap_p.h \
+	$$PWD/qtextdocument.h \
+	$$PWD/qtextdocument_p.h \
+	$$PWD/qtexthtmlparser_p.h \
+	$$PWD/qabstracttextdocumentlayout.h \
+	$$PWD/qtextdocumentlayout_p.h \
+	$$PWD/qtextcursor.h \
+	$$PWD/qtextcursor_p.h \
+	$$PWD/qtextdocumentfragment.h \
+	$$PWD/qtextdocumentfragment_p.h \
+	$$PWD/qtextimagehandler_p.h \
+	$$PWD/qtexttable.h \
+	$$PWD/qtextlist.h \
+	$$PWD/qsyntaxhighlighter.h \
+	$$PWD/qtextdocumentwriter.h \
+	$$PWD/qcssparser_p.h \
+	$$PWD/qtexttable_p.h \
+	$$PWD/qzipreader_p.h \
+	$$PWD/qzipwriter_p.h \
+	$$PWD/qtextodfwriter_p.h \
+	$$PWD/qstatictext_p.h \
+	$$PWD/qstatictext.h
 
 SOURCES += \
-	text/qfont.cpp \
-	text/qfontengine.cpp \
-	text/qfontsubset.cpp \
-	text/qfontmetrics.cpp \
-	text/qfontdatabase.cpp \
-	text/qtextcontrol.cpp \
-	text/qtextengine.cpp \
-	text/qtextlayout.cpp \
-	text/qtextformat.cpp \
-	text/qtextobject.cpp \
-	text/qtextoption.cpp \
-	text/qfragmentmap.cpp \
-	text/qtextdocument.cpp \
-	text/qtextdocument_p.cpp \
-	text/qtexthtmlparser.cpp \
-	text/qabstracttextdocumentlayout.cpp \
-	text/qtextdocumentlayout.cpp \
-	text/qtextcursor.cpp \
-	text/qtextdocumentfragment.cpp \
-	text/qtextimagehandler.cpp \
-	text/qtexttable.cpp \
-	text/qtextlist.cpp \
-	text/qtextdocumentwriter.cpp \
-	text/qsyntaxhighlighter.cpp \
-	text/qcssparser.cpp \
-	text/qzip.cpp \
-	text/qtextodfwriter.cpp \
-	text/qstatictext.cpp
+	$$PWD/qfont.cpp \
+	$$PWD/qfontengine.cpp \
+	$$PWD/qfontsubset.cpp \
+	$$PWD/qfontmetrics.cpp \
+	$$PWD/qfontdatabase.cpp \
+	$$PWD/qtextcontrol.cpp \
+	$$PWD/qtextengine.cpp \
+	$$PWD/qtextlayout.cpp \
+	$$PWD/qtextformat.cpp \
+	$$PWD/qtextobject.cpp \
+	$$PWD/qtextoption.cpp \
+	$$PWD/qfragmentmap.cpp \
+	$$PWD/qtextdocument.cpp \
+	$$PWD/qtextdocument_p.cpp \
+	$$PWD/qtexthtmlparser.cpp \
+	$$PWD/qabstracttextdocumentlayout.cpp \
+	$$PWD/qtextdocumentlayout.cpp \
+	$$PWD/qtextcursor.cpp \
+	$$PWD/qtextdocumentfragment.cpp \
+	$$PWD/qtextimagehandler.cpp \
+	$$PWD/qtexttable.cpp \
+	$$PWD/qtextlist.cpp \
+	$$PWD/qtextdocumentwriter.cpp \
+	$$PWD/qsyntaxhighlighter.cpp \
+	$$PWD/qcssparser.cpp \
+	$$PWD/qzip.cpp \
+	$$PWD/qtextodfwriter.cpp \
+	$$PWD/qstatictext.cpp
 
 win32 {
 	SOURCES += \
-		text/qfont_win.cpp \
-		text/qfontengine_win.cpp
-	HEADERS += text/qfontengine_win_p.h
+		$$PWD/qfont_win.cpp \
+		$$PWD/qfontengine_win.cpp
+	HEADERS += $$PWD/qfontengine_win_p.h
 }
 
 unix:x11 {
 	HEADERS += \
-		text/qfontengine_x11_p.h \
-		text/qfontdatabase_x11.cpp \
-		text/qfontengine_ft_p.h
+		$$PWD/qfontengine_x11_p.h \
+		$$PWD/qfontdatabase_x11.cpp \
+		$$PWD/qfontengine_ft_p.h
 	SOURCES += \
-		text/qfont_x11.cpp \
-		text/qfontengine_x11.cpp \
-		text/qfontengine_ft.cpp
+		$$PWD/qfont_x11.cpp \
+		$$PWD/qfontengine_x11.cpp \
+		$$PWD/qfontengine_ft.cpp
 }
 
 !embedded:!x11:mac {
 	SOURCES += \
-		text/qfont_mac.cpp
-        OBJECTIVE_SOURCES += text/qfontengine_mac.mm
+		$$PWD/qfont_mac.cpp
+        OBJECTIVE_SOURCES += $$PWD/qfontengine_mac.mm
 }
 
 embedded {
 	SOURCES += \
-		text/qfont_qws.cpp \
-		text/qfontengine_qws.cpp \
-		text/qfontengine_ft.cpp \
-		text/qfontengine_qpf.cpp \
-		text/qabstractfontengine_qws.cpp
+		$$PWD/qfont_qws.cpp \
+		$$PWD/qfontengine_qws.cpp \
+		$$PWD/qfontengine_ft.cpp \
+		$$PWD/qfontengine_qpf.cpp \
+		$$PWD/qabstractfontengine_qws.cpp
 	HEADERS += \
-		text/qfontengine_ft_p.h \
-		text/qfontengine_qpf_p.h \
-		text/qabstractfontengine_qws.h \
-		text/qabstractfontengine_p.h
+		$$PWD/qfontengine_ft_p.h \
+		$$PWD/qfontengine_qpf_p.h \
+		$$PWD/qabstractfontengine_qws.h \
+		$$PWD/qabstractfontengine_p.h
 	DEFINES += QT_NO_FONTCONFIG
 }
 
 symbian {
 	SOURCES += \
-		text/qfont_s60.cpp
+		$$PWD/qfont_s60.cpp
 	contains(QT_CONFIG, freetype) {
 		SOURCES += \
-			text/qfontengine_ft.cpp
+			$$PWD/qfontengine_ft.cpp
 		HEADERS += \
-			text/qfontengine_ft_p.h
+			$$PWD/qfontengine_ft_p.h
 		DEFINES += \
 			QT_NO_FONTCONFIG
 	} else {
 		SOURCES += \
-			text/qfontengine_s60.cpp
+			$$PWD/qfontengine_s60.cpp
 		HEADERS += \
-			text/qfontengine_s60_p.h
+			$$PWD/qfontengine_s60_p.h
 		LIBS += -lfntstr -lecom
 	}
 }

@@ -1,6 +1,6 @@
 TARGET	   = Qt3Support
 QPRO_PWD   = $$PWD
-QT         = core gui network sql
+QT         = core network sql
 DEFINES   += QT_BUILD_COMPAT_LIB
 DEFINES   += QT_NO_USING_NAMESPACE
 win32-msvc*|win32-icc:QMAKE_LFLAGS += /BASE:0x60000000

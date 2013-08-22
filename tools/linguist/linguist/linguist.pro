@@ -2,7 +2,7 @@ TEMPLATE = app
 LANGUAGE = C++
 DESTDIR = ../../../bin
 
-QT += xml
+#QT += xml
 
 CONFIG += qt \
     warn_on \

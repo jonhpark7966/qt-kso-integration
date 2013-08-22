@@ -27,7 +27,7 @@ contains(QT_CONFIG, reduce_exports):CONFIG += hide_symbols
 
 include(../qt_targets.pri)
 
-wince*:LIBS += $$QMAKE_LIBS_GUI
+wince*:LIBS += $$QMAKE_LIBS_CORE
 
 symbian: {
     TARGET.EPOCALLOWDLLDATA=1

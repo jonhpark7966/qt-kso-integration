@@ -6,7 +6,7 @@ SOURCES     = domitem.cpp \
               main.cpp \
               mainwindow.cpp
 CONFIG  += qt
-QT      += xml
+#QT      += xml
 
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/itemviews/simpledommodel

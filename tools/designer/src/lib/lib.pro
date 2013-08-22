@@ -1,6 +1,6 @@
 TEMPLATE=lib
 TARGET=QtDesigner
-QT += xml
+#QT += xml
 contains(QT_CONFIG, reduce_exports):CONFIG += hide_symbols
 CONFIG += qt
 win32|mac: CONFIG += debug_and_release

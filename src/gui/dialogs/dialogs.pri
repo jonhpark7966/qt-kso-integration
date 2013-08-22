@@ -1,42 +1,42 @@
 # Qt dialogs module
 
 HEADERS += \
-	dialogs/qabstractprintdialog.h \
-	dialogs/qabstractprintdialog_p.h \
-	dialogs/qabstractpagesetupdialog.h \
-	dialogs/qabstractpagesetupdialog_p.h \
-	dialogs/qcolordialog.h \
-	dialogs/qcolordialog_p.h \
-        dialogs/qfscompleter_p.h \
-	dialogs/qdialog.h \
-	dialogs/qdialog_p.h \
-	dialogs/qerrormessage.h \
-	dialogs/qfiledialog.h \
-	dialogs/qfiledialog_p.h \
-	dialogs/qfontdialog.h \
-	dialogs/qfontdialog_p.h \
-	dialogs/qinputdialog.h \
-	dialogs/qmessagebox.h \
-	dialogs/qpagesetupdialog.h \
-	dialogs/qprintdialog.h \
-	dialogs/qprogressdialog.h \
-        dialogs/qsidebar_p.h \
-        dialogs/qfilesystemmodel.h \
-        dialogs/qfilesystemmodel_p.h \
-        dialogs/qfileinfogatherer_p.h \
-	dialogs/qwizard.h \
-        dialogs/qprintpreviewdialog.h
+	$$PWD/qabstractprintdialog.h \
+	$$PWD/qabstractprintdialog_p.h \
+	$$PWD/qabstractpagesetupdialog.h \
+	$$PWD/qabstractpagesetupdialog_p.h \
+	$$PWD/qcolordialog.h \
+	$$PWD/qcolordialog_p.h \
+        $$PWD/qfscompleter_p.h \
+	$$PWD/qdialog.h \
+	$$PWD/qdialog_p.h \
+	$$PWD/qerrormessage.h \
+	$$PWD/qfiledialog.h \
+	$$PWD/qfiledialog_p.h \
+	$$PWD/qfontdialog.h \
+	$$PWD/qfontdialog_p.h \
+	$$PWD/qinputdialog.h \
+	$$PWD/qmessagebox.h \
+	$$PWD/qpagesetupdialog.h \
+	$$PWD/qprintdialog.h \
+	$$PWD/qprogressdialog.h \
+        $$PWD/qsidebar_p.h \
+        $$PWD/qfilesystemmodel.h \
+        $$PWD/qfilesystemmodel_p.h \
+        $$PWD/qfileinfogatherer_p.h \
+	$$PWD/qwizard.h \
+        $$PWD/qprintpreviewdialog.h
 
 !embedded:mac {
-    OBJECTIVE_SOURCES += dialogs/qfiledialog_mac.mm \
-                         dialogs/qfontdialog_mac.mm \
-                         dialogs/qnspanelproxy_mac.mm \
-                         dialogs/qpagesetupdialog_mac.mm \
-                         dialogs/qprintdialog_mac.mm
+    OBJECTIVE_SOURCES += $$PWD/qfiledialog_mac.mm \
+                         $$PWD/qfontdialog_mac.mm \
+                         $$PWD/qnspanelproxy_mac.mm \
+                         $$PWD/qpagesetupdialog_mac.mm \
+                         $$PWD/qprintdialog_mac.mm
 
 # Compile qcolordialog_mac.mm with exception support, disregarding the -no-exceptions 
 # configure option. (qcolordialog_mac needs to catch exceptions thrown by cocoa)
-    EXCEPTION_SOURCES = dialogs/qcolordialog_mac.mm
+    EXCEPTION_SOURCES = $$PWD/qcolordialog_mac.mm
     exceptions_compiler.commands = $$QMAKE_CXX -c
     exceptions_compiler.commands += $(CXXFLAGS) $(INCPATH) ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
     exceptions_compiler.commands += -fexceptions
@@ -50,63 +50,63 @@ HEADERS += \
 }
 
 win32 {
-    HEADERS += dialogs/qwizard_win_p.h \
-               dialogs/qfiledialog_win_p.h
-    SOURCES += dialogs/qdialogsbinarycompat_win.cpp \
-               dialogs/qfiledialog_win.cpp \
-               dialogs/qpagesetupdialog_win.cpp \
-               dialogs/qprintdialog_win.cpp \
-               dialogs/qwizard_win.cpp
+    HEADERS += $$PWD/qwizard_win_p.h \
+               $$PWD/qfiledialog_win_p.h
+    SOURCES += $$PWD/qdialogsbinarycompat_win.cpp \
+               $$PWD/qfiledialog_win.cpp \
+               $$PWD/qpagesetupdialog_win.cpp \
+               $$PWD/qprintdialog_win.cpp \
+               $$PWD/qwizard_win.cpp
 
     !win32-borland:!wince*: LIBS += -lshell32 	# the filedialog needs this library
 }
 
 !mac:!embedded:!symbian:unix {
-        HEADERS += dialogs/qpagesetupdialog_unix_p.h
-	SOURCES += dialogs/qprintdialog_unix.cpp \
-		   dialogs/qpagesetupdialog_unix.cpp
-	FORMS += dialogs/qprintsettingsoutput.ui \
-        dialogs/qprintwidget.ui \
-        dialogs/qprintpropertieswidget.ui
+        HEADERS += $$PWD/qpagesetupdialog_unix_p.h
+	SOURCES += $$PWD/qprintdialog_unix.cpp \
+		   $$PWD/qpagesetupdialog_unix.cpp
+	FORMS += $$PWD/qprintsettingsoutput.ui \
+        $$PWD/qprintwidget.ui \
+        $$PWD/qprintpropertieswidget.ui
 }
 
 embedded {
         contains(QT_CONFIG,qtopia) {
-            HEADERS += dialogs/qpagesetupdialog_unix_p.h
+            HEADERS += $$PWD/qpagesetupdialog_unix_p.h
             DEFINES += QTOPIA_PRINTDIALOG
-            SOURCES += dialogs/qprintdialog_qws.cpp \
-                       dialogs/qpagesetupdialog_unix.cpp
+            SOURCES += $$PWD/qprintdialog_qws.cpp \
+                       $$PWD/qpagesetupdialog_unix.cpp
         } else {
-            HEADERS += dialogs/qpagesetupdialog_unix_p.h
-            SOURCES += dialogs/qprintdialog_unix.cpp \
-                       dialogs/qpagesetupdialog_unix.cpp
-            FORMS += dialogs/qprintsettingsoutput.ui \
-                     dialogs/qprintwidget.ui \
-                     dialogs/qprintpropertieswidget.ui
+            HEADERS += $$PWD/qpagesetupdialog_unix_p.h
+            SOURCES += $$PWD/qprintdialog_unix.cpp \
+                       $$PWD/qpagesetupdialog_unix.cpp
+            FORMS += $$PWD/qprintsettingsoutput.ui \
+                     $$PWD/qprintwidget.ui \
+                     $$PWD/qprintpropertieswidget.ui
         }
 }
 
-wince*|symbian: FORMS += dialogs/qfiledialog_embedded.ui
-else: FORMS += dialogs/qfiledialog.ui
+wince*|symbian: FORMS += $$PWD/qfiledialog_embedded.ui
+else: FORMS += $$PWD/qfiledialog.ui
 
 INCLUDEPATH += $$PWD
 SOURCES += \
-	dialogs/qabstractprintdialog.cpp \
-	dialogs/qabstractpagesetupdialog.cpp \
-	dialogs/qcolordialog.cpp \
-	dialogs/qdialog.cpp \
-	dialogs/qerrormessage.cpp \
-	dialogs/qfiledialog.cpp \
-	dialogs/qfontdialog.cpp \
-	dialogs/qinputdialog.cpp \
-	dialogs/qmessagebox.cpp \
-	dialogs/qprogressdialog.cpp \
-        dialogs/qsidebar.cpp \
-        dialogs/qfilesystemmodel.cpp \
-        dialogs/qfileinfogatherer.cpp \
-        dialogs/qpagesetupdialog.cpp \
-	dialogs/qwizard.cpp \
-        dialogs/qprintpreviewdialog.cpp
+	$$PWD/qabstractprintdialog.cpp \
+	$$PWD/qabstractpagesetupdialog.cpp \
+	$$PWD/qcolordialog.cpp \
+	$$PWD/qdialog.cpp \
+	$$PWD/qerrormessage.cpp \
+	$$PWD/qfiledialog.cpp \
+	$$PWD/qfontdialog.cpp \
+	$$PWD/qinputdialog.cpp \
+	$$PWD/qmessagebox.cpp \
+	$$PWD/qprogressdialog.cpp \
+        $$PWD/qsidebar.cpp \
+        $$PWD/qfilesystemmodel.cpp \
+        $$PWD/qfileinfogatherer.cpp \
+        $$PWD/qpagesetupdialog.cpp \
+	$$PWD/qwizard.cpp \
+        $$PWD/qprintpreviewdialog.cpp
 
 symbian:contains(QT_CONFIG, s60) {
     contains(CONFIG, is_using_gnupoc) {
@@ -114,13 +114,13 @@ symbian:contains(QT_CONFIG, s60) {
     } else {
         LIBS += -lCommonDialogs
     }
-    SOURCES += dialogs/qfiledialog_symbian.cpp \
-               dialogs/qcolordialog_symbian.cpp
+    SOURCES += $$PWD/qfiledialog_symbian.cpp \
+               $$PWD/qcolordialog_symbian.cpp
 }
 
-FORMS += dialogs/qpagesetupwidget.ui
-RESOURCES += dialogs/qprintdialog.qrc
-RESOURCES += dialogs/qmessagebox.qrc
+FORMS += $$PWD/qpagesetupwidget.ui
+RESOURCES += $$PWD/qprintdialog.qrc
+RESOURCES += $$PWD/qmessagebox.qrc
 
 # Compensate for lack of platform defines in Symbian3
 symbian: DEFINES += SYMBIAN_VERSION_$$upper($$replace(SYMBIAN_VERSION,\\.,_))

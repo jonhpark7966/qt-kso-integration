@@ -16,10 +16,19 @@ defineReplace(qtLibraryTarget) {
 }
 
 defineTest(qtAddLibrary) {
-    INCLUDEPATH -= $$QMAKE_INCDIR_QT/$$1
-    INCLUDEPATH = $$QMAKE_INCDIR_QT/$$1 $$INCLUDEPATH
-
     LIB_NAME = $$1
+	
+    isEqual(LIB_NAME, QtCore) {
+        INCLUDEPATH -=  \
+			$$QMAKE_INCDIR_QT/QtCore \
+			$$QMAKE_INCDIR_QT/QtXml \
+			$$QMAKE_INCDIR_QT/QtGui
+        INCLUDEPATH = $$QMAKE_INCDIR_QT/QtCore $$QMAKE_INCDIR_QT/QtXml $$QMAKE_INCDIR_QT/QtGui $$INCLUDEPATH
+    } else {
+        INCLUDEPATH -= $$QMAKE_INCDIR_QT/$${LIB_NAME}
+        INCLUDEPATH = $$QMAKE_INCDIR_QT/$${LIB_NAME} $$INCLUDEPATH
+    }
+	
     unset(LINKAGE)
     mac {
        CONFIG(qt_framework, qt_framework|qt_no_framework) { #forced
@@ -46,7 +55,7 @@ defineTest(qtAddLibrary) {
        }
     }
     symbian {
-        isEqual(LIB_NAME, QtGui) {
+        isEqual(LIB_NAME, QtCore) {
             # Needed for #include <QtGui> because qs60mainapplication.h includes aknapp.h
             INCLUDEPATH *= $$MW_LAYER_SYSTEMINCLUDE
         } else:isEqual(LIB_NAME, QtWebKit) {

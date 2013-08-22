@@ -85,7 +85,7 @@ isEmpty(QT_BUILD_TREE):include($$moduleFile)
 VERSION = $${QT_WEBKIT_MAJOR_VERSION}.$${QT_WEBKIT_MINOR_VERSION}.$${QT_WEBKIT_PATCH_VERSION}
 
 unix {
-    QMAKE_PKGCONFIG_REQUIRES = QtCore QtGui QtNetwork
+    QMAKE_PKGCONFIG_REQUIRES = QtCore QtNetwork
 }
 
 unix:!mac:*-g++*:QMAKE_CXXFLAGS += -ffunction-sections -fdata-sections 

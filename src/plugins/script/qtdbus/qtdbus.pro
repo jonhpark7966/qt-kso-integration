@@ -1,6 +1,6 @@
 TARGET  = qtscriptdbus
 include(../../qpluginbase.pri)
-QT = core gui script
+QT = core script
 CONFIG += qdbus
 
 SOURCES += main.cpp

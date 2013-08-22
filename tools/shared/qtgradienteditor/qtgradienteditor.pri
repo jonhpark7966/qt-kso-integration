@@ -30,4 +30,4 @@ HEADERS +=   $$PWD/qtgradientstopsmodel.h \
              $$PWD/qtgradientutils.h
 RESOURCES += $$PWD/qtgradienteditor.qrc
 
-QT += xml
+#QT += xml

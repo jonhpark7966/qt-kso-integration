@@ -22,7 +22,7 @@ win32 {
     #sure the same version is used
 	VERSIONS_LIST = $$split(VERSION, ".")
     QT_LIBS_OVERRIDE = $$member(VERSIONS_LIST, 0)
-	for(lib, $$list(qtcore qtgui qtnetwork qtxml qtopengl qtsql qt3support)) {
+	for(lib, $$list(qtcore qtnetwork qtxml qtopengl qtsql qt3support)) {
         eval(QMAKE_$${upper($$lib)}_VERSION_OVERRIDE = $$QT_LIBS_OVERRIDE)
 	eval(QMAKE_$${upper($$lib)}D_VERSION_OVERRIDE = $$QT_LIBS_OVERRIDE)
     }

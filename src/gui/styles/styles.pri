@@ -1,34 +1,34 @@
 # Qt styles module
 
 HEADERS += \
-	styles/qstyle.h \
-	styles/qstylefactory.h \
-	styles/qstyleoption.h \
-	styles/qstyleplugin.h \
-	styles/qcommonstylepixmaps_p.h \
-	styles/qcommonstyle.h \
-	styles/qstylehelper_p.h \
-	styles/qproxystyle.h \
-	styles/qproxystyle_p.h \
-	styles/qstylesheetstyle_p.h
+	$$PWD/qstyle.h \
+	$$PWD/qstylefactory.h \
+	$$PWD/qstyleoption.h \
+	$$PWD/qstyleplugin.h \
+	$$PWD/qcommonstylepixmaps_p.h \
+	$$PWD/qcommonstyle.h \
+	$$PWD/qstylehelper_p.h \
+	$$PWD/qproxystyle.h \
+	$$PWD/qproxystyle_p.h \
+	$$PWD/qstylesheetstyle_p.h
 
 SOURCES += \
-	styles/qstyle.cpp \
-	styles/qstylefactory.cpp \
-	styles/qstyleoption.cpp \
-	styles/qstyleplugin.cpp \
-	styles/qstylehelper.cpp \
-	styles/qcommonstyle.cpp \
-	styles/qproxystyle.cpp \
-        styles/qstylesheetstyle.cpp \
-        styles/qstylesheetstyle_default.cpp
+	$$PWD/qstyle.cpp \
+	$$PWD/qstylefactory.cpp \
+	$$PWD/qstyleoption.cpp \
+	$$PWD/qstyleplugin.cpp \
+	$$PWD/qstylehelper.cpp \
+	$$PWD/qcommonstyle.cpp \
+	$$PWD/qproxystyle.cpp \
+        $$PWD/qstylesheetstyle.cpp \
+        $$PWD/qstylesheetstyle_default.cpp
 
 wince* {
-    RESOURCES += styles/qstyle_wince.qrc
+    RESOURCES += $$PWD/qstyle_wince.qrc
 } else:symbian {
-    RESOURCES += styles/qstyle_s60.qrc
+    RESOURCES += $$PWD/qstyle_s60.qrc
 } else {
-    RESOURCES += styles/qstyle.qrc
+    RESOURCES += $$PWD/qstyle.qrc
 }
 
 contains( styles, all ) {
@@ -45,10 +45,10 @@ x11{
 
 contains( styles, mac ) {
 	HEADERS += \
-		styles/qmacstyle_mac.h \
-		styles/qmacstylepixmaps_mac_p.h \
-		styles/qmacstyle_mac_p.h
-        OBJECTIVE_SOURCES += styles/qmacstyle_mac.mm
+		$$PWD/qmacstyle_mac.h \
+		$$PWD/qmacstylepixmaps_mac_p.h \
+		$$PWD/qmacstyle_mac_p.h
+        OBJECTIVE_SOURCES += $$PWD/qmacstyle_mac.mm
 
 	!contains( styles, windows ) {
 		message( mac requires windows )
@@ -60,8 +60,8 @@ contains( styles, mac ) {
 }
 
 contains( styles, cde ) {
-	HEADERS += styles/qcdestyle.h
-	SOURCES += styles/qcdestyle.cpp
+	HEADERS += $$PWD/qcdestyle.h
+	SOURCES += $$PWD/qcdestyle.cpp
 
 	!contains( styles, motif ) {
 		message( cde requires motif )
@@ -73,9 +73,9 @@ contains( styles, cde ) {
 }
 
 contains( styles, windowsvista ) {
-	HEADERS += styles/qwindowsvistastyle.h
-	HEADERS += styles/qwindowsvistastyle_p.h
-	SOURCES += styles/qwindowsvistastyle.cpp
+	HEADERS += $$PWD/qwindowsvistastyle.h
+	HEADERS += $$PWD/qwindowsvistastyle_p.h
+	SOURCES += $$PWD/qwindowsvistastyle.cpp
 	!contains( styles, windowsxp ) {
 		message( windowsvista requires windowsxp )
 		styles += windowsxp
@@ -86,8 +86,8 @@ contains( styles, windowsvista ) {
 }
 
 contains( styles, windowsxp ) {
-	HEADERS += styles/qwindowsxpstyle.h
-	SOURCES += styles/qwindowsxpstyle.cpp
+	HEADERS += $$PWD/qwindowsxpstyle.h
+	SOURCES += $$PWD/qwindowsxpstyle.cpp
 	!contains( styles, windows ) {
 		message( windowsxp requires windows )
 		styles += windows
@@ -98,8 +98,8 @@ contains( styles, windowsxp ) {
 }
 
 contains( styles, plastique ) {
-	HEADERS += styles/qplastiquestyle.h
-	SOURCES += styles/qplastiquestyle.cpp
+	HEADERS += $$PWD/qplastiquestyle.h
+	SOURCES += $$PWD/qplastiquestyle.cpp
 	!contains( styles, windows ) {
 		message( plastique requires windows )
 		styles += windows
@@ -110,12 +110,12 @@ contains( styles, plastique ) {
 }
 
 contains( styles, gtk ) {
-        HEADERS += styles/qgtkstyle.h
-        HEADERS += styles/qgtkpainter_p.h
-        HEADERS += styles/qgtkstyle_p.h
-        SOURCES += styles/qgtkstyle.cpp
-        SOURCES += styles/qgtkpainter.cpp
-        SOURCES += styles/qgtkstyle_p.cpp
+        HEADERS += $$PWD/qgtkstyle.h
+        HEADERS += $$PWD/qgtkpainter_p.h
+        HEADERS += $$PWD/qgtkstyle_p.h
+        SOURCES += $$PWD/qgtkstyle.cpp
+        SOURCES += $$PWD/qgtkpainter.cpp
+        SOURCES += $$PWD/qgtkstyle_p.cpp
 	!contains( styles, cleanlooks ) {
 		styles += cleanlooks
 		DEFINES+= QT_STYLE_CLEANLOOKS
@@ -125,9 +125,9 @@ contains( styles, gtk ) {
 }
 
 contains( styles, cleanlooks ) {
-        HEADERS += styles/qcleanlooksstyle.h
-        HEADERS += styles/qcleanlooksstyle_p.h
-        SOURCES += styles/qcleanlooksstyle.cpp
+        HEADERS += $$PWD/qcleanlooksstyle.h
+        HEADERS += $$PWD/qcleanlooksstyle_p.h
+        SOURCES += $$PWD/qcleanlooksstyle.cpp
 	!contains( styles, windows ) {
 		styles += windows
 		DEFINES+= QT_STYLE_WINDOWS
@@ -137,40 +137,40 @@ contains( styles, cleanlooks ) {
 }
 
 contains( styles, windows ) {
-	HEADERS += styles/qwindowsstyle.h
-	SOURCES += styles/qwindowsstyle.cpp
+	HEADERS += $$PWD/qwindowsstyle.h
+	SOURCES += $$PWD/qwindowsstyle.cpp
 } else {
 	DEFINES += QT_NO_STYLE_WINDOWS
 }
 
 contains( styles, motif ) {
-	HEADERS += styles/qmotifstyle.h
-	SOURCES += styles/qmotifstyle.cpp
+	HEADERS += $$PWD/qmotifstyle.h
+	SOURCES += $$PWD/qmotifstyle.cpp
 } else {
 	DEFINES += QT_NO_STYLE_MOTIF
 }
 
 contains( styles, windowsce ) {
-	HEADERS += styles/qwindowscestyle.h
-	SOURCES += styles/qwindowscestyle.cpp
+	HEADERS += $$PWD/qwindowscestyle.h
+	SOURCES += $$PWD/qwindowscestyle.cpp
 } else {
 	DEFINES += QT_NO_STYLE_WINDOWSCE
 }
 
 contains( styles, windowsmobile ) {
-	HEADERS += styles/qwindowsmobilestyle.h
-	SOURCES += styles/qwindowsmobilestyle.cpp
+	HEADERS += $$PWD/qwindowsmobilestyle.h
+	SOURCES += $$PWD/qwindowsmobilestyle.cpp
 } else {
 	DEFINES += QT_NO_STYLE_WINDOWSMOBILE
 }
 
 contains( styles, s60 ):contains(QT_CONFIG, s60) {
     HEADERS += \
-        styles/qs60style.h \
-        styles/qs60style_p.h
-    SOURCES += styles/qs60style.cpp
+        $$PWD/qs60style.h \
+        $$PWD/qs60style_p.h
+    SOURCES += $$PWD/qs60style.cpp
     symbian {
-        SOURCES += styles/qs60style_s60.cpp
+        SOURCES += $$PWD/qs60style_s60.cpp
         LIBS += -legul -lbmpanim
         contains(CONFIG, is_using_gnupoc) {
             LIBS += -laknicon -laknskins -laknskinsrv -lfontutils
@@ -178,13 +178,13 @@ contains( styles, s60 ):contains(QT_CONFIG, s60) {
             LIBS += -lAknIcon -lAKNSKINS -lAKNSKINSRV -lFontUtils
         }
     } else {
-        SOURCES += styles/qs60style_simulated.cpp
-        RESOURCES += styles/qstyle_s60_simulated.qrc
+        SOURCES += $$PWD/qs60style_simulated.cpp
+        RESOURCES += $$PWD/qstyle_s60_simulated.qrc
     }
 } else {
     symbian {
-        HEADERS += styles/qs60style.h
-        SOURCES += styles/qs60style_stub.cpp
+        HEADERS += $$PWD/qs60style.h
+        SOURCES += $$PWD/qs60style_stub.cpp
     }
     DEFINES += QT_NO_STYLE_S60
 }

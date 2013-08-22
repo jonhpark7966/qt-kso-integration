@@ -1,7 +1,7 @@
 TARGET = qmeegographicssystem
 include(../../qpluginbase.pri)
 
-QT += gui opengl
+QT += core opengl
 
 QTDIR_build:DESTDIR = $$QT_BUILD_TREE/plugins/graphicssystems
 
