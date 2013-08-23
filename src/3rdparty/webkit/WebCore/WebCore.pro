@@ -92,7 +92,7 @@ unix:!mac:*-g++*:QMAKE_CXXFLAGS += -ffunction-sections -fdata-sections
 unix:!mac:*-g++*:QMAKE_LFLAGS += -Wl,--gc-sections
 linux*-g++*:QMAKE_LFLAGS += $$QMAKE_LFLAGS_NOUNDEF
 
-win32-msvc*:QMAKE_USE_PGO = yes
+# win32-msvc*:QMAKE_USE_PGO = yes
 
 CONFIG(release):!CONFIG(standalone_package) {
     contains(QT_CONFIG, reduce_exports):CONFIG += hide_symbols
