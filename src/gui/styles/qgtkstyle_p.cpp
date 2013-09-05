@@ -861,7 +861,7 @@ QFont QGtkStylePrivate::getThemeFont()
 QStringList QGtkStylePrivate::extract_filter(const QString &rawFilter)
 {
     QString result = rawFilter;
-    QRegExp r(QString::fromLatin1("^([^()]*)\\(([a-zA-Z0-9_.*? +;#\\-\\[\\]@\\{\\}/!<>\\$%&=^~:\\|]*)\\)$"));
+    QRegExp r(QString::fromLatin1("^([^()]*)\\(([^)]*)\\)\\s*$"));
     int index = r.indexIn(result);
     if (index >= 0)
         result = r.cap(2);
