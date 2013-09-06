@@ -5731,30 +5731,6 @@ void QPainter::drawImage(const QRectF &targetRect, const QImage &image, const QR
     }
     if (!userData->hasEffects())
         return drawImage(targetRect, image, sourceRect, flags);
-    else if (!d->extended || d->extended->type() != QPaintEngine::Raster) {
-        QRect targetRectDev = combinedTransform().mapRect(targetRect).toRect();
-        QRect rcDev(0, 0, device()->width(), device()->height());
-        targetRectDev.adjust(-2, -2, 2, 2);
-        targetRectDev = targetRectDev.intersected(rcDev);
-        if (!targetRectDev.isValid())
-            return;
-
-        QImage effectImg(targetRectDev.width(), targetRectDev.height(), QImage::Format_ARGB32_Premultiplied);
-        effectImg.fill(0);
-        QPainter p(&effectImg);
-        QRect vp = viewport();
-        vp.translate(-targetRectDev.left(), -targetRectDev.top());
-        p.setViewport(vp);
-        p.setWindow(window());
-        p.setWorldTransform(worldTransform());
-        p.drawImage(targetRect, image, sourceRect, userData, flags);
-
-        save();
-        resetTransform();
-        drawImage(targetRectDev, effectImg, effectImg.rect(), flags);
-        restore();
-        return;
-    }
 
     qreal x = targetRect.x();
     qreal y = targetRect.y();
@@ -5810,7 +5786,14 @@ void QPainter::drawImage(const QRectF &targetRect, const QImage &image, const QR
     if (w == 0 || h == 0 || sw <= 0 || sh <= 0)
         return;
 
-    d->extended->drawImage(QRectF(x, y, w, h), image, QRectF(sx, sy, sw, sh), userData, flags);
+    if (d->extended) {
+        d->extended->drawImage(QRectF(x, y, w, h), image, QRectF(sx, sy, sw, sh), userData, flags);
+        return;
+    }
+
+    d->updateState(d->state);
+
+    d->engine->drawImage(QRectF(x, y, w, h), image, QRectF(sx, sy, sw, sh), userData, flags);
 }
 
 void QPainter::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)

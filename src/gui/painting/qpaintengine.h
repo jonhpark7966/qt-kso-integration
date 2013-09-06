@@ -191,6 +191,9 @@ public:
     virtual void drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s);
     virtual void drawImage(const QRectF &r, const QImage &pm, const QRectF &sr,
                            Qt::ImageConversionFlags flags = Qt::AutoColor);
+    virtual void drawImage(const QRectF &, const QImage &, const QRectF &, 
+                        const QImageEffects *,
+                        Qt::ImageConversionFlags flags = Qt::AutoColor);
 
     void setPaintDevice(QPaintDevice *device);
     QPaintDevice *paintDevice() const;

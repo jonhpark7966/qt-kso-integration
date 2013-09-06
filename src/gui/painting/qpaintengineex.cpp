@@ -991,6 +991,11 @@ void QPaintEngineEx::drawImage(const QPointF &pos, const QImage &image)
     drawImage(QRectF(pos, image.size()), image, image.rect());
 }
 
+void QPaintEngineEx::drawImage( const QRectF &r, const QImage &pm, const QRectF &sr, const QImageEffects *effects, Qt::ImageConversionFlags flags /*= Qt::AutoColor*/ )
+{
+    QPaintEngine::drawImage(r, pm, sr, effects, flags);
+}
+
 void QPaintEngineEx::drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s)
 {
     QBrush brush(state()->pen.color(), pixmap);
