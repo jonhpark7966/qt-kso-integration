@@ -1,5 +1,5 @@
 load(qttest_p4)
-QT -= gui
+#QT -= gui
 
 SOURCES += tst_qelapsedtimer.cpp
 wince* {

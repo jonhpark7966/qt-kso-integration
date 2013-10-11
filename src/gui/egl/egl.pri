@@ -2,29 +2,29 @@ contains(QT_CONFIG, egl): {
 	CONFIG += egl
 
 	HEADERS += \
-	    egl/qegl_p.h \
-	    egl/qeglcontext_p.h \
-	    egl/qeglproperties_p.h
+	    $$PWD/qegl_p.h \
+	    $$PWD/qeglcontext_p.h \
+	    $$PWD/qeglproperties_p.h
 
 	SOURCES += \
-	    egl/qegl.cpp \
-	    egl/qeglproperties.cpp
+	    $$PWD/qegl.cpp \
+	    $$PWD/qeglproperties.cpp
 
-	wince*: SOURCES += egl/qegl_wince.cpp
+	wince*: SOURCES += $$PWD/qegl_wince.cpp
 
 	unix {
 	    embedded {
-	        SOURCES += egl/qegl_qws.cpp
+	        SOURCES += $$PWD/qegl_qws.cpp
 	    } else {
 	        symbian {
-	            SOURCES += egl/qegl_symbian.cpp
+	            SOURCES += $$PWD/qegl_symbian.cpp
 	        } else {
-	            SOURCES += egl/qegl_x11.cpp
+	            SOURCES += $$PWD/qegl_x11.cpp
 	        }
 	    }
 	}
 } else:symbian {
 	DEFINES += QT_NO_EGL
-	SOURCES += egl/qegl_stub.cpp
-	SOURCES += egl/qeglproperties_stub.cpp
+	SOURCES += $$PWD/qegl_stub.cpp
+	SOURCES += $$PWD/qeglproperties_stub.cpp
 }

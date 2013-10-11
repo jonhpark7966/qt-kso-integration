@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = ping
 DEPENDPATH += .
 INCLUDEPATH += .
-QT -= gui
+#QT -= gui
 CONFIG += qdbus
 
 # Input

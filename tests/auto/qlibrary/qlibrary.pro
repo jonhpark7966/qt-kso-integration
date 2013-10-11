@@ -1,4 +1,4 @@
-QT -= gui
+#QT -= gui
 TEMPLATE    =	subdirs
 CONFIG  += ordered
 

@@ -6,7 +6,7 @@ DESTDIR = $$DEMO_DESTDIR/bin
 INSTALLS += target sources
 
 
-QT += xml network
+QT += network
 
 contains(QT_CONFIG, opengl) {
     DEFINES += QT_OPENGL_SUPPORT

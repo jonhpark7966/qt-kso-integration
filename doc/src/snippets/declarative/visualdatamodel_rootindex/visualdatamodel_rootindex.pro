@@ -1,4 +1,4 @@
 TEMPLATE = app
-QT += gui declarative
+QT += core declarative
 
 SOURCES += main.cpp

@@ -4,9 +4,8 @@ TEMPLATE = subdirs
 unset(SRC_SUBDIRS)
 win32:SRC_SUBDIRS += src_winmain
 symbian:SRC_SUBDIRS += src_s60main
-SRC_SUBDIRS += src_corelib src_xml src_network src_sql src_testlib
+SRC_SUBDIRS += src_corelib src_network src_sql src_testlib
 !symbian:contains(QT_CONFIG, dbus):SRC_SUBDIRS += src_dbus
-!contains(QT_CONFIG, no-gui): SRC_SUBDIRS += src_gui
 !wince*:!symbian:!vxworks:contains(QT_CONFIG, qt3support): SRC_SUBDIRS += src_qt3support
 
 !wince*:!symbian-abld:!symbian-sbsv2:include(tools/tools.pro)
@@ -41,14 +40,10 @@ src_winmain.subdir = $$QT_SOURCE_TREE/src/winmain
 src_winmain.target = sub-winmain
 src_corelib.subdir = $$QT_SOURCE_TREE/src/corelib
 src_corelib.target = sub-corelib
-src_xml.subdir = $$QT_SOURCE_TREE/src/xml
-src_xml.target = sub-xml
 src_xmlpatterns.subdir = $$QT_SOURCE_TREE/src/xmlpatterns
 src_xmlpatterns.target = sub-xmlpatterns
 src_dbus.subdir = $$QT_SOURCE_TREE/src/dbus
 src_dbus.target = sub-dbus
-src_gui.subdir = $$QT_SOURCE_TREE/src/gui
-src_gui.target = sub-gui
 src_sql.subdir = $$QT_SOURCE_TREE/src/sql
 src_sql.target = sub-sql
 src_network.subdir = $$QT_SOURCE_TREE/src/network
@@ -88,35 +83,33 @@ src_webkit_declarative.target = sub-webkitdeclarative
 
 #CONFIG += ordered
 !wince*:!ordered:!symbian-abld:!symbian-sbsv2 {
-   src_corelib.depends = src_tools_moc src_tools_rcc
-   src_gui.depends = src_corelib src_tools_uic
-   embedded: src_gui.depends += src_network
-   src_xml.depends = src_corelib
+   src_corelib.depends = src_tools_moc src_tools_rcc src_tools_uic
+   embedded: src_corelib.depends += src_network
    src_xmlpatterns.depends = src_corelib src_network
-   src_dbus.depends = src_corelib src_xml
-   src_svg.depends = src_corelib src_gui
+   src_dbus.depends = src_corelib
+   src_svg.depends = src_corelib
    src_script.depends = src_corelib
-   src_scripttools.depends = src_script src_gui src_network
+   src_scripttools.depends = src_script src_corelib src_network
    src_network.depends = src_corelib
-   src_opengl.depends = src_gui
-   src_openvg.depends = src_gui
+   src_opengl.depends = src_corelib
+   src_openvg.depends = src_corelib
    src_sql.depends = src_corelib
    src_testlib.depends = src_corelib
-   src_qt3support.depends = src_gui src_xml src_network src_sql
+   src_qt3support.depends = src_corelib src_network src_sql
    src_tools_idc.depends = src_corelib             # target defined in tools.pro
-   src_tools_uic3.depends = src_qt3support src_xml # target defined in tools.pro
-   src_phonon.depends = src_gui
-   src_multimedia.depends = src_gui
+   src_tools_uic3.depends = src_qt3support # target defined in tools.pro
+   src_phonon.depends = src_corelib
+   src_multimedia.depends = src_corelib
    contains(QT_CONFIG, opengl):src_multimedia.depends += src_opengl
-   src_activeqt.depends = src_tools_idc src_gui
-   src_declarative.depends = src_gui src_script src_network
-   src_plugins.depends = src_gui src_sql src_svg
+   src_activeqt.depends = src_tools_idc src_corelib
+   src_declarative.depends = src_corelib src_script src_network
+   src_plugins.depends = src_corelib src_sql src_svg
    contains(QT_CONFIG, multimedia):src_plugins.depends += src_multimedia
    src_s60installs.depends = $$TOOLS_SUBDIRS $$SRC_SUBDIRS
    src_s60installs.depends -= src_s60installs
-   src_imports.depends = src_gui src_declarative
+   src_imports.depends = src_corelib src_declarative
    contains(QT_CONFIG, webkit)  {
-      src_webkit.depends = src_gui src_sql src_network
+      src_webkit.depends = src_corelib src_sql src_network
       contains(QT_CONFIG, xmlpatterns): src_webkit.depends += src_xmlpatterns
       src_imports.depends += src_webkit
       exists($$QT_SOURCE_TREE/src/3rdparty/webkit/JavaScriptCore/JavaScriptCore.pro) {

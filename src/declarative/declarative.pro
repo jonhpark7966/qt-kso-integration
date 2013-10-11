@@ -1,12 +1,12 @@
 TARGET     = QtDeclarative
 QPRO_PWD   = $$PWD
-QT         = core gui script network
+QT         = core script network
 contains(QT_CONFIG, svg): QT += svg
 DEFINES   += QT_BUILD_DECLARATIVE_LIB QT_NO_URL_CAST_FROM_STRING
 win32-msvc*|win32-icc:QMAKE_LFLAGS += /BASE:0x66000000
 solaris-cc*:QMAKE_CXXFLAGS_RELEASE -= -O2
 
-unix:QMAKE_PKGCONFIG_REQUIRES = QtCore QtGui
+unix:QMAKE_PKGCONFIG_REQUIRES = QtCore
 
 exists("qdeclarative_enable_gcov") {
     QMAKE_CXXFLAGS = -fprofile-arcs -ftest-coverage -fno-elide-constructors

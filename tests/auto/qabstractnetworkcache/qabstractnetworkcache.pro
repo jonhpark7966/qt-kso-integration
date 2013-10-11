@@ -1,6 +1,6 @@
 load(qttest_p4)
 QT += network
-QT -= gui
+#QT -= gui
 SOURCES  += tst_qabstractnetworkcache.cpp
 
 wince*|symbian: {

@@ -1,6 +1,6 @@
 
 DESTDIR = ../../../../bin
-QT += xml network
+QT += network
 contains(QT_CONFIG, script): QT += script
 build_all:!build_pass {
     CONFIG -= build_all

@@ -9,7 +9,7 @@ wince*|symbian: {
     DEPLOYMENT = deploy
     !symbian {
         DEFINES += SRCDIR=\\\"\\\"
-        QT += gui
+        QT += core
     }
 } else {
     DEFINES += SRCDIR=\\\"$$PWD/\\\"

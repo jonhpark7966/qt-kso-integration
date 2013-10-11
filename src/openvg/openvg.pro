@@ -1,6 +1,5 @@
 TARGET = QtOpenVG
-QT += core \
-    gui
+QT += core
 
 DEFINES+=QT_BUILD_OPENVG_LIB
 
@@ -42,7 +41,7 @@ symbian {
 
 include(../qbase.pri)
 
-unix:QMAKE_PKGCONFIG_REQUIRES = QtCore QtGui
+unix:QMAKE_PKGCONFIG_REQUIRES = QtCore
 symbian:TARGET.UID3 = 0x2001E62F
 
 !isEmpty(QMAKE_INCDIR_OPENVG): INCLUDEPATH += $$QMAKE_INCDIR_OPENVG

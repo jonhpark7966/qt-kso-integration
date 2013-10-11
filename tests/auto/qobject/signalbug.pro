@@ -8,7 +8,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG -= app_bundle debug_and_release
 DESTDIR=.
-QT -= gui
+#QT -= gui
 wince*: {
    LIBS += coredll.lib
 }

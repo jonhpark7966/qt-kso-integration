@@ -1,15 +1,15 @@
 HEADERS += \
-    math3d/qgenericmatrix.h \
-    math3d/qmatrix4x4.h \
-    math3d/qquaternion.h \
-    math3d/qvector2d.h \
-    math3d/qvector3d.h \
-    math3d/qvector4d.h
+    $$PWD/qgenericmatrix.h \
+    $$PWD/qmatrix4x4.h \
+    $$PWD/qquaternion.h \
+    $$PWD/qvector2d.h \
+    $$PWD/qvector3d.h \
+    $$PWD/qvector4d.h
 
 SOURCES += \
-    math3d/qgenericmatrix.cpp \
-    math3d/qmatrix4x4.cpp \
-    math3d/qquaternion.cpp \
-    math3d/qvector2d.cpp \
-    math3d/qvector3d.cpp \
-    math3d/qvector4d.cpp
+    $$PWD/qgenericmatrix.cpp \
+    $$PWD/qmatrix4x4.cpp \
+    $$PWD/qquaternion.cpp \
+    $$PWD/qvector2d.cpp \
+    $$PWD/qvector3d.cpp \
+    $$PWD/qvector4d.cpp

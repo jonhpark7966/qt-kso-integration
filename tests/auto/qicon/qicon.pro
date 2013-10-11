@@ -4,7 +4,7 @@ SOURCES += tst_qicon.cpp
 RESOURCES = tst_qicon.qrc
 
 wince* {
-   QT += xml svg
+   QT += svg
    addFiles.sources += $$_PRO_FILE_PWD_/*.png
    addFiles.sources += $$_PRO_FILE_PWD_/*.svg
    addFiles.sources += $$_PRO_FILE_PWD_/*.svgz
@@ -15,7 +15,7 @@ wince* {
    DEPLOYMENT_PLUGIN += qsvg
    DEFINES += SRCDIR=\\\".\\\"
 } else:symbian {
-   QT += xml svg
+   QT += svg
    addFiles.sources =  *.png tst_qicon.cpp *.svg *.svgz
    addFiles.path = .
    DEPLOYMENT += addFiles

@@ -1,6 +1,6 @@
 load(qttest_p4)
 
-QT += xml
+#QT += xml
 
 HEADERS += \
     tst_linguist.h \

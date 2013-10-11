@@ -1,5 +1,5 @@
 
-QT += xml
+#QT += xml
 
 INCLUDEPATH += $$PWD
 

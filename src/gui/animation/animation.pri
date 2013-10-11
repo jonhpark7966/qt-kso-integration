@@ -1,3 +1,3 @@
 # Qt gui animation module
 
-SOURCES += animation/qguivariantanimation.cpp
+SOURCES += $$PWD/qguivariantanimation.cpp

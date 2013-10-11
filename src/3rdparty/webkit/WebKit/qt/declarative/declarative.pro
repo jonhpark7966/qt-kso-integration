@@ -24,7 +24,7 @@ QMAKE_EXTRA_COMPILERS += copy2build
 TARGET = $$qtLibraryTarget($$TARGET)
 contains(QT_CONFIG, reduce_exports):CONFIG += hide_symbols
 
-wince*:LIBS += $$QMAKE_LIBS_GUI
+wince*:LIBS += $$QMAKE_LIBS_CORE
 
 symbian: {
     TARGET.EPOCALLOWDLLDATA=1

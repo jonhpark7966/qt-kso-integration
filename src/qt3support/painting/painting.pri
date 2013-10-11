@@ -12,4 +12,4 @@ HEADERS += \
 	painting/q3picture.h \
 	painting/q3paintengine_svg_p.h
 
-QT += xml
+#QT += xml

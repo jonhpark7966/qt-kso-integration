@@ -50,17 +50,17 @@ CONFIG += qt thread debug
 
 #! [2]
 CONFIG += qt
-QT += network xml
+QT += network
 #! [2]
 
 
 #! [3]
-QT = network xml # This will omit the core and gui modules.
+QT = network # This will omit the core and gui modules.
 #! [3]
 
 
 #! [4]
-QT -= gui # Only the core module is used.
+#QT -= gui # Only the core module is used.
 #! [4]
 
 
@@ -308,7 +308,7 @@ QMAKE_UIC = uic -L /path/to/plugin
 
 
 #! [47]
-QT -= gui # Only the core module is used.
+#QT -= gui # Only the core module is used.
 #! [47]
 
 

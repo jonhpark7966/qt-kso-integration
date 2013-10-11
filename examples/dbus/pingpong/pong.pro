@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = pong
 DEPENDPATH += .
 INCLUDEPATH += .
-QT -= gui
+#QT -= gui
 CONFIG += qdbus
 
 # Input

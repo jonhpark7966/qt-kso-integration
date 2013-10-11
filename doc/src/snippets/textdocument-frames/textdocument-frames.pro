@@ -3,4 +3,4 @@ SOURCES     = main.cpp \
               xmlwriter.cpp
 HEADERS     = mainwindow.h \
               xmlwriter.h
-QT          += xml
+#QT          += xml

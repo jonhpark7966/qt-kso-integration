@@ -8,8 +8,8 @@ HEADERS +=  parser/parser.h
 SOURCES += tst_qxmlsimplereader.cpp parser/parser.cpp 
 
 CONFIG += no_batch
-QT += network xml
-QT -= gui
+QT += network
+#QT -= gui
 
 
 wince*|symbian: {

@@ -7,7 +7,7 @@ build_all:!build_pass {
     CONFIG += release
 }
 
-QT += xml qt3support
+QT += qt3support
 
 DESTDIR = ../../../bin
 

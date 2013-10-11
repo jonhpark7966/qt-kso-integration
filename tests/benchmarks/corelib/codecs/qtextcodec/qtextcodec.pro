@@ -1,6 +1,6 @@
 load(qttest_p4)
 TARGET = tst_bench_qtextcodec
-QT -= gui
+#QT -= gui
 SOURCES += main.cpp
 
 wince*:{

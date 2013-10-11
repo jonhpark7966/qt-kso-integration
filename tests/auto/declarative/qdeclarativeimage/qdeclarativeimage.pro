@@ -1,5 +1,5 @@
 load(qttest_p4)
-contains(QT_CONFIG,declarative): QT += declarative gui network
+contains(QT_CONFIG,declarative): QT += declarative core network
 macx:CONFIG -= app_bundle
 
 HEADERS += ../shared/testhttpserver.h

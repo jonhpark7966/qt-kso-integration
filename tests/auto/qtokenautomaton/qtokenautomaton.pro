@@ -14,4 +14,4 @@ HEADERS += tokenizers/basic/basic.h                     \
            tokenizers/noToString/noToString.h           \
            tokenizers/withNamespace/withNamespace.h
 
-QT -= gui
+#QT -= gui

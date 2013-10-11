@@ -1,111 +1,111 @@
 # Qt kernel module
 
 # Only used on platforms with CONFIG += precompile_header
-PRECOMPILED_HEADER = kernel/qt_gui_pch.h
+#PRECOMPILED_HEADER = $$PWD/qt_gui_pch.h
 
 
 KERNEL_P= kernel
 HEADERS += \
-	kernel/qaction.h \
-    kernel/qaction_p.h \
-	kernel/qactiongroup.h \
-	kernel/qapplication.h \
-	kernel/qapplication_p.h \
-	kernel/qboxlayout.h \
-	kernel/qclipboard.h \
-	kernel/qcursor.h \
-	kernel/qdesktopwidget.h \
-	kernel/qdrag.h \
-	kernel/qdnd_p.h \
-	kernel/qevent.h \
-	kernel/qevent_p.h \
-	kernel/qformlayout.h \
-	kernel/qgridlayout.h \
-	kernel/qkeysequence.h \
-	kernel/qlayout.h \
-	kernel/qlayout_p.h \
-	kernel/qlayoutengine_p.h \
-	kernel/qlayoutitem.h \
-	kernel/qmime.h \
-	kernel/qsessionmanager.h \
-	kernel/qshortcut.h \
-	kernel/qshortcutmap_p.h \
-	kernel/qsizepolicy.h \
-	kernel/qpalette.h \
-	kernel/qsound.h \
-	kernel/qsound_p.h \
-	kernel/qstackedlayout.h \
-	kernel/qtooltip.h \
-	kernel/qwhatsthis.h \
-    kernel/qwidget.h \
-    kernel/qwidget_p.h \
-	kernel/qwidgetaction.h \
-	kernel/qwidgetaction_p.h \
-	kernel/qwindowdefs.h \
-	kernel/qkeymapper_p.h \
-	kernel/qgesture.h \
-	kernel/qgesture_p.h \
-	kernel/qstandardgestures_p.h \
-	kernel/qgesturerecognizer.h \
-	kernel/qgesturemanager_p.h \
-	kernel/qsoftkeymanager_p.h \
-    kernel/qsoftkeymanager_common_p.h \
-	kernel/qguiplatformplugin_p.h
+	$$PWD/qaction.h \
+    $$PWD/qaction_p.h \
+	$$PWD/qactiongroup.h \
+	$$PWD/qapplication.h \
+	$$PWD/qapplication_p.h \
+	$$PWD/qboxlayout.h \
+	$$PWD/qclipboard.h \
+	$$PWD/qcursor.h \
+	$$PWD/qdesktopwidget.h \
+	$$PWD/qdrag.h \
+	$$PWD/qdnd_p.h \
+	$$PWD/qevent.h \
+	$$PWD/qevent_p.h \
+	$$PWD/qformlayout.h \
+	$$PWD/qgridlayout.h \
+	$$PWD/qkeysequence.h \
+	$$PWD/qlayout.h \
+	$$PWD/qlayout_p.h \
+	$$PWD/qlayoutengine_p.h \
+	$$PWD/qlayoutitem.h \
+	$$PWD/qmime.h \
+	$$PWD/qsessionmanager.h \
+	$$PWD/qshortcut.h \
+	$$PWD/qshortcutmap_p.h \
+	$$PWD/qsizepolicy.h \
+	$$PWD/qpalette.h \
+	$$PWD/qsound.h \
+	$$PWD/qsound_p.h \
+	$$PWD/qstackedlayout.h \
+	$$PWD/qtooltip.h \
+	$$PWD/qwhatsthis.h \
+    $$PWD/qwidget.h \
+    $$PWD/qwidget_p.h \
+	$$PWD/qwidgetaction.h \
+	$$PWD/qwidgetaction_p.h \
+	$$PWD/qwindowdefs.h \
+	$$PWD/qkeymapper_p.h \
+	$$PWD/qgesture.h \
+	$$PWD/qgesture_p.h \
+	$$PWD/qstandardgestures_p.h \
+	$$PWD/qgesturerecognizer.h \
+	$$PWD/qgesturemanager_p.h \
+	$$PWD/qsoftkeymanager_p.h \
+    $$PWD/qsoftkeymanager_common_p.h \
+	$$PWD/qguiplatformplugin_p.h
 
 SOURCES += \
-	kernel/qaction.cpp \
-	kernel/qactiongroup.cpp \
-	kernel/qapplication.cpp \
-	kernel/qboxlayout.cpp \
-	kernel/qclipboard.cpp \
-	kernel/qcursor.cpp \
-	kernel/qdrag.cpp \
-	kernel/qdnd.cpp \
-	kernel/qevent.cpp \
-	kernel/qformlayout.cpp \
-	kernel/qgridlayout.cpp \
-	kernel/qkeysequence.cpp \
-	kernel/qlayout.cpp \
-	kernel/qlayoutengine.cpp \
-	kernel/qlayoutitem.cpp \
-	kernel/qmime.cpp \
-	kernel/qpalette.cpp \
-	kernel/qshortcut.cpp \
-	kernel/qshortcutmap.cpp \
-	kernel/qsound.cpp \
-	kernel/qstackedlayout.cpp \
-	kernel/qtooltip.cpp \
-	kernel/qguivariant.cpp \
-	kernel/qwhatsthis.cpp \
-	kernel/qwidget.cpp \
-	kernel/qwidgetaction.cpp \
-	kernel/qkeymapper.cpp \
-	kernel/qgesture.cpp \
-	kernel/qstandardgestures.cpp \
-	kernel/qgesturerecognizer.cpp \
-	kernel/qgesturemanager.cpp \
-	kernel/qsoftkeymanager.cpp \
-    kernel/qdesktopwidget.cpp \
-	kernel/qguiplatformplugin.cpp
+	$$PWD/qaction.cpp \
+	$$PWD/qactiongroup.cpp \
+	$$PWD/qapplication.cpp \
+	$$PWD/qboxlayout.cpp \
+	$$PWD/qclipboard.cpp \
+	$$PWD/qcursor.cpp \
+	$$PWD/qdrag.cpp \
+	$$PWD/qdnd.cpp \
+	$$PWD/qevent.cpp \
+	$$PWD/qformlayout.cpp \
+	$$PWD/qgridlayout.cpp \
+	$$PWD/qkeysequence.cpp \
+	$$PWD/qlayout.cpp \
+	$$PWD/qlayoutengine.cpp \
+	$$PWD/qlayoutitem.cpp \
+	$$PWD/qmime.cpp \
+	$$PWD/qpalette.cpp \
+	$$PWD/qshortcut.cpp \
+	$$PWD/qshortcutmap.cpp \
+	$$PWD/qsound.cpp \
+	$$PWD/qstackedlayout.cpp \
+	$$PWD/qtooltip.cpp \
+	$$PWD/qguivariant.cpp \
+	$$PWD/qwhatsthis.cpp \
+	$$PWD/qwidget.cpp \
+	$$PWD/qwidgetaction.cpp \
+	$$PWD/qkeymapper.cpp \
+	$$PWD/qgesture.cpp \
+	$$PWD/qstandardgestures.cpp \
+	$$PWD/qgesturerecognizer.cpp \
+	$$PWD/qgesturemanager.cpp \
+	$$PWD/qsoftkeymanager.cpp \
+    $$PWD/qdesktopwidget.cpp \
+	$$PWD/qguiplatformplugin.cpp
 
 win32 {
 	DEFINES += QT_NO_DIRECTDRAW
 
     HEADERS += \
-        kernel/qwinnativepangesturerecognizer_win_p.h
+        $$PWD/qwinnativepangesturerecognizer_win_p.h
 
 	SOURCES += \
-		kernel/qapplication_win.cpp \
-		kernel/qclipboard_win.cpp \
-		kernel/qcursor_win.cpp \
-		kernel/qdesktopwidget_win.cpp \
-		kernel/qdnd_win.cpp \
-		kernel/qmime_win.cpp \
-		kernel/qsound_win.cpp \
-		kernel/qwidget_win.cpp \
-		kernel/qole_win.cpp \
-        kernel/qkeymapper_win.cpp \
-        kernel/qwinnativepangesturerecognizer_win.cpp
+		$$PWD/qapplication_win.cpp \
+		$$PWD/qclipboard_win.cpp \
+		$$PWD/qcursor_win.cpp \
+		$$PWD/qdesktopwidget_win.cpp \
+		$$PWD/qdnd_win.cpp \
+		$$PWD/qmime_win.cpp \
+		$$PWD/qsound_win.cpp \
+		$$PWD/qwidget_win.cpp \
+		$$PWD/qole_win.cpp \
+        $$PWD/qkeymapper_win.cpp \
+        $$PWD/qwinnativepangesturerecognizer_win.cpp
 
     !contains(DEFINES, QT_NO_DIRECTDRAW):LIBS += ddraw.lib
 }
@@ -114,19 +114,19 @@ symbian {
     exists($${EPOCROOT}epoc32/include/platform/mw/akntranseffect.h): DEFINES += QT_SYMBIAN_HAVE_AKNTRANSEFFECT_H
 
     SOURCES += \
-        kernel/qapplication_s60.cpp \
-        kernel/qeventdispatcher_s60.cpp \
-        kernel/qwidget_s60.cpp \
-        kernel/qcursor_s60.cpp \
-        kernel/qdesktopwidget_s60.cpp \
-        kernel/qkeymapper_s60.cpp\
-        kernel/qclipboard_s60.cpp\
-        kernel/qdnd_s60.cpp \
-        kernel/qsound_s60.cpp
+        $$PWD/qapplication_s60.cpp \
+        $$PWD/qeventdispatcher_s60.cpp \
+        $$PWD/qwidget_s60.cpp \
+        $$PWD/qcursor_s60.cpp \
+        $$PWD/qdesktopwidget_s60.cpp \
+        $$PWD/qkeymapper_s60.cpp\
+        $$PWD/qclipboard_s60.cpp\
+        $$PWD/qdnd_s60.cpp \
+        $$PWD/qsound_s60.cpp
 
     HEADERS += \
-        kernel/qt_s60_p.h \
-        kernel/qeventdispatcher_s60_p.h
+        $$PWD/qt_s60_p.h \
+        $$PWD/qeventdispatcher_s60_p.h
 
     LIBS += -lbafl -lestor
 
@@ -134,8 +134,8 @@ symbian {
     INCLUDEPATH += ../3rdparty/s60
 
     contains(QT_CONFIG, s60) {
-        SOURCES += kernel/qsoftkeymanager_s60.cpp
-        HEADERS += kernel/qsoftkeymanager_s60_p.h
+        SOURCES += $$PWD/qsoftkeymanager_s60.cpp
+        HEADERS += $$PWD/qsoftkeymanager_s60_p.h
     }
 }
 
@@ -143,60 +143,60 @@ symbian {
 unix:x11 {
 	INCLUDEPATH += ../3rdparty/xorg
 	HEADERS += \
-		kernel/qx11embed_x11.h \
-		kernel/qx11info_x11.h \
-        kernel/qkde_p.h
+		$$PWD/qx11embed_x11.h \
+		$$PWD/qx11info_x11.h \
+        $$PWD/qkde_p.h
 
 	SOURCES += \
-		kernel/qapplication_x11.cpp \
-		kernel/qclipboard_x11.cpp \
-		kernel/qcursor_x11.cpp \
-		kernel/qdnd_x11.cpp \
-		kernel/qdesktopwidget_x11.cpp \
-		kernel/qmotifdnd_x11.cpp \
-		kernel/qsound_x11.cpp \
-		kernel/qwidget_x11.cpp \
-		kernel/qwidgetcreate_x11.cpp \
-		kernel/qx11embed_x11.cpp \
-		kernel/qx11info_x11.cpp \
-		kernel/qkeymapper_x11.cpp \
-		kernel/qkde.cpp
+		$$PWD/qapplication_x11.cpp \
+		$$PWD/qclipboard_x11.cpp \
+		$$PWD/qcursor_x11.cpp \
+		$$PWD/qdnd_x11.cpp \
+		$$PWD/qdesktopwidget_x11.cpp \
+		$$PWD/qmotifdnd_x11.cpp \
+		$$PWD/qsound_x11.cpp \
+		$$PWD/qwidget_x11.cpp \
+		$$PWD/qwidgetcreate_x11.cpp \
+		$$PWD/qx11embed_x11.cpp \
+		$$PWD/qx11info_x11.cpp \
+		$$PWD/qkeymapper_x11.cpp \
+		$$PWD/qkde.cpp
 
         contains(QT_CONFIG, glib) {
             SOURCES += \
-		kernel/qguieventdispatcher_glib.cpp
+		$$PWD/qguieventdispatcher_glib.cpp
             HEADERS += \
-                kernel/qguieventdispatcher_glib_p.h
+                $$PWD/qguieventdispatcher_glib_p.h
             QMAKE_CXXFLAGS += $$QT_CFLAGS_GLIB
 	    LIBS_PRIVATE +=$$QT_LIBS_GLIB
 	}
             SOURCES += \
-		kernel/qeventdispatcher_x11.cpp
+		$$PWD/qeventdispatcher_x11.cpp
             HEADERS += \
-                kernel/qeventdispatcher_x11_p.h
+                $$PWD/qeventdispatcher_x11_p.h
 }
 
 embedded {
 	HEADERS += \
-		kernel/qeventdispatcher_qws_p.h
+		$$PWD/qeventdispatcher_qws_p.h
 
 	SOURCES += \
-		kernel/qapplication_qws.cpp \
-		kernel/qclipboard_qws.cpp \
-		kernel/qcursor_qws.cpp \
-		kernel/qdesktopwidget_qws.cpp \
-		kernel/qdnd_qws.cpp \
-		kernel/qeventdispatcher_qws.cpp \
-		kernel/qsound_qws.cpp \
-		kernel/qwidget_qws.cpp \
-		kernel/qkeymapper_qws.cpp \
-		kernel/qsessionmanager_qws.cpp
+		$$PWD/qapplication_qws.cpp \
+		$$PWD/qclipboard_qws.cpp \
+		$$PWD/qcursor_qws.cpp \
+		$$PWD/qdesktopwidget_qws.cpp \
+		$$PWD/qdnd_qws.cpp \
+		$$PWD/qeventdispatcher_qws.cpp \
+		$$PWD/qsound_qws.cpp \
+		$$PWD/qwidget_qws.cpp \
+		$$PWD/qkeymapper_qws.cpp \
+		$$PWD/qsessionmanager_qws.cpp
 
         contains(QT_CONFIG, glib) {
             SOURCES += \
-		kernel/qeventdispatcher_glib_qws.cpp
+		$$PWD/qeventdispatcher_glib_qws.cpp
             HEADERS += \
-                kernel/qeventdispatcher_glib_qws_p.h
+                $$PWD/qeventdispatcher_glib_qws_p.h
             QMAKE_CXXFLAGS += $$QT_CFLAGS_GLIB
             LIBS_PRIVATE +=$$QT_LIBS_GLIB
 	}
@@ -204,10 +204,10 @@ embedded {
 
 !embedded:!x11:mac {
 	SOURCES += \
-		kernel/qclipboard_mac.cpp \
-		kernel/qmime_mac.cpp \
-		kernel/qt_mac.cpp \
-		kernel/qkeymapper_mac.cpp
+		$$PWD/qclipboard_mac.cpp \
+		$$PWD/qmime_mac.cpp \
+		$$PWD/qt_mac.cpp \
+		$$PWD/qkeymapper_mac.cpp
 
         OBJECTIVE_HEADERS += \
                 qcocoawindow_mac_p.h \
@@ -221,30 +221,30 @@ embedded {
                 qcocoasharedwindowmethods_mac_p.h
 
         OBJECTIVE_SOURCES += \
-                kernel/qcursor_mac.mm \
-                kernel/qdnd_mac.mm \
-                kernel/qsound_mac.mm  \
-                kernel/qapplication_mac.mm \
-		        kernel/qwidget_mac.mm \
-		        kernel/qcocoapanel_mac.mm \
-                kernel/qcocoaview_mac.mm \
-                kernel/qcocoawindow_mac.mm \
-                kernel/qcocoawindowdelegate_mac.mm \
-                kernel/qcocoamenuloader_mac.mm \
-                kernel/qcocoaapplication_mac.mm \
-                kernel/qcocoaapplicationdelegate_mac.mm \
-                kernel/qt_cocoa_helpers_mac.mm \
-                kernel/qdesktopwidget_mac.mm \
-                kernel/qeventdispatcher_mac.mm \
-                kernel/qcocoawindowcustomthemeframe_mac.mm \
-                kernel/qmacgesturerecognizer_mac.mm \
-                kernel/qmultitouch_mac.mm
+                $$PWD/qcursor_mac.mm \
+                $$PWD/qdnd_mac.mm \
+                $$PWD/qsound_mac.mm  \
+                $$PWD/qapplication_mac.mm \
+		        $$PWD/qwidget_mac.mm \
+		        $$PWD/qcocoapanel_mac.mm \
+                $$PWD/qcocoaview_mac.mm \
+                $$PWD/qcocoawindow_mac.mm \
+                $$PWD/qcocoawindowdelegate_mac.mm \
+                $$PWD/qcocoamenuloader_mac.mm \
+                $$PWD/qcocoaapplication_mac.mm \
+                $$PWD/qcocoaapplicationdelegate_mac.mm \
+                $$PWD/qt_cocoa_helpers_mac.mm \
+                $$PWD/qdesktopwidget_mac.mm \
+                $$PWD/qeventdispatcher_mac.mm \
+                $$PWD/qcocoawindowcustomthemeframe_mac.mm \
+                $$PWD/qmacgesturerecognizer_mac.mm \
+                $$PWD/qmultitouch_mac.mm
 
         HEADERS += \
-                kernel/qt_cocoa_helpers_mac_p.h \
-                kernel/qcocoaapplication_mac_p.h \
-                kernel/qcocoaapplicationdelegate_mac_p.h \
-                kernel/qeventdispatcher_mac_p.h
+                $$PWD/qt_cocoa_helpers_mac_p.h \
+                $$PWD/qcocoaapplication_mac_p.h \
+                $$PWD/qcocoaapplicationdelegate_mac_p.h \
+                $$PWD/qeventdispatcher_mac_p.h
 
         MENU_NIB.files = mac/qt_menu.nib
         MENU_NIB.path = Resources

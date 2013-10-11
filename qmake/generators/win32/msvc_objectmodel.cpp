@@ -1398,18 +1398,18 @@ bool VCLinkerTool::parseOption(const char* option)
                 if (*str == 'S')
                     ShowProgress = linkProgressAll;
 #ifndef Q_OS_WIN
-                else if (strncasecmp(str, "pginstrument", 12))
+                else if (!strncasecmp(str, "pginstrument", 12))
                     LinkTimeCodeGeneration = optLTCGInstrument;
-                else if (strncasecmp(str, "pgoptimize", 10))
+                else if (!strncasecmp(str, "pgoptimize", 10))
                     LinkTimeCodeGeneration = optLTCGOptimize;
-                else if (strncasecmp(str, "pgupdate", 8 ))
+                else if (!strncasecmp(str, "pgupdate", 8 ))
                     LinkTimeCodeGeneration = optLTCGUpdate;
 #else
-                else if (_stricmp(str, "pginstrument"))
+                else if (!_stricmp(str, "pginstrument"))
                     LinkTimeCodeGeneration = optLTCGInstrument;
-                else if (_stricmp(str, "pgoptimize"))
+                else if (!_stricmp(str, "pgoptimize"))
                     LinkTimeCodeGeneration = optLTCGOptimize;
-                else if (_stricmp(str, "pgupdate"))
+                else if (!_stricmp(str, "pgupdate"))
                     LinkTimeCodeGeneration = optLTCGUpdate;
 #endif
             }

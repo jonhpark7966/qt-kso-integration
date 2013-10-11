@@ -1,255 +1,255 @@
 # Qt gui library, paint module
 HEADERS += \
-        painting/qbezier_p.h \
-        painting/qbrush.h \
-        painting/qcolor.h \
-        painting/qcolor_p.h \
-        painting/qcolormap.h \
-        painting/qdrawutil.h \
-        painting/qemulationpaintengine_p.h \
-        painting/qgraphicssystem_p.h \
-        painting/qgraphicssystemex_p.h \
-        painting/qmatrix.h \
-        painting/qmemrotate_p.h \
-        painting/qoutlinemapper_p.h \
-        painting/qpaintdevice.h \
-        painting/qpaintengine.h \
-		painting/qpaintengine_p.h \
-        painting/qpaintengine_alpha_p.h \
-        painting/qpaintengine_preview_p.h \
-        painting/qpaintengineex_p.h \
-        painting/qpainter.h \
-        painting/qpainter_p.h \
-        painting/qpainterpath.h \
-        painting/qpainterpath_p.h \
-        painting/qvectorpath_p.h \
-        painting/qpathclipper_p.h \
-        painting/qpdf_p.h \
-        painting/qpen.h \
-        painting/qpolygon.h \
-        painting/qpolygonclipper_p.h \
-        painting/qprintengine.h \
-        painting/qprintengine_pdf_p.h \
-        painting/qprintengine_ps_p.h \
-        painting/qprinter.h \
-        painting/qprinter_p.h \
-        painting/qprinterinfo.h \
-        painting/qrasterizer_p.h \
-        painting/qregion.h \
-        painting/qstroker_p.h \
-        painting/qstylepainter.h \
-        painting/qtessellator_p.h \
-        painting/qtextureglyphcache_p.h \
-        painting/qtransform.h \
-        painting/qwindowsurface_p.h \
-        painting/qwmatrix.h \
-        painting/qpaintbuffer_p.h \
-        painting/qpathgradient_p.h \
-        painting/qcomplexstroker.h \
-        painting/qcomplexstroker_p.h \
-        painting/qcustomlineanchor.h \
-        painting/qcustomlineanchor_p.h
+        $$PWD/qbezier_p.h \
+        $$PWD/qbrush.h \
+        $$PWD/qcolor.h \
+        $$PWD/qcolor_p.h \
+        $$PWD/qcolormap.h \
+        $$PWD/qdrawutil.h \
+        $$PWD/qemulationpaintengine_p.h \
+        $$PWD/qgraphicssystem_p.h \
+        $$PWD/qgraphicssystemex_p.h \
+        $$PWD/qmatrix.h \
+        $$PWD/qmemrotate_p.h \
+        $$PWD/qoutlinemapper_p.h \
+        $$PWD/qpaintdevice.h \
+        $$PWD/qpaintengine.h \
+		$$PWD/qpaintengine_p.h \
+        $$PWD/qpaintengine_alpha_p.h \
+        $$PWD/qpaintengine_preview_p.h \
+        $$PWD/qpaintengineex_p.h \
+        $$PWD/qpainter.h \
+        $$PWD/qpainter_p.h \
+        $$PWD/qpainterpath.h \
+        $$PWD/qpainterpath_p.h \
+        $$PWD/qvectorpath_p.h \
+        $$PWD/qpathclipper_p.h \
+        $$PWD/qpdf_p.h \
+        $$PWD/qpen.h \
+        $$PWD/qpolygon.h \
+        $$PWD/qpolygonclipper_p.h \
+        $$PWD/qprintengine.h \
+        $$PWD/qprintengine_pdf_p.h \
+        $$PWD/qprintengine_ps_p.h \
+        $$PWD/qprinter.h \
+        $$PWD/qprinter_p.h \
+        $$PWD/qprinterinfo.h \
+        $$PWD/qrasterizer_p.h \
+        $$PWD/qregion.h \
+        $$PWD/qstroker_p.h \
+        $$PWD/qstylepainter.h \
+        $$PWD/qtessellator_p.h \
+        $$PWD/qtextureglyphcache_p.h \
+        $$PWD/qtransform.h \
+        $$PWD/qwindowsurface_p.h \
+        $$PWD/qwmatrix.h \
+        $$PWD/qpaintbuffer_p.h \
+        $$PWD/qpathgradient_p.h \
+        $$PWD/qcomplexstroker.h \
+        $$PWD/qcomplexstroker_p.h \
+        $$PWD/qcustomlineanchor.h \
+        $$PWD/qcustomlineanchor_p.h
 
 SOURCES += \
-        painting/qbezier.cpp \
-        painting/qblendfunctions.cpp \
-        painting/qbrush.cpp \
-        painting/qcolor.cpp \
-        painting/qcolor_p.cpp \
-        painting/qcssutil.cpp \
-        painting/qdrawutil.cpp \
-        painting/qemulationpaintengine.cpp \
-        painting/qgraphicssystem.cpp \
-        painting/qmatrix.cpp \
-        painting/qmemrotate.cpp \
-        painting/qoutlinemapper.cpp \
-        painting/qpaintdevice.cpp \
-        painting/qpaintengine.cpp \
-        painting/qpaintengine_alpha.cpp \
-        painting/qpaintengine_preview.cpp \
-        painting/qpaintengineex.cpp \
-        painting/qpainter.cpp \
-        painting/qpainterpath.cpp \
-        painting/qpathclipper.cpp \
-        painting/qpdf.cpp \
-        painting/qpen.cpp \
-        painting/qpolygon.cpp \
-        painting/qprintengine_pdf.cpp \
-        painting/qprintengine_ps.cpp \
-        painting/qprinter.cpp \
-        painting/qrasterizer.cpp \
-        painting/qregion.cpp \
-        painting/qstroker.cpp \
-        painting/qstylepainter.cpp \
-        painting/qtessellator.cpp \
-        painting/qtextureglyphcache.cpp \
-        painting/qtransform.cpp \
-        painting/qwindowsurface.cpp \
-        painting/qpaintbuffer.cpp	\
-        painting/qcomplexstroker.cpp \
-        painting/qcustomlineanchor.cpp
+        $$PWD/qbezier.cpp \
+        $$PWD/qblendfunctions.cpp \
+        $$PWD/qbrush.cpp \
+        $$PWD/qcolor.cpp \
+        $$PWD/qcolor_p.cpp \
+        $$PWD/qcssutil.cpp \
+        $$PWD/qdrawutil.cpp \
+        $$PWD/qemulationpaintengine.cpp \
+        $$PWD/qgraphicssystem.cpp \
+        $$PWD/qmatrix.cpp \
+        $$PWD/qmemrotate.cpp \
+        $$PWD/qoutlinemapper.cpp \
+        $$PWD/qpaintdevice.cpp \
+        $$PWD/qpaintengine.cpp \
+        $$PWD/qpaintengine_alpha.cpp \
+        $$PWD/qpaintengine_preview.cpp \
+        $$PWD/qpaintengineex.cpp \
+        $$PWD/qpainter.cpp \
+        $$PWD/qpainterpath.cpp \
+        $$PWD/qpathclipper.cpp \
+        $$PWD/qpdf.cpp \
+        $$PWD/qpen.cpp \
+        $$PWD/qpolygon.cpp \
+        $$PWD/qprintengine_pdf.cpp \
+        $$PWD/qprintengine_ps.cpp \
+        $$PWD/qprinter.cpp \
+        $$PWD/qrasterizer.cpp \
+        $$PWD/qregion.cpp \
+        $$PWD/qstroker.cpp \
+        $$PWD/qstylepainter.cpp \
+        $$PWD/qtessellator.cpp \
+        $$PWD/qtextureglyphcache.cpp \
+        $$PWD/qtransform.cpp \
+        $$PWD/qwindowsurface.cpp \
+        $$PWD/qpaintbuffer.cpp	\
+        $$PWD/qcomplexstroker.cpp \
+        $$PWD/qcustomlineanchor.cpp
 
         SOURCES +=                                      \
-                painting/qpaintengine_raster.cpp        \
-                painting/qdrawhelper.cpp                \
-                painting/qimagescale.cpp                \
-                painting/qgrayraster.c
+                $$PWD/qpaintengine_raster.cpp        \
+                $$PWD/qdrawhelper.cpp                \
+                $$PWD/qimagescale.cpp                \
+                $$PWD/qgrayraster.c
 
         HEADERS +=                                      \
-                painting/qpaintengine_raster_p.h        \
-                painting/qdrawhelper_p.h                \
-                painting/qblendfunctions_p.h            \
-                painting/qrasterdefs_p.h                \
-                painting/qgrayraster_p.h
+                $$PWD/qpaintengine_raster_p.h        \
+                $$PWD/qdrawhelper_p.h                \
+                $$PWD/qblendfunctions_p.h            \
+                $$PWD/qrasterdefs_p.h                \
+                $$PWD/qgrayraster_p.h
 
 win32 {
-        HEADERS += painting/qprintengine_win_p.h
+        HEADERS += $$PWD/qprintengine_win_p.h
 
         SOURCES += \
-                painting/qcolormap_win.cpp \
-                painting/qpaintdevice_win.cpp \
-                painting/qprintengine_win.cpp \
-                painting/qprinterinfo_win.cpp
+                $$PWD/qcolormap_win.cpp \
+                $$PWD/qpaintdevice_win.cpp \
+                $$PWD/qprintengine_win.cpp \
+                $$PWD/qprinterinfo_win.cpp
 
         !win32-borland:!wince*:LIBS += -lmsimg32
 }
 
 embedded {
     HEADERS += \
-        painting/qgraphicssystem_qws_p.h \
+        $$PWD/qgraphicssystem_qws_p.h \
 
     SOURCES += \
-        painting/qgraphicssystem_qws.cpp \
+        $$PWD/qgraphicssystem_qws.cpp \
 
 } else {
     HEADERS += \
-        painting/qgraphicssystem_raster_p.h \
-        painting/qgraphicssystem_runtime_p.h \
-        painting/qgraphicssystemfactory_p.h \
-        painting/qgraphicssystemplugin_p.h \
-        painting/qwindowsurface_raster_p.h \
+        $$PWD/qgraphicssystem_raster_p.h \
+        $$PWD/qgraphicssystem_runtime_p.h \
+        $$PWD/qgraphicssystemfactory_p.h \
+        $$PWD/qgraphicssystemplugin_p.h \
+        $$PWD/qwindowsurface_raster_p.h \
 
     SOURCES += \
-        painting/qgraphicssystem_raster.cpp \
-        painting/qgraphicssystem_runtime.cpp \
-        painting/qgraphicssystemfactory.cpp \
-        painting/qgraphicssystemplugin.cpp \
-        painting/qwindowsurface_raster.cpp \
+        $$PWD/qgraphicssystem_raster.cpp \
+        $$PWD/qgraphicssystem_runtime.cpp \
+        $$PWD/qgraphicssystemfactory.cpp \
+        $$PWD/qgraphicssystemplugin.cpp \
+        $$PWD/qwindowsurface_raster.cpp \
 }
 
 unix:x11 {
         HEADERS += \
-                painting/qpaintengine_x11_p.h
+                $$PWD/qpaintengine_x11_p.h
 
         SOURCES += \
-                painting/qcolormap_x11.cpp \
-                painting/qpaintdevice_x11.cpp \
-                painting/qpaintengine_x11.cpp
+                $$PWD/qcolormap_x11.cpp \
+                $$PWD/qpaintdevice_x11.cpp \
+                $$PWD/qpaintengine_x11.cpp
 }
 
 !embedded:!x11:mac {
         HEADERS += \
-                painting/qpaintengine_mac_p.h \
-                painting/qgraphicssystem_mac_p.h \
-                painting/qprintengine_mac_p.h
+                $$PWD/qpaintengine_mac_p.h \
+                $$PWD/qgraphicssystem_mac_p.h \
+                $$PWD/qprintengine_mac_p.h
 
         SOURCES += \
-                painting/qcolormap_mac.cpp \
-                painting/qpaintdevice_mac.cpp \
-                painting/qpaintengine_mac.cpp \
-                painting/qgraphicssystem_mac.cpp \
-                painting/qprinterinfo_mac.cpp
+                $$PWD/qcolormap_mac.cpp \
+                $$PWD/qpaintdevice_mac.cpp \
+                $$PWD/qpaintengine_mac.cpp \
+                $$PWD/qgraphicssystem_mac.cpp \
+                $$PWD/qprinterinfo_mac.cpp
         OBJECTIVE_SOURCES += \
-                painting/qprintengine_mac.mm \
+                $$PWD/qprintengine_mac.mm \
 }
 
 unix:!mac:!symbian {
         HEADERS += \
-                painting/qprinterinfo_unix_p.h
+                $$PWD/qprinterinfo_unix_p.h
         SOURCES += \
-                painting/qprinterinfo_unix.cpp
+                $$PWD/qprinterinfo_unix.cpp
 }
 
 win32|x11|mac|embedded|symbian {
-        SOURCES += painting/qbackingstore.cpp
-        HEADERS += painting/qbackingstore_p.h
+        SOURCES += $$PWD/qbackingstore.cpp
+        HEADERS += $$PWD/qbackingstore_p.h
 }
 
 embedded {
         contains(QT_CONFIG,qtopia) {
                 DEFINES += QTOPIA_PRINTENGINE
-                HEADERS += painting/qprintengine_qws_p.h
-                SOURCES += painting/qprintengine_qws.cpp
+                HEADERS += $$PWD/qprintengine_qws_p.h
+                SOURCES += $$PWD/qprintengine_qws.cpp
         }
 
         SOURCES += \
-                painting/qcolormap_qws.cpp \
-                painting/qpaintdevice_qws.cpp
+                $$PWD/qcolormap_qws.cpp \
+                $$PWD/qpaintdevice_qws.cpp
 }
 
 symbian {
         SOURCES += \
-		painting/qpaintengine_raster_symbian.cpp \
-                painting/qregion_s60.cpp \
-                painting/qcolormap_s60.cpp
+		$$PWD/qpaintengine_raster_symbian.cpp \
+                $$PWD/qregion_s60.cpp \
+                $$PWD/qcolormap_s60.cpp
 
         HEADERS += \
-                painting/qpaintengine_raster_symbian_p.h
+                $$PWD/qpaintengine_raster_symbian_p.h
 }
 
 x11|embedded {
         contains(QT_CONFIG,qtopia) {
             DEFINES += QT_NO_CUPS QT_NO_LPR
         } else {
-            SOURCES += painting/qcups.cpp
-            HEADERS += painting/qcups_p.h
+            SOURCES += $$PWD/qcups.cpp
+            HEADERS += $$PWD/qcups_p.h
         }
 } else {
         DEFINES += QT_NO_CUPS QT_NO_LPR
 }
 
 if(mmx|3dnow|sse|sse2|sse4|iwmmxt) {
-    HEADERS += painting/qdrawhelper_x86_p.h \
-               painting/qdrawhelper_mmx_p.h \
-               painting/qdrawhelper_sse_p.h \
-               painting/qdrawingprimitive_sse2_p.h
-    MMX_SOURCES += painting/qdrawhelper_mmx.cpp
-    MMX3DNOW_SOURCES += painting/qdrawhelper_mmx3dnow.cpp
-    SSE3DNOW_SOURCES += painting/qdrawhelper_sse3dnow.cpp
-    SSE_SOURCES += painting/qdrawhelper_sse.cpp
-    SSE2_SOURCES += painting/qdrawhelper_sse2.cpp
-    SSSE3_SOURCES += painting/qdrawhelper_ssse3.cpp
-    SSE4_SOURCES += painting/qpathgradient_p_sse4.cpp
-    IWMMXT_SOURCES += painting/qdrawhelper_iwmmxt.cpp
+    HEADERS += $$PWD/qdrawhelper_x86_p.h \
+               $$PWD/qdrawhelper_mmx_p.h \
+               $$PWD/qdrawhelper_sse_p.h \
+               $$PWD/qdrawingprimitive_sse2_p.h
+    MMX_SOURCES += $$PWD/qdrawhelper_mmx.cpp
+    MMX3DNOW_SOURCES += $$PWD/qdrawhelper_mmx3dnow.cpp
+    SSE3DNOW_SOURCES += $$PWD/qdrawhelper_sse3dnow.cpp
+    SSE_SOURCES += $$PWD/qdrawhelper_sse.cpp
+    SSE2_SOURCES += $$PWD/qdrawhelper_sse2.cpp
+    SSSE3_SOURCES += $$PWD/qdrawhelper_ssse3.cpp
+    SSE4_SOURCES += $$PWD/qpathgradient_p_sse4.cpp
+    IWMMXT_SOURCES += $$PWD/qdrawhelper_iwmmxt.cpp
 }
 
 x11 {
-        HEADERS += painting/qwindowsurface_x11_p.h
-        SOURCES += painting/qwindowsurface_x11.cpp
+        HEADERS += $$PWD/qwindowsurface_x11_p.h
+        SOURCES += $$PWD/qwindowsurface_x11.cpp
 }
 
 mac {
-        HEADERS += painting/qwindowsurface_mac_p.h
-        SOURCES += painting/qwindowsurface_mac.cpp
+        HEADERS += $$PWD/qwindowsurface_mac_p.h
+        SOURCES += $$PWD/qwindowsurface_mac.cpp
 }
 
 embedded {
-        HEADERS += painting/qwindowsurface_qws_p.h
-        SOURCES += painting/qwindowsurface_qws.cpp
+        HEADERS += $$PWD/qwindowsurface_qws_p.h
+        SOURCES += $$PWD/qwindowsurface_qws.cpp
 }
 
 
 
 symbian {
-        HEADERS += painting/qwindowsurface_s60_p.h \
-                    painting/qdrawhelper_arm_simd_p.h \
-                    painting/qgraphicssystemex_symbian_p.h
-        SOURCES += painting/qwindowsurface_s60.cpp \
-                    painting/qgraphicssystemex_symbian.cpp
+        HEADERS += $$PWD/qwindowsurface_s60_p.h \
+                    $$PWD/qdrawhelper_arm_simd_p.h \
+                    $$PWD/qgraphicssystemex_symbian_p.h
+        SOURCES += $$PWD/qwindowsurface_s60.cpp \
+                    $$PWD/qgraphicssystemex_symbian.cpp
         armccIfdefBlock = \
         "$${LITERAL_HASH}if defined(ARMV6)" \
         "MACRO QT_HAVE_ARM_SIMD" \
-        "SOURCEPATH 	painting" \
+        "SOURCEPATH 	$$PWD/painting" \
         "SOURCE			qdrawhelper_arm_simd.cpp" \
         "$${LITERAL_HASH}endif"
 
@@ -257,8 +257,8 @@ symbian {
         QMAKE_CXXFLAGS.ARMCC *= -O3
 }
 
-NEON_SOURCES += painting/qdrawhelper_neon.cpp
-NEON_HEADERS += painting/qdrawhelper_neon_p.h
+NEON_SOURCES += $$PWD/qdrawhelper_neon.cpp
+NEON_HEADERS += $$PWD/qdrawhelper_neon_p.h
 NEON_ASM += ../3rdparty/pixman/pixman-arm-neon-asm.S painting/qdrawhelper_neon_asm.S
 
 include($$PWD/../../3rdparty/zlib_dependency.pri)

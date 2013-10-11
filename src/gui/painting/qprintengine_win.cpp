@@ -1260,121 +1260,6 @@ void QWin32PrintEnginePrivate::updateOrigin()
     }
 }
 
-static bool isHPPcl(const QString& driverName)
-{
-    return (driverName.indexOf(QString::fromAscii("HP "), 0, Qt::CaseInsensitive) != -1
-        && driverName.indexOf(QString::fromAscii("PCL"), 0, Qt::CaseInsensitive) != -1);
-}
-
-static bool isHPUniversalPcl(const QString& driverName)
-{
-    return (driverName.indexOf(QString::fromAscii("HP Universal Printing PCL"), 0, Qt::CaseInsensitive) != -1);
-}
-
-static bool isHPUniversalPs(const QString& driverName)
-{
-    return (driverName.indexOf(QString::fromAscii("HP Universal Printing PS"), 0, Qt::CaseInsensitive) != -1);
-}
-
-static bool isHPHB(const QString& driverName)
-{
-    return driverName.startsWith(QString::fromAscii("HP "), Qt::CaseInsensitive) &&
-        driverName.endsWith(QString::fromAscii("HB"), Qt::CaseInsensitive);
-}
-
-
-static WORD matchToFitPresetPaper(POINT *paperSizes, WORD *paperTypes, int count, const QSizeF& wantedSize, const QString& driverName)
-{
-    Q_ASSERT(paperSizes && paperTypes);
-
-    int env_dl_idx = -1;
-    int a4_idx = -1;
-    int a3_idx = -1;
-    int letter_idx = -1;
-    int statment_idx = -1;
-
-    for (int i = 0; i < count; i++)
-    {
-        switch(paperTypes[i])
-        {
-        case DMPAPER_ENV_DL:
-            env_dl_idx = i;
-            break;
-        case DMPAPER_A4:
-            a4_idx = i;
-            break;
-        case DMPAPER_A3:
-            a3_idx = i;
-            break;
-        case DMPAPER_LETTER:
-            letter_idx = i;
-            break;
-        case DMPAPER_STATEMENT:
-            statment_idx = i;
-            break;
-        default:
-            break;
-        }
-    }
-
-    bool hpUniversalPS = isHPUniversalPs(driverName);
-
-    if (!isHPUniversalPcl(driverName) && !hpUniversalPS && env_dl_idx != -1 && paperSizes[env_dl_idx].x > wantedSize.width()
-        && paperSizes[env_dl_idx].y > wantedSize.height())
-        return paperTypes[env_dl_idx];
-
-    if (a4_idx != -1 && paperSizes[a4_idx].x > wantedSize.width()
-        && paperSizes[a4_idx].y > wantedSize.height())
-        return paperTypes[a4_idx];
-
-    if (a3_idx != -1 && paperSizes[a3_idx].x > wantedSize.width()
-        && paperSizes[a3_idx].y > wantedSize.height())
-        return paperTypes[a3_idx];
-
-
-    if (!hpUniversalPS && letter_idx != -1)
-        return paperTypes[letter_idx];
-
-    if (hpUniversalPS && statment_idx != -1)
-        return paperTypes[statment_idx];
-
-    return DMPAPER_USER;
-}
-
-static QString getPrinterName(const QString& printName)
-{
-    QString strDriverName;
-    HANDLE hPrinter = NULL;
-
-    BOOL bRet = OpenPrinterW((LPWSTR)printName.utf16(), &hPrinter, NULL);
-
-    if (!bRet)
-        return strDriverName;
-
-    DWORD nBytes = 0;
-
-    ::GetPrinterW(hPrinter, 2, NULL, 0, &nBytes);
-    if (nBytes > 0)
-    {
-        PRINTER_INFO_2W* pWinInfo = NULL;
-        pWinInfo = (PRINTER_INFO_2W*)new BYTE[nBytes];
-
-        bRet = ::GetPrinterW(hPrinter, 2, 
-            (LPBYTE)pWinInfo, nBytes, &nBytes);
-        if (bRet)
-        {
-            strDriverName = QString::fromUtf16(pWinInfo->pDriverName);
-        }
-
-        delete [] pWinInfo;
-    }
-
-    if (hPrinter)
-        ::ClosePrinter(hPrinter);
-
-    return strDriverName;
-}
-
 void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &value)
 {
     Q_D(QWin32PrintEngine);
@@ -1526,8 +1411,8 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
             size = DeviceCapabilities((const wchar_t *)d->name.utf16(),
                 (const wchar_t *)d->port.utf16(), DC_PAPERSIZE, (wchar_t *)papersizes, d->devMode);
 
-            const qreal EXACT_ERROR_SUM = 0.5 * 72/25.4; // 0.5 mm
-            const qreal ACCEPTABLE_ERROR_SUM = 4.2 * 72/25.4; // 4.2 mm
+            const qreal EXACT_ERROR_SUM = 0.55 * 72/25.4; // 0.55 mm
+            const qreal ACCEPTABLE_ERROR_SUM = 4.25 * 72/25.4; // 4.25 mm
 
             DWORD nIndex;
             for (nIndex = 0; nIndex < size; nIndex++)
@@ -1554,19 +1439,6 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
                         d->devMode->dmPaperSize = papers[nIndex];
                         break;
                     }
-                }
-            }
-
-            if (d->devMode->dmPaperSize == DMPAPER_USER)
-            {
-                const QString driverName = getPrinterName(d->name);
-
-                if(isHPPcl(driverName) || isHPUniversalPs(driverName) || isHPHB(driverName))
-                {
-                    // in 0.1mm
-                    QSizeF wantedSize(d->paper_size.width() / 72 * 254 - 42.5,
-                        d->paper_size.height() / 72 * 254 - 42.5);
-                    d->devMode->dmPaperSize = matchToFitPresetPaper(papersizes, papers, (int)size, wantedSize, driverName);
                 }
             }
 
