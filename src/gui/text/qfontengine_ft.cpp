@@ -2821,12 +2821,6 @@ void QFontEngineFT::addGlyphsToPath(glyph_t *glyphs, QFixedPoint *positions, int
         for (int gl = 0; gl < numGlyphs; gl++) {
             FT_UInt glyph = freetype->substituteForVerticalMode(glyphs[gl]);
 
-            FT_Load_Glyph(face, glyph, FT_LOAD_NO_BITMAP);
-
-            FT_GlyphSlot g = face->glyph;
-            if (g->format != FT_GLYPH_FORMAT_OUTLINE)
-                continue;
-
             rotation = freetype->isRotatedInVerticalMode(glyph);
             if (lastRotation != rotation)
             {
@@ -2840,6 +2834,12 @@ void QFontEngineFT::addGlyphsToPath(glyph_t *glyphs, QFixedPoint *positions, int
                 pos.x += xoff;
                 pos.y += yoff;
             }
+
+            FT_Load_Glyph(face, glyph, FT_LOAD_NO_BITMAP);
+
+            FT_GlyphSlot g = face->glyph;
+            if (g->format != FT_GLYPH_FORMAT_OUTLINE)
+                continue;
 
             QFreetypeFace::addGlyphToPath(face, g, pos, path, xsize, ysize);
         }
