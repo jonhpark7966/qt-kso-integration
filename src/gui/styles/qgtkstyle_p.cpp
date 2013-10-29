@@ -870,6 +870,35 @@ QStringList QGtkStylePrivate::extract_filter(const QString &rawFilter)
 
 extern QStringList qt_make_filter_list(const QString &filter);
 
+static void _gtk_file_chooser_filter_notify(GtkFileChooser *chooser,
+                                            GParamSpec *pspec,
+                                            QMap<GtkFileFilter *, QString> *filterMap)
+{
+    GtkFileFilter *gtkFilter = QGtkStylePrivate::gtk_file_chooser_get_filter(chooser);
+    QString strFilter = filterMap->value(gtkFilter);
+
+    int begin = strFilter.lastIndexOf(".");
+    int end = strFilter.lastIndexOf(")");
+    QString suffix(strFilter.constData() + begin, end - begin);
+
+    gchar *name = QGtkStylePrivate::gtk_file_chooser_get_filename(chooser);
+    QFileInfo fileInfo(QString::fromLocal8Bit(name));
+    g_free(name);
+
+    QString strName = fileInfo.fileName();
+    if (strName.isEmpty())
+        return ;
+
+    int pos = strName.lastIndexOf('.');
+    if (pos == -1)
+        return ;
+
+    strName = strName.left(pos);
+    strName += suffix;
+
+    QGtkStylePrivate::gtk_file_chooser_set_current_name(chooser, qPrintable(strName));
+}
+
 void QGtkStylePrivate::setupGtkFileChooser(GtkWidget* gtkFileChooser, QWidget *parent,
                                 const QString &dir, const QString &filter, QString *selectedFilter,
                                 QFileDialog::Options options, bool isSaveDialog,
@@ -1050,6 +1079,7 @@ QString QGtkStylePrivate::saveFilename(QWidget *parent, const QString &caption, 
                                                              GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
                                                              NULL);
     setupGtkFileChooser(gtkFileChooser, parent, dir, filter, selectedFilter, options, true, &filterMap);
+    g_signal_connect(gtkFileChooser, "notify::filter", G_CALLBACK(_gtk_file_chooser_filter_notify), &filterMap);
 
     QWidget modal_widget;
     modal_widget.setAttribute(Qt::WA_NoChildEventsForParent, true);
