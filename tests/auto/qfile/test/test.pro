@@ -2,7 +2,7 @@ load(qttest_p4)
 SOURCES  += ../tst_qfile.cpp
 
 wince*|symbian {
-    QT = core gui
+    QT = core
     files.sources += ..\\dosfile.txt ..\\noendofline.txt ..\\testfile.txt \
                      ..\\testlog.txt ..\\two.dots.file ..\\tst_qfile.cpp \
                      ..\\Makefile ..\\forCopying.txt ..\\forRenaming.txt

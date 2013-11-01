@@ -1,8 +1,8 @@
 load(qttest_p4)
 SOURCES  += tst_qdom.cpp
 
-QT = core xml
-QT -= gui
+QT = core
+#QT -= gui
 
 wince*|symbian: {
    addFiles.sources = testdata doubleNamespaces.xml umlaut.xml

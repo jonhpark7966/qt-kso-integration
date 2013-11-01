@@ -1,25 +1,25 @@
 # Qt accessibility module
 
 contains(QT_CONFIG, accessibility) {
-      HEADERS += accessible/qaccessible.h \
-                 accessible/qaccessible2.h \
-		 accessible/qaccessibleobject.h \
-		 accessible/qaccessiblewidget.h \
-		 accessible/qaccessibleplugin.h
-      SOURCES += accessible/qaccessible.cpp \
-                 accessible/qaccessible2.cpp \
-		 accessible/qaccessibleobject.cpp \
-		 accessible/qaccessiblewidget.cpp \
-		 accessible/qaccessibleplugin.cpp
+      HEADERS += $$PWD/qaccessible.h \
+                 $$PWD/qaccessible2.h \
+		 $$PWD/qaccessibleobject.h \
+		 $$PWD/qaccessiblewidget.h \
+		 $$PWD/qaccessibleplugin.h
+      SOURCES += $$PWD/qaccessible.cpp \
+                 $$PWD/qaccessible2.cpp \
+		 $$PWD/qaccessibleobject.cpp \
+		 $$PWD/qaccessiblewidget.cpp \
+		 $$PWD/qaccessibleplugin.cpp
 
       mac:!embedded {
-        HEADERS += accessible/qaccessible_mac_p.h
-        OBJECTIVE_SOURCES += accessible/qaccessible_mac.mm \
-                             accessible/qaccessible_mac_cocoa.mm
+        HEADERS += $$PWD/qaccessible_mac_p.h
+        OBJECTIVE_SOURCES += $$PWD/qaccessible_mac.mm \
+                             $$PWD/qaccessible_mac_cocoa.mm
       } else:win32 { 
-        SOURCES += accessible/qaccessible_win.cpp
+        SOURCES += $$PWD/qaccessible_win.cpp
       } else {
-        HEADERS += accessible/qaccessiblebridge.h
-        SOURCES += accessible/qaccessible_unix.cpp accessible/qaccessiblebridge.cpp
+        HEADERS += $$PWD/qaccessiblebridge.h
+        SOURCES += $$PWD/qaccessible_unix.cpp $$PWD/qaccessiblebridge.cpp
       }
 }

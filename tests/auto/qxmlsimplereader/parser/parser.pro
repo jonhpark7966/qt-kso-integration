@@ -10,6 +10,6 @@ HEADERS += parser.h
 SOURCES += main.cpp parser.cpp
 
 CONFIG  += qt warn_on debug
-QT += xml
+#QT += xml
 
 

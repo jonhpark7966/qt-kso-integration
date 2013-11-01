@@ -11,7 +11,9 @@ DEFINES += MAKE_PHONON_LIB
 
 PHONON_DIR = $$QT_SOURCE_TREE/src/3rdparty/phonon/phonon
 
-unix:QMAKE_PKGCONFIG_REQUIRES = QtCore QtGui QtNetwork
+unix:QMAKE_PKGCONFIG_REQUIRES = QtCore QtNetwork
+
+#win32-msvc*:QMAKE_USE_PGO = yes
 
 # Input
 HEADERS += $$PHONON_DIR/abstractaudiooutput.h \

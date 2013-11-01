@@ -3,7 +3,7 @@ load(qttest_p4)
 SOURCES += tst_qsslsocket.cpp
 !wince*:win32:LIBS += -lws2_32
 QT += network
-QT -= gui
+#QT -= gui
 
 TARGET = tst_qsslsocket
 

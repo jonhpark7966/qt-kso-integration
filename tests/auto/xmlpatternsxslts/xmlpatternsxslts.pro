@@ -10,7 +10,7 @@ SOURCES += ../xmlpatternsxqts/tst_suitetest.cpp
 LIBS += -l$$XMLPATTERNS_SDK
 }
 
-QT += xml
+#QT += xml
 INCLUDEPATH += $$(QTSRCDIR)/tests/auto/xmlpatternssdk  \
                $$(QTDIR)/include/QtXmlPatterns/private \
                $$(QTSRCDIR)/tests/auto/xmlpatternsxqts \

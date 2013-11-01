@@ -536,6 +536,12 @@ void Configure::parseCmdLine()
         else if (configCmdLine.at(i) == "-no-ltcg") {
             dictionary[ "LTCG" ] = "no";
         }
+        else if (configCmdLine.at(i).compare("-ltcg=pginstrument", Qt::CaseInsensitive) == 0) {
+            dictionary[ "LTCG" ] = "pginstrument";
+        }
+        else if (configCmdLine.at(i).compare("-ltcg=pgoptimize", Qt::CaseInsensitive) == 0) {
+            dictionary[ "LTCG" ] = "pgoptimize";
+        }
         else if (configCmdLine.at(i) == "-mp") {
             dictionary[ "MSVC_MP" ] = "yes";
         }
@@ -2930,6 +2936,11 @@ void Configure::generateCachefile()
 
         if (dictionary[ "LTCG" ] == "yes")
             configStream << " ltcg";
+        else if (dictionary[ "LTCG" ] == "pginstrument")
+            configStream << " ltcg_pginstrument";
+        else if (dictionary[ "LTCG" ] == "pgoptimize")
+            configStream << " ltcg_pgoptimize";
+
         if (dictionary[ "MSVC_MP" ] == "yes")
             configStream << " msvc_mp";
         if (dictionary[ "STL" ] == "yes")
@@ -3237,9 +3248,11 @@ void Configure::generateConfigfiles()
         tmpFile.flush();
 
         // Replace old qconfig.h with new one
-        ::SetFileAttributes((wchar_t*)outName.utf16(), FILE_ATTRIBUTE_NORMAL);
-        QFile::remove(outName);
-        tmpFile.copy(outName);
+        if (dictionary[ "LTCG" ] != "pgoptimize") {
+            ::SetFileAttributes((wchar_t*)outName.utf16(), FILE_ATTRIBUTE_NORMAL);
+            QFile::remove(outName);
+            tmpFile.copy(outName);
+        }
         tmpFile.close();
     }
 
@@ -3328,9 +3341,11 @@ void Configure::generateConfigfiles()
         tmpFile2.flush();
 
         // Replace old qconfig.cpp with new one
-        ::SetFileAttributes((wchar_t*)outName.utf16(), FILE_ATTRIBUTE_NORMAL);
-        QFile::remove(outName);
-        tmpFile2.copy(outName);
+        if (dictionary[ "LTCG" ] != "pgoptimize") {
+            ::SetFileAttributes((wchar_t*)outName.utf16(), FILE_ATTRIBUTE_NORMAL);
+            QFile::remove(outName);
+            tmpFile2.copy(outName);
+        }
         tmpFile2.close();
     }
 
@@ -3343,12 +3358,15 @@ void Configure::generateConfigfiles()
         tmpStream.flush();
         tmpFile3.flush();
 
-        outName = buildPath + "/src/corelib/global/qconfig_eval.cpp";
-        ::SetFileAttributes((wchar_t*)outName.utf16(), FILE_ATTRIBUTE_NORMAL);
-        QFile::remove(outName);
 
-        if (dictionary["EDITION"] == "Evaluation" || qmakeDefines.contains("QT_EVAL"))
+        if (dictionary[ "LTCG" ] != "pgoptimize") {
+            outName = buildPath + "/src/corelib/global/qconfig_eval.cpp";
+            ::SetFileAttributes((wchar_t*)outName.utf16(), FILE_ATTRIBUTE_NORMAL);
+            QFile::remove(outName);
+
+            if (dictionary["EDITION"] == "Evaluation" || qmakeDefines.contains("QT_EVAL"))
             tmpFile3.copy(outName);
+    }
         tmpFile3.close();
     }
 }

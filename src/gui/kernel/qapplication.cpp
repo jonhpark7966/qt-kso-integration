@@ -727,10 +727,6 @@ void QApplicationPrivate::process_cmdline()
     \sa arguments()
 */
 
-QApplication::QApplication(int &argc, char **argv)
-    : QCoreApplication(*new QApplicationPrivate(argc, argv, GuiClient))
-{ Q_D(QApplication); d->construct(); }
-
 QApplication::QApplication(int &argc, char **argv, int _internal)
     : QCoreApplication(*new QApplicationPrivate(argc, argv, GuiClient))
 { Q_D(QApplication); d->construct(); QApplicationPrivate::app_compile_version = _internal;}
@@ -760,11 +756,6 @@ QApplication::QApplication(int &argc, char **argv, int _internal)
 
     \snippet doc/src/snippets/code/src_gui_kernel_qapplication.cpp 0
 */
-
-QApplication::QApplication(int &argc, char **argv, bool GUIenabled )
-    : QCoreApplication(*new QApplicationPrivate(argc, argv, GUIenabled ? GuiClient : Tty))
-{ Q_D(QApplication); d->construct(); }
-
 QApplication::QApplication(int &argc, char **argv, bool GUIenabled , int _internal)
     : QCoreApplication(*new QApplicationPrivate(argc, argv, GUIenabled ? GuiClient : Tty))
 { Q_D(QApplication); d->construct();  QApplicationPrivate::app_compile_version = _internal;}
@@ -784,10 +775,6 @@ QApplication::QApplication(int &argc, char **argv, bool GUIenabled , int _intern
     makes this application the server (equivalent to running with the
     \c -qws option).
 */
-QApplication::QApplication(int &argc, char **argv, Type type)
-    : QCoreApplication(*new QApplicationPrivate(argc, argv, type))
-{ Q_D(QApplication); d->construct(); }
-
 QApplication::QApplication(int &argc, char **argv, Type type , int _internal)
     : QCoreApplication(*new QApplicationPrivate(argc, argv, type))
 { Q_D(QApplication); d->construct();  QApplicationPrivate::app_compile_version = _internal;}

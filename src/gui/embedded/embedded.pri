@@ -5,124 +5,124 @@ embedded {
 	LIBS -= -dl
 	KERNEL_P        = kernel
 
-	!mac:HEADERS += embedded/qsoundqss_qws.h
+	!mac:HEADERS += $$PWD/qsoundqss_qws.h
 	HEADERS += \
-		    embedded/qcopchannel_qws.h \
-		    embedded/qdecoration_qws.h \
-		    embedded/qdecorationfactory_qws.h \
-		    embedded/qdecorationplugin_qws.h \
-		    embedded/qdirectpainter_qws.h \
-		    embedded/qlock_p.h \
-		    embedded/qscreen_qws.h \
-		    embedded/qscreenmulti_qws_p.h \
-		    embedded/qscreenproxy_qws.h \
-		    embedded/qwindowsystem_qws.h \
-		    embedded/qwindowsystem_p.h \
-		    embedded/qwscommand_qws_p.h \
-		    embedded/qwscursor_qws.h \
-		    embedded/qwsdisplay_qws.h \
-		    embedded/qwsdisplay_qws_p.h \
-		    embedded/qwsevent_qws.h \
-		    embedded/qwsmanager_qws.h \
-		    embedded/qwsmanager_p.h \
-		    embedded/qwsproperty_qws.h \
-		    embedded/qwsprotocolitem_qws.h \
-                    embedded/qtransportauth_qws.h \
-                    embedded/qtransportauth_qws_p.h \
-                    embedded/qtransportauthdefs_qws.h \
-		    embedded/qwssocket_qws.h \
-		    embedded/qwslock_p.h \
-		    embedded/qwsutils_qws.h \
-                    embedded/qwssharedmemory_p.h \
-		    embedded/qwssignalhandler_p.h \
-		    embedded/qwsembedwidget.h
+		    $$PWD/qcopchannel_qws.h \
+		    $$PWD/qdecoration_qws.h \
+		    $$PWD/qdecorationfactory_qws.h \
+		    $$PWD/qdecorationplugin_qws.h \
+		    $$PWD/qdirectpainter_qws.h \
+		    $$PWD/qlock_p.h \
+		    $$PWD/qscreen_qws.h \
+		    $$PWD/qscreenmulti_qws_p.h \
+		    $$PWD/qscreenproxy_qws.h \
+		    $$PWD/qwindowsystem_qws.h \
+		    $$PWD/qwindowsystem_p.h \
+		    $$PWD/qwscommand_qws_p.h \
+		    $$PWD/qwscursor_qws.h \
+		    $$PWD/qwsdisplay_qws.h \
+		    $$PWD/qwsdisplay_qws_p.h \
+		    $$PWD/qwsevent_qws.h \
+		    $$PWD/qwsmanager_qws.h \
+		    $$PWD/qwsmanager_p.h \
+		    $$PWD/qwsproperty_qws.h \
+		    $$PWD/qwsprotocolitem_qws.h \
+                    $$PWD/qtransportauth_qws.h \
+                    $$PWD/qtransportauth_qws_p.h \
+                    $$PWD/qtransportauthdefs_qws.h \
+		    $$PWD/qwssocket_qws.h \
+		    $$PWD/qwslock_p.h \
+		    $$PWD/qwsutils_qws.h \
+                    $$PWD/qwssharedmemory_p.h \
+		    $$PWD/qwssignalhandler_p.h \
+		    $$PWD/qwsembedwidget.h
 
-	 !mac:SOURCES += embedded/qsoundqss_qws.cpp
+	 !mac:SOURCES += $$PWD/qsoundqss_qws.cpp
          SOURCES +=  \
-		    embedded/qcopchannel_qws.cpp \
-		    embedded/qdecoration_qws.cpp \
-		    embedded/qdecorationfactory_qws.cpp \
-		    embedded/qdecorationplugin_qws.cpp \
-		    embedded/qdirectpainter_qws.cpp \
-		    embedded/qlock.cpp \
-		    embedded/qscreen_qws.cpp \
-		    embedded/qscreenmulti_qws.cpp \
-		    embedded/qscreenproxy_qws.cpp \
-		    embedded/qwindowsystem_qws.cpp \
-		    embedded/qwscommand_qws.cpp \
-		    embedded/qwscursor_qws.cpp \
-		    embedded/qwsevent_qws.cpp \
-		    embedded/qwsmanager_qws.cpp \
-		    embedded/qwsproperty_qws.cpp \
-                    embedded/qtransportauth_qws.cpp \
-		    embedded/qwslock.cpp \
-                    embedded/qwssharedmemory.cpp \
-		    embedded/qwssocket_qws.cpp \
-		    embedded/qwssignalhandler.cpp \
-		    embedded/qwsembedwidget.cpp
+		    $$PWD/qcopchannel_qws.cpp \
+		    $$PWD/qdecoration_qws.cpp \
+		    $$PWD/qdecorationfactory_qws.cpp \
+		    $$PWD/qdecorationplugin_qws.cpp \
+		    $$PWD/qdirectpainter_qws.cpp \
+		    $$PWD/qlock.cpp \
+		    $$PWD/qscreen_qws.cpp \
+		    $$PWD/qscreenmulti_qws.cpp \
+		    $$PWD/qscreenproxy_qws.cpp \
+		    $$PWD/qwindowsystem_qws.cpp \
+		    $$PWD/qwscommand_qws.cpp \
+		    $$PWD/qwscursor_qws.cpp \
+		    $$PWD/qwsevent_qws.cpp \
+		    $$PWD/qwsmanager_qws.cpp \
+		    $$PWD/qwsproperty_qws.cpp \
+                    $$PWD/qtransportauth_qws.cpp \
+		    $$PWD/qwslock.cpp \
+                    $$PWD/qwssharedmemory.cpp \
+		    $$PWD/qwssocket_qws.cpp \
+		    $$PWD/qwssignalhandler.cpp \
+		    $$PWD/qwsembedwidget.cpp
 
         contains(QT_CONFIG,sxe)|contains(QT_CONFIG,qtopia) {
-            SOURCES += embedded/qunixsocket.cpp embedded/qunixsocketserver.cpp
-            HEADERS += embedded/qunixsocket_p.h embedded/qunixsocketserver_p.h
+            SOURCES += $$PWD/qunixsocket.cpp $$PWD/qunixsocketserver.cpp
+            HEADERS += $$PWD/qunixsocket_p.h $$PWD/qunixsocketserver_p.h
         }
 
 #
 # Decorations
 #
     contains( decorations, default ) {
-    	HEADERS += embedded/qdecorationdefault_qws.h
-    	SOURCES += embedded/qdecorationdefault_qws.cpp
+    	HEADERS += $$PWD/qdecorationdefault_qws.h
+    	SOURCES += $$PWD/qdecorationdefault_qws.cpp
     }
     contains( decorations, styled ) {
-    	HEADERS += embedded/qdecorationstyled_qws.h
-    	SOURCES += embedded/qdecorationstyled_qws.cpp
+    	HEADERS += $$PWD/qdecorationstyled_qws.h
+    	SOURCES += $$PWD/qdecorationstyled_qws.cpp
     }
 
     contains( decorations, windows ) {
-    	HEADERS += embedded/qdecorationwindows_qws.h
-    	SOURCES += embedded/qdecorationwindows_qws.cpp
+    	HEADERS += $$PWD/qdecorationwindows_qws.h
+    	SOURCES += $$PWD/qdecorationwindows_qws.cpp
     }
 
 #
 # Qt for Embedded Linux Drivers
 #
-	HEADERS += embedded/qscreendriverplugin_qws.h \
-		    embedded/qscreendriverfactory_qws.h \
-		    embedded/qkbd_qws.h \
-		    embedded/qkbd_qws_p.h \
-		    embedded/qkbd_defaultmap_qws_p.h \
-		    embedded/qkbddriverplugin_qws.h \
-		    embedded/qkbddriverfactory_qws.h \
-		    embedded/qmouse_qws.h \
-		    embedded/qmousedriverplugin_qws.h \
-		    embedded/qmousedriverfactory_qws.h
+	HEADERS += $$PWD/qscreendriverplugin_qws.h \
+		    $$PWD/qscreendriverfactory_qws.h \
+		    $$PWD/qkbd_qws.h \
+		    $$PWD/qkbd_qws_p.h \
+		    $$PWD/qkbd_defaultmap_qws_p.h \
+		    $$PWD/qkbddriverplugin_qws.h \
+		    $$PWD/qkbddriverfactory_qws.h \
+		    $$PWD/qmouse_qws.h \
+		    $$PWD/qmousedriverplugin_qws.h \
+		    $$PWD/qmousedriverfactory_qws.h
 
-	SOURCES += embedded/qscreendriverplugin_qws.cpp \
-		    embedded/qscreendriverfactory_qws.cpp \
-		    embedded/qkbd_qws.cpp \
-		    embedded/qkbddriverplugin_qws.cpp \
-		    embedded/qkbddriverfactory_qws.cpp \
-		    embedded/qmouse_qws.cpp \
-		    embedded/qmousedriverplugin_qws.cpp \
-		    embedded/qmousedriverfactory_qws.cpp
+	SOURCES += $$PWD/qscreendriverplugin_qws.cpp \
+		    $$PWD/qscreendriverfactory_qws.cpp \
+		    $$PWD/qkbd_qws.cpp \
+		    $$PWD/qkbddriverplugin_qws.cpp \
+		    $$PWD/qkbddriverfactory_qws.cpp \
+		    $$PWD/qmouse_qws.cpp \
+		    $$PWD/qmousedriverplugin_qws.cpp \
+		    $$PWD/qmousedriverfactory_qws.cpp
 
 #
 # Graphics drivers
 #
         contains( gfx-drivers, linuxfb ) {
-	        HEADERS += embedded/qscreenlinuxfb_qws.h
-		SOURCES += embedded/qscreenlinuxfb_qws.cpp
+	        HEADERS += $$PWD/qscreenlinuxfb_qws.h
+		SOURCES += $$PWD/qscreenlinuxfb_qws.cpp
 	}
 
         contains( gfx-drivers, qnx ) {
-                HEADERS += embedded/qscreenqnx_qws.h
-                SOURCES += embedded/qscreenqnx_qws.cpp
+                HEADERS += $$PWD/qscreenqnx_qws.h
+                SOURCES += $$PWD/qscreenqnx_qws.cpp
                 LIBS += -lgf
         }
 
 	contains( gfx-drivers, qvfb ) {
-		HEADERS += embedded/qscreenvfb_qws.h
-		SOURCES += embedded/qscreenvfb_qws.cpp
+		HEADERS += $$PWD/qscreenvfb_qws.h
+		SOURCES += $$PWD/qscreenvfb_qws.cpp
 	}
 
 
@@ -135,8 +135,8 @@ embedded {
 	}
 
 	contains( gfx-drivers, transformed ) {
-		HEADERS += embedded/qscreentransformed_qws.h
-		SOURCES += embedded/qscreentransformed_qws.cpp
+		HEADERS += $$PWD/qscreentransformed_qws.h
+		SOURCES += $$PWD/qscreentransformed_qws.cpp
 	}
 
 	contains( gfx-drivers, directfb ) {
@@ -147,64 +147,64 @@ embedded {
 # Keyboard drivers
 #
 	contains( kbd-drivers, qvfb ) {
-		HEADERS +=embedded/qkbdvfb_qws.h
-		SOURCES +=embedded/qkbdvfb_qws.cpp
+		HEADERS +=$$PWD/qkbdvfb_qws.h
+		SOURCES +=$$PWD/qkbdvfb_qws.cpp
 		!contains( kbd-drivers, qvfb ) {
 			kbd-drivers += qvfb
 		}
         }
 
 	contains( kbd-drivers, tty ) {
-		HEADERS +=embedded/qkbdtty_qws.h
-		SOURCES +=embedded/qkbdtty_qws.cpp
+		HEADERS +=$$PWD/qkbdtty_qws.h
+		SOURCES +=$$PWD/qkbdtty_qws.cpp
 	}
 
 	contains( kbd-drivers, linuxinput ) {
-		HEADERS +=embedded/qkbdlinuxinput_qws.h
-		SOURCES +=embedded/qkbdlinuxinput_qws.cpp
+		HEADERS +=$$PWD/qkbdlinuxinput_qws.h
+		SOURCES +=$$PWD/qkbdlinuxinput_qws.cpp
 	}
 
 	contains( kbd-drivers, um ) {
-		HEADERS +=embedded/qkbdum_qws.h
-		SOURCES +=embedded/qkbdum_qws.cpp
+		HEADERS +=$$PWD/qkbdum_qws.h
+		SOURCES +=$$PWD/qkbdum_qws.cpp
 	}
 
         contains( kbd-drivers, qnx ) {
-                HEADERS += embedded/qkbdqnx_qws.h
-                SOURCES += embedded/qkbdqnx_qws.cpp
+                HEADERS += $$PWD/qkbdqnx_qws.h
+                SOURCES += $$PWD/qkbdqnx_qws.cpp
         }
 
 #
 # Mouse drivers
 #
 	contains( mouse-drivers, qvfb ) {
-		HEADERS +=embedded/qmousevfb_qws.h
-		SOURCES +=embedded/qmousevfb_qws.cpp
+		HEADERS +=$$PWD/qmousevfb_qws.h
+		SOURCES +=$$PWD/qmousevfb_qws.cpp
 	}
 
 	contains( mouse-drivers, pc ) {
-		HEADERS +=embedded/qmousepc_qws.h
-		SOURCES +=embedded/qmousepc_qws.cpp
+		HEADERS +=$$PWD/qmousepc_qws.h
+		SOURCES +=$$PWD/qmousepc_qws.cpp
 	}
 
 	contains( mouse-drivers, linuxtp ) {
-		HEADERS +=embedded/qmouselinuxtp_qws.h
-		SOURCES +=embedded/qmouselinuxtp_qws.cpp
+		HEADERS +=$$PWD/qmouselinuxtp_qws.h
+		SOURCES +=$$PWD/qmouselinuxtp_qws.cpp
 	}
 
 	contains( mouse-drivers, tslib ) {
 		LIBS_PRIVATE += -lts
-		HEADERS +=embedded/qmousetslib_qws.h
-		SOURCES +=embedded/qmousetslib_qws.cpp
+		HEADERS +=$$PWD/qmousetslib_qws.h
+		SOURCES +=$$PWD/qmousetslib_qws.cpp
 	}
 
 	contains( mouse-drivers, linuxinput ) {
-		HEADERS +=embedded/qmouselinuxinput_qws.h
-		SOURCES +=embedded/qmouselinuxinput_qws.cpp
+		HEADERS +=$$PWD/qmouselinuxinput_qws.h
+		SOURCES +=$$PWD/qmouselinuxinput_qws.cpp
         }
 
         contains( mouse-drivers, qnx ) {
-                HEADERS += embedded/qmouseqnx_qws.h
-                SOURCES += embedded/qmouseqnx_qws.cpp
+                HEADERS += $$PWD/qmouseqnx_qws.h
+                SOURCES += $$PWD/qmouseqnx_qws.cpp
         }
 }

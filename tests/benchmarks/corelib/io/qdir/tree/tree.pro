@@ -8,4 +8,4 @@ INCLUDEPATH += .
 SOURCES += bench_qdir_tree.cpp
 RESOURCES += bench_qdir_tree.qrc
 
-QT -= gui
+#QT -= gui

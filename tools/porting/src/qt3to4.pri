@@ -1,7 +1,7 @@
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-QT += XML
+#QT += XML
 HEADERS +=  $$PWD/smallobject.h             \
             $$PWD/tokenengine.h             \
             $$PWD/tokenizer.h               \

@@ -1,7 +1,7 @@
 TARGET = QtDBus
 QPRO_PWD = $$PWD
-QT = core \
-    xml
+QT = core
+
 CONFIG += link_pkgconfig
 DEFINES += QT_BUILD_DBUS_LIB \
     DBUS_API_SUBJECT_TO_CHANGE

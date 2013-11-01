@@ -1,6 +1,6 @@
 load(qttest_p4)
 SOURCES += ../tst_selftests.cpp
-QT += core xml
+QT += core
 
 TARGET = ../tst_selftests
 

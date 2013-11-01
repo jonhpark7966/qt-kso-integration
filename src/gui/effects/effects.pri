@@ -1,4 +1,4 @@
-HEADERS += effects/qgraphicseffect.h \
-    effects/qgraphicseffect_p.h
+HEADERS += $$PWD/qgraphicseffect.h \
+    $$PWD/qgraphicseffect_p.h
 
-SOURCES += effects/qgraphicseffect.cpp
+SOURCES += $$PWD/qgraphicseffect.cpp

@@ -18,6 +18,6 @@ symbian*: {
     DEPLOYMENT += testData
 }
 
-QT += xml svg 
+QT += svg 
 
 

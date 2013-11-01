@@ -8,7 +8,7 @@ wince* {
     deploy.sources += 4.wav
     DEPLOYMENT = deploy
     DEFINES += SRCDIR=\\\"\\\"
-    QT += gui
+    QT += core
 } else {
     !symbian:DEFINES += SRCDIR=\\\"$$PWD/\\\"
 }

@@ -1,3 +1,3 @@
 load(qttest_p4)
-QT = core gui script
+QT = core script
 SOURCES  += tst_qscriptextqobject.cpp

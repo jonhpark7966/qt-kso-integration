@@ -1,45 +1,45 @@
 # Qt util module
 
 HEADERS += \
-        util/qsystemtrayicon.h \
-        util/qcompleter.h \
-        util/qcompleter_p.h \
-        util/qdesktopservices.h \
-        util/qsystemtrayicon_p.h \
-        util/qundogroup.h \
-        util/qundostack.h \
-        util/qundostack_p.h \
-        util/qundoview.h
+        $$PWD/qsystemtrayicon.h \
+        $$PWD/qcompleter.h \
+        $$PWD/qcompleter_p.h \
+        $$PWD/qdesktopservices.h \
+        $$PWD/qsystemtrayicon_p.h \
+        $$PWD/qundogroup.h \
+        $$PWD/qundostack.h \
+        $$PWD/qundostack_p.h \
+        $$PWD/qundoview.h
 
 SOURCES += \
-        util/qsystemtrayicon.cpp \
-        util/qcompleter.cpp \
-        util/qdesktopservices.cpp \
-        util/qundogroup.cpp \
-        util/qundostack.cpp \
-        util/qundoview.cpp
+        $$PWD/qsystemtrayicon.cpp \
+        $$PWD/qcompleter.cpp \
+        $$PWD/qdesktopservices.cpp \
+        $$PWD/qundogroup.cpp \
+        $$PWD/qundostack.cpp \
+        $$PWD/qundoview.cpp
 
 
 wince* {
 		SOURCES += \
-				util/qsystemtrayicon_wince.cpp
+				$$PWD/qsystemtrayicon_wince.cpp
 } else:win32 {
 		SOURCES += \
-				util/qsystemtrayicon_win.cpp
+				$$PWD/qsystemtrayicon_win.cpp
 }
 
 unix:x11 {
 		SOURCES += \
-				util/qsystemtrayicon_x11.cpp
+				$$PWD/qsystemtrayicon_x11.cpp
 }
 
 embedded {
 		SOURCES += \
-				util/qsystemtrayicon_qws.cpp
+				$$PWD/qsystemtrayicon_qws.cpp
 }
 
 !embedded:!x11:mac {
-		OBJECTIVE_SOURCES += util/qsystemtrayicon_mac.mm
+		OBJECTIVE_SOURCES += $$PWD/qsystemtrayicon_mac.mm
 }
 
 symbian {

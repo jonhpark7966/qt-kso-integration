@@ -1481,19 +1481,19 @@ bool VCXLinkerTool::parseOption(const char* option)
             else if (*str == 'N')
                 LinkStatus = _False;
 #ifndef Q_OS_WIN
-            else if (strncasecmp(str, "pginstrument", 12))
+            else if (!strncasecmp(str, "pginstrument", 12))
                 LinkTimeCodeGeneration = "PGInstrument";
-            else if (strncasecmp(str, "pgoptimize", 10))
+            else if (!strncasecmp(str, "pgoptimize", 10))
                 LinkTimeCodeGeneration = "PGOptimization";
-            else if (strncasecmp(str, "pgupdate", 8 ))
+            else if (!strncasecmp(str, "pgupdate", 8 ))
                 LinkTimeCodeGeneration = "PGUpdate";
 #else
 
-            else if (_stricmp(str, "pginstrument"))
+            else if (!_stricmp(str, "pginstrument"))
                 LinkTimeCodeGeneration = "PGInstrument";
-            else if (_stricmp(str, "pgoptimize"))
+            else if (!_stricmp(str, "pgoptimize"))
                 LinkTimeCodeGeneration = "PGOptimization";
-            else if (_stricmp(str, "pgupdate"))
+            else if (!_stricmp(str, "pgupdate"))
                 LinkTimeCodeGeneration = "PGUpdate";
 #endif
         }

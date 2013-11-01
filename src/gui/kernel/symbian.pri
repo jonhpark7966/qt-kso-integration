@@ -1,7 +1,7 @@
 symbian {
     contains(QT_CONFIG, s60): LIBS+= $$QMAKE_LIBS_S60
-    RESOURCES += symbian/symbianresources.qrc
+    RESOURCES += $$PWD/symbianresources.qrc
 
-    HEADERS += symbian/qsymbianevent.h
-    SOURCES += symbian/qsymbianevent.cpp
+    HEADERS += $$PWD/symbian/qsymbianevent.h
+    SOURCES += $$PWD/symbian/qsymbianevent.cpp
 }

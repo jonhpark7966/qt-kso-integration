@@ -1,2 +1,2 @@
-QT          += xml
+#QT          += xml
 SOURCES     = main.cpp

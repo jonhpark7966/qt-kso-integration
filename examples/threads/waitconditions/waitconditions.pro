@@ -4,7 +4,7 @@
 
 TEMPLATE = app
 CONFIG -= moc app_bundle
-QT -= gui
+#QT -= gui
 DEPENDPATH += .
 INCLUDEPATH += .
 

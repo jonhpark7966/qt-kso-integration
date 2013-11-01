@@ -14,7 +14,7 @@ target.path = $$[QT_INSTALL_BINS]
 INSTALLS += target
 
 wince* {
-    QT += xml
+    #QT += xml
 
     contains(QT_CONFIG, scripttools) {
         QT += scripttools

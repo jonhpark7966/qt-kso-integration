@@ -17,5 +17,5 @@ INCLUDEPATH += $$(QTDIR)/include/QtXmlPatterns/private      \
                ../xmlpatternssdk/
 
 CONFIG += testlib
-QT += xml
+#QT += xml
 TARGET = tst_xmlpatternsxqts

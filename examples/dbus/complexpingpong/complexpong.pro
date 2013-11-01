@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-QT -= gui
+#QT -= gui
 CONFIG += qdbus
 
 # Input

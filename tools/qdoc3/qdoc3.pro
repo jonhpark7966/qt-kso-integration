@@ -10,7 +10,7 @@ qdoc_bootstrapped {
     DEFINES -= QT_NO_CAST_FROM_ASCII
     DEFINES += QT_NO_TRANSLATION
 } else {
-    QT = core xml
+    QT = core
     CONFIG += console
     CONFIG -= debug_and_release_target
 }

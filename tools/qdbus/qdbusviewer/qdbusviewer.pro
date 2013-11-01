@@ -15,7 +15,7 @@ RESOURCES += qdbusviewer.qrc
 DESTDIR = ../../../bin
 
 CONFIG += qdbus
-QT += xml
+#QT += xml
 
 target.path=$$[QT_INSTALL_BINS]
 INSTALLS += target

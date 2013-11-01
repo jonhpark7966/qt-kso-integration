@@ -15,6 +15,8 @@ win32-msvc*|win32-icc:QMAKE_LFLAGS += /BASE:0x64000000
 
 unix:QMAKE_PKGCONFIG_REQUIRES = QtCore
 
+#win32-msvc*:QMAKE_USE_PGO = yes
+
 include(../qbase.pri)
 include(access/access.pri)
 include(bearer/bearer.pri)

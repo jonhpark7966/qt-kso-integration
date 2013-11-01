@@ -1,5 +1,5 @@
 SOURCES += main.cpp
-QT -= gui
+#QT -= gui
 
 wince*|symbian:{
    htmlfiles.sources = *.html
