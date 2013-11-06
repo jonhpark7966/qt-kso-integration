@@ -194,6 +194,9 @@ public:
     virtual void drawImage(const QRectF &, const QImage &, const QRectF &, 
                         const QImageEffects *,
                         Qt::ImageConversionFlags flags = Qt::AutoColor);
+    virtual void drawImage(const QRectF &, const QByteArray &, const QRectF &,
+                        const QImageEffects *,
+                        Qt::ImageConversionFlags flags = Qt::AutoColor);
 
     void setPaintDevice(QPaintDevice *device);
     QPaintDevice *paintDevice() const;

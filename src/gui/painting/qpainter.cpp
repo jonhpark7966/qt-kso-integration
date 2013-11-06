@@ -5796,6 +5796,18 @@ void QPainter::drawImage(const QRectF &targetRect, const QImage &image, const QR
     d->engine->drawImage(QRectF(x, y, w, h), image, QRectF(sx, sy, sw, sh), userData, flags);
 }
 
+void QPainter::drawImage(const QRectF &targetRect, const QByteArray &bytes, const QRectF &sourceRect,
+                        const QImageEffects *effects/* = NULL*/,
+                        Qt::ImageConversionFlags flags /*= Qt::AutoColor*/)
+{
+    Q_D(QPainter);
+    if (!d->engine || bytes.isNull())
+        return;
+
+    d->updateState(d->state);
+    d->engine->drawImage(targetRect, bytes, sourceRect, effects, flags);
+}
+
 void QPainter::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)
 {
     Q_D(QPainter);

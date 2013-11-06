@@ -669,11 +669,20 @@ void QPaintEngine::drawImage(const QRectF &targetRect, const QImage &image, cons
     imgPainter.setWindow(originPainter->window());
     imgPainter.setWorldTransform(originPainter->worldTransform());
     imgPainter.drawImage(targetRect, image, sourceRect, userData, flags);
+    imgPainter.end();
 
     originPainter->save();
     originPainter->resetTransform();
     originPainter->drawImage(targetRectDev, effectImg, effectImg.rect(), flags);
     originPainter->restore();
+}
+
+
+void QPaintEngine::drawImage(const QRectF &/*targetRect*/, const QByteArray &/*bytes*/, const QRectF &/*sourceRect*/,
+                            const QImageEffects * /*userData*/,
+                            Qt::ImageConversionFlags /*flags = Qt::AutoColor*/)
+{
+    Q_ASSERT(false);
 }
 
 drawMetafileFunc* QPaintEngine::pDrawMetafileFunc = NULL;

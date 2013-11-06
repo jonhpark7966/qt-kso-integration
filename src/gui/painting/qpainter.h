@@ -387,6 +387,9 @@ public:
                    Qt::ImageConversionFlags flags = Qt::AutoColor);
     void drawImage(const QRectF &r, const QImage &pm, const QRectF &sr, const QImageEffects *userData,
                    Qt::ImageConversionFlags flags = Qt::AutoColor); 
+    void drawImage(const QRectF &targetRect, const QByteArray &bytes, const QRectF &sourceRect,
+                   const QImageEffects *effects = NULL, Qt::ImageConversionFlags flags = Qt::AutoColor);
+
     inline void drawImage(const QRect &targetRect, const QImage &image, const QRect &sourceRect,
                           Qt::ImageConversionFlags flags = Qt::AutoColor);
     inline void drawImage(const QPointF &p, const QImage &image, const QRectF &sr,
