@@ -5748,6 +5748,7 @@ void QPainter::drawImage(const QRectF &targetRect, const QImage &image, const QR
         p.setWindow(window());
         p.setWorldTransform(worldTransform());
         p.drawImage(targetRect, image, sourceRect, userData, flags);
+        p.end();
 
         save();
         resetTransform();
@@ -5811,6 +5812,18 @@ void QPainter::drawImage(const QRectF &targetRect, const QImage &image, const QR
         return;
 
     d->extended->drawImage(QRectF(x, y, w, h), image, QRectF(sx, sy, sw, sh), userData, flags);
+}
+
+void QPainter::drawRawImage(const QRectF &targetRect, const QByteArray &bytes, const QRectF &sourceRect,
+                            const QImageEffects *userData /*= NULL*/,
+                            Qt::ImageConversionFlags flags /*= Qt::AutoColor*/)
+{
+    Q_D(QPainter);
+    if (!d->engine || bytes.isNull())
+        return;
+
+    d->updateState(d->state);
+    d->engine->drawRawImage(targetRect, bytes, sourceRect, userData, flags);
 }
 
 void QPainter::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)

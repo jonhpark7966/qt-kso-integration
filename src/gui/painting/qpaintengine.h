@@ -246,6 +246,9 @@ public:
 	void setDrawMetafileFunc(drawMetafileFunc *p) {pDrawMetafileFunc = p;}
 	drawMetafileFunc* getDrawMetafileFunc() {return pDrawMetafileFunc;}
 
+    virtual void drawRawImage(const QRectF &, const QByteArray &, const QRectF &,
+                           const QImageEffects *,
+                           Qt::ImageConversionFlags flags = Qt::AutoColor);
 protected:
     QPaintEngine(QPaintEnginePrivate &data, PaintEngineFeatures devcaps=0);
 
