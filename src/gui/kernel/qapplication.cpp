@@ -882,14 +882,6 @@ static char *aargv[] = { (char*)"unknown", 0 };
 
     This function is only available on X11.
 */
-QApplication::QApplication(Display* dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
-    : QCoreApplication(*new QApplicationPrivate(aargc, aargv, GuiClient))
-{
-    if (! dpy)
-        qWarning("QApplication: Invalid Display* argument");
-    Q_D(QApplication);
-    d->construct(dpy, visual, colormap);
-}
 
 QApplication::QApplication(Display* dpy, Qt::HANDLE visual, Qt::HANDLE colormap, int _internal)
     : QCoreApplication(*new QApplicationPrivate(aargc, aargv, GuiClient))
@@ -915,15 +907,6 @@ QApplication::QApplication(Display* dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
 
     This function is only available on X11.
 */
-QApplication::QApplication(Display *dpy, int &argc, char **argv,
-                           Qt::HANDLE visual, Qt::HANDLE colormap)
-    : QCoreApplication(*new QApplicationPrivate(argc, argv, GuiClient))
-{
-    if (! dpy)
-        qWarning("QApplication: Invalid Display* argument");
-    Q_D(QApplication);
-    d->construct(dpy, visual, colormap);
-}
 
 QApplication::QApplication(Display *dpy, int &argc, char **argv,
                            Qt::HANDLE visual, Qt::HANDLE colormap, int _internal)
