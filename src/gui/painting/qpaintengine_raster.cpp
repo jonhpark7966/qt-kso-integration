@@ -1263,7 +1263,7 @@ void QRasterPaintEnginePrivate::updateMatrixData(QSpanData *spanData, const QBru
     if (b.d->transform.type() > QTransform::TxNone) { // FALCON: optimize
         spanData->setupMatrix(trans * b.transform() * m, bilinear);
     } else {
-        if (m.type() <= QTransform::TxTranslate) {
+        if (m.type() <= QTransform::TxTranslate && trans == QTransform()) {
             // specialize setupMatrix for translation matrices
             // to avoid needless matrix inversion
             spanData->m11 = 1;
@@ -1280,7 +1280,7 @@ void QRasterPaintEnginePrivate::updateMatrixData(QSpanData *spanData, const QBru
             spanData->fast_matrix = qAbs(m.dx()) < 1e4 && qAbs(m.dy()) < 1e4;
             spanData->adjustSpanMethods();
         } else {
-            spanData->setupMatrix(m, bilinear);
+            spanData->setupMatrix(trans * m, bilinear);
         }
     }
 }
