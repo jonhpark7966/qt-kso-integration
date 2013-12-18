@@ -1454,7 +1454,6 @@ void QPathDasher::GetDashedPath(const QPainterPath& path2dash,  QPainterPath& op
     QList<QPolygonF> polygons = path2dash.toSubpathPolygons(QTransform(), flatness);
     for (int subIndex = 0; subIndex < polygons.size(); ++subIndex) {
         const QPolygonF &poly = polygons.at(subIndex);
-        bool bIsClosed = poly.isClosed();
         const QPointF& fpt = poly.front();
         const QPointF& lpt = poly.back();
 
@@ -1464,17 +1463,13 @@ void QPathDasher::GetDashedPath(const QPainterPath& path2dash,  QPainterPath& op
         int ns = dashedPolygons.count();
         for (int n = 0; n < ns; ++n) {
             if (0 == n) {
-                if (dashedPolygons.at(n).front() == fpt) {
-                    if (bIsClosed)
-                        openStartPath.addPolygon(dashedPolygons.at(n));
-                }
+                if (dashedPolygons.at(n).front() == fpt)
+                    openStartPath.addPolygon(dashedPolygons.at(n));
                 else 
                     openMiddleAndClosePath.addPolygon(dashedPolygons.at(n));
             } else if ((ns - 1) == n) {
-                if (dashedPolygons.at(n).back() == lpt) {
-                    if (bIsClosed)
+                if (dashedPolygons.at(n).back() == lpt)
                     openEndPath.addPolygon(dashedPolygons.at(n));
-                }
                 else
                     openMiddleAndClosePath.addPolygon(dashedPolygons.at(n));
             } else {
