@@ -542,6 +542,8 @@ enum TextureBlendType {
     BlendTransformedTiled,
     BlendTransformedBilinear,
     BlendTransformedBilinearTiled,
+    BlendTransformedHighQualityBilinear,
+    BlendTransformedHighQualityBilinearTiled,
     NBlendTypes
 };
 
@@ -938,6 +940,44 @@ Q_STATIC_TEMPLATE_FUNCTION inline void fetchTransformedBilinear_pixelBounds(int 
 
     Q_ASSERT(v1 >= 0 && v1 < max);
     Q_ASSERT(v2 >= 0 && v2 < max);
+}
+
+template<TextureBlendType blendType>
+Q_STATIC_TEMPLATE_FUNCTION inline bool fetchTransformedHighQuiltyBilinear_AreaBounds(int max,int l1, int l2, float l3, float &vleft, float &v1, float &v2)
+{
+    if (blendType == BlendTransformedBilinearTiled) {
+        Q_ASSERT(max > 0);
+        if (vleft >= max)
+            vleft -= max * qFloor(vleft / max);
+        else if (vleft < 0)
+            vleft += max * qCeil(-vleft / max);
+    }
+
+    if (vleft + l3 <= l1) {
+        v1 = l1;
+        v2 = v1 + 1;
+        return true;
+    } else if (vleft >= l2) {
+        v2 = l2;
+        v1 = v2 - 1;
+        return true;
+    } else if (vleft < l1) {
+        v2 = vleft + l3;
+        v1 = l1;
+        if (v2 - v1 < 0.1)
+            v2 = v1 + 1;
+        return true;
+    } else if (vleft + l3 > l2) {
+        v1 = vleft;
+        v2 = l2;
+        if (v2 - v1 < 0.1)
+            v1 = v2-1;
+        return true;
+    } else {
+        v2 = vleft + l3;
+        v1 = vleft;
+        return false;
+    }
 }
 
 inline void qt_transparent(uint &clr, const QSpanData *data)
@@ -1485,6 +1525,175 @@ const uint * QT_FASTCALL fetchTransformedBilinear(uint *buffer, const Operator *
     return buffer;
 }
 
+template<typename T1>
+static inline void AddPixelMulAlpha(T1 *padder, int padder_len, float alpha, uint pixelv)
+{
+    Q_ASSERT(padder_len >= 4);
+    const quint8 *pChannel = (const quint8 *)&pixelv;
+    if (1.0f != alpha) {
+        padder[0] += (pChannel[0] * alpha);
+        padder[1] += (pChannel[1] * alpha);
+        padder[2] += (pChannel[2] * alpha);
+        padder[3] += (pChannel[3] * alpha);
+    } else {
+        padder[0] += pChannel[0];
+        padder[1] += pChannel[1];
+        padder[2] += pChannel[2];
+        padder[3] += pChannel[3];
+    }
+}
+
+template<TextureBlendType blendType, QImage::Format format> /* blendType = BlendTransformedBilinear or BlendTransformedBilinearTiled */
+Q_STATIC_TEMPLATE_FUNCTION
+const uint * QT_FASTCALL fetchTransformedHighQualityBilinear(uint *buffer, const Operator *, const QSpanData *data,
+                                                             int y, int x, int length)
+{
+    if (!data->fast_matrix
+        || (0.5 < data->scale_h && data->scale_h < 2.0
+            && 0.5 < data->scale_w && data->scale_w < 2.0))
+        return fetchTransformedBilinear<blendType,format>(buffer, NULL, data, y, x, length);
+
+#ifdef Q_CC_RVCT // needed to avoid compiler crash in RVCT 2.2
+    FetchPixelProc fetch;
+    if (format != QImage::Format_Invalid)
+        fetch = qt_fetchPixel<format>;
+    else
+        fetch = fetchPixelProc[data->texture.format];
+#else
+    FetchPixelProc fetch = (format != QImage::Format_Invalid) ? FetchPixelProc(qt_fetchPixel<format>) : fetchPixelProc[data->texture.format];
+#endif
+    int image_width = data->texture.width;
+    int image_height = data->texture.height;
+
+    int image_x1 = data->texture.x1;
+    int image_y1 = data->texture.y1;
+    int image_x2 = data->texture.x2 - 1;
+    int image_y2 = data->texture.y2 - 1;
+    const bool hasColorKey = data->effects && data->effects->hasColorKey;
+
+    uint *end = buffer + length;
+    uint *b = buffer;
+    // The increment pr x in the scanline
+    float fdx = data->m11;
+    float fdy = data->m12;
+
+    float fx = data->m21 * y + data->m11 * x + data->dx;
+    float fy = data->m22 * y + data->m12 * x + data->dy;
+    float ft = 0.0f, fb = 0.0f, fl = 0.0f, fr = 0.0f;
+    int it = 0, ib = 0, il = 0, ir = 0;
+    int xIter = 0, yIter = 0;
+    float fwinWidth = data->scale_w > 1 ? data->scale_w : 1.5;
+    float fwinHeight = data->scale_h > 1 ? data->scale_h : 1.5;
+    float fAreaScale = 1.0f / (fwinWidth * fwinHeight);
+    float falphas[11] = {1.0f};
+    uint pixelv = 0;
+
+    if (fdy == 0) { //no rotation
+        bool ybound = fetchTransformedHighQuiltyBilinear_AreaBounds<blendType>(image_height, image_y1, image_y2, fwinHeight, fy, ft, fb);
+        it = qFloor(ft);
+        ib = qFloor(fb);
+        const uchar *snm = data->texture.scanLine(it);
+
+        while (b < end) {
+            float qsum[4] = {0};
+            bool xbound = fetchTransformedHighQuiltyBilinear_AreaBounds<blendType>(image_width, image_x1, image_x2, fwinWidth, fx, fl, fr);
+            il = qFloor(fl);
+            ir = qFloor(fr);
+            falphas[1] = 1.0f - ft + it;
+            falphas[2] = fb - ib;
+            falphas[4] = 1.0f - fl + il;
+            falphas[5] = falphas[1] * falphas[4];
+            falphas[6] = falphas[2] * falphas[4];
+            falphas[8] = fr - ir;
+            falphas[9] = falphas[1] * falphas[8];
+            falphas[10] = falphas[2] * falphas[8];
+            const uchar *psnm = snm;
+
+            for (yIter = it ; yIter <= ib ; ++yIter) {
+                uint flag = 0;
+                flag = (yIter == it ? (flag | 0x01) : (flag & 0xfe));
+                flag = (yIter == ib ? (flag | 0x02) : (flag & 0xfd));
+
+                for (xIter = il ; xIter <= ir ; ++xIter) {
+                    flag = (xIter == il ? (flag | 0x04) : (flag & 0xfb));
+                    flag = (xIter == ir ? (flag | 0x08) : (flag & 0xf7));
+
+                    if (falphas[flag] > 0.01) {
+                        pixelv = fetch(psnm, xIter, data->texture.colorTable);
+                        qt_transparent(pixelv, data);
+                        AddPixelMulAlpha(qsum, 4, falphas[flag], pixelv);
+                    }
+                }
+                psnm = psnm + data->texture.bytesPerLine;
+            }
+            Q_ASSERT(0.0f != (fb - ft) * (fr - fl));
+            float Weights = (xbound || ybound) ? 1.0f / ((fb - ft) * (fr - fl)) : fAreaScale;
+
+            *b = qRgba(qsum[2] * Weights, qsum[1] * Weights, qsum[0] * Weights, qsum[3] * Weights);
+
+            fx += fdx;
+            ++b;
+        }
+    } else {
+        while (b < end) {
+            float qsum[4] = {0};
+            bool ybound = fetchTransformedHighQuiltyBilinear_AreaBounds<blendType>(image_height, image_y1, image_y2, fwinHeight, fy, ft, fb);
+            bool xbound = fetchTransformedHighQuiltyBilinear_AreaBounds<blendType>(image_width, image_x1, image_x2, fwinWidth, fx, fl, fr);
+            il = qFloor(fl);
+            ir = qFloor(fr);
+            it = qFloor(ft);
+            ib = qFloor(fb);
+            falphas[1] = 1.0f - ft + it;
+            falphas[2] = fb - ib;
+            falphas[4] = 1.0f - fl + il;
+            falphas[5] = falphas[1] * falphas[4];
+            falphas[6] = falphas[2] * falphas[4];
+            falphas[8] = fr - ir;
+            falphas[9] = falphas[1] * falphas[8];
+            falphas[10] = falphas[2] * falphas[8];
+
+            const uchar *psnm = data->texture.scanLine(it);
+
+            for (yIter = it ; yIter <= ib ; ++yIter) {
+            uint flag=0;
+            flag = ( yIter == it ? (flag | 0x01) : (flag & 0xfe));
+            flag = ( yIter == ib ? (flag | 0x02) : (flag & 0xfd));
+
+                for (xIter = il ; xIter <= ir ; ++xIter) {
+                    flag = ( xIter == il ? (flag | 0x04) : (flag & 0xfb));
+                    flag = ( xIter == ir ? (flag | 0x08) : (flag & 0xf7));
+
+                    if (falphas[flag] > 0.01) {
+                        pixelv = fetch(psnm, xIter, data->texture.colorTable);
+                        qt_transparent(pixelv, data);
+                        AddPixelMulAlpha(qsum, 4, falphas[flag], pixelv);
+                    }
+                }
+                psnm = psnm + data->texture.bytesPerLine;
+            }
+            Q_ASSERT(0.0f != (fb - ft) * (fr - fl));
+            float Weights = (xbound || ybound) ? 1.0f / ((fb - ft) * (fr - fl)) : fAreaScale;
+
+            *b = qRgba(qsum[2] * Weights , qsum[1] * Weights , qsum[0] * Weights , qsum[3] * Weights);
+            fx += fdx;
+            fy += fdy;
+            ++b;
+        }
+    }
+
+    if (NULL != data->effects) {
+        if (!hasColorKey) {
+            qt_makeEffects(data->effects, buffer, length);
+        } else {
+            QImageEffectsPrivate tmp(*data->effects);
+            tmp.hasColorKey = false;
+            qt_makeEffects(&tmp, buffer, length);
+        }
+    }
+
+    return buffer;
+}
+
 #define SPANFUNC_POINTER_FETCHHUNTRANSFORMED(Arg) qt_fetchUntransformed<QImage::Arg>
 
 static const SourceFetchProc sourceFetch[NBlendTypes][QImage::NImageFormats] = {
@@ -1599,6 +1808,42 @@ static const SourceFetchProc sourceFetch[NBlendTypes][QImage::NImageFormats] = {
         fetchTransformedBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // RGB444
         fetchTransformedBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>    // ARGB4444_Premultiplied
     },
+    {
+        0, // HighQualityBilinear
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // Mono
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // MonoLsb
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // Indexed8
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_ARGB32_Premultiplied>,   // RGB32
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_ARGB32>,   // ARGB32
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_ARGB32_Premultiplied>,   // ARGB32_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // RGB16
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // ARGB8565_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // RGB666
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // ARGB6666_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // RGB555
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // ARGB8555_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // RGB888
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>,   // RGB444
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinear, QImage::Format_Invalid>    // ARGB4444_Premultiplied
+    },
+    {
+        0, // HighQualityBilinearTiled
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // Mono
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // MonoLsb
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // Indexed8
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_ARGB32_Premultiplied>,   // RGB32
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_ARGB32>,   // ARGB32
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_ARGB32_Premultiplied>,   // ARGB32_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // RGB16
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // ARGB8565_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // RGB666
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // ARGB6666_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // RGB555
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // ARGB8555_Premultiplied
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // RGB888
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>,   // RGB444
+        fetchTransformedHighQualityBilinear<BlendTransformedBilinearTiled, QImage::Format_Invalid>    // ARGB4444_Premultiplied
+    }
 };
 
 
@@ -3643,9 +3888,9 @@ static TextureBlendType getBlendType(const QSpanData *data)
             ft = BlendUntransformed;
     else if (data->bilinear)
         if (data->texture.type == QTextureData::Tiled)
-            ft = BlendTransformedBilinearTiled;
+            ft = data->highQulityBilinear ? BlendTransformedHighQualityBilinearTiled : BlendTransformedBilinearTiled;
         else
-            ft = BlendTransformedBilinear;
+            ft = data->highQulityBilinear ? BlendTransformedHighQualityBilinear : BlendTransformedBilinear;
     else
         if (data->texture.type == QTextureData::Tiled)
             ft = BlendTransformedTiled;
@@ -7198,6 +7443,44 @@ static const ProcessSpans processTextureSpans[NBlendTypes][QImage::NImageFormats
         SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB888
         SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB444
         SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB4444_Premultiplied
+    },
+    // HighQualityBilinear
+    {
+        0,
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // Mono
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // MonoLsb
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // Indexed8
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB32
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB32
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB32_Premultiplied
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans),
+    },
+    // HighQualityBilinearTiled
+    {
+        0,
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // Mono
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // MonoLsb
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // Indexed8
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB32
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB32
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB32_Premultiplied
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB16
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB8565_Premultiplied
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB666
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB6666_Premultiplied
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB555
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB8555_Premultiplied
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB888
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // RGB444
+        SPANFUNC_POINTER(blend_src_generic, RegularSpans), // ARGB4444_Premultiplied
     }
 };
 
@@ -7307,6 +7590,44 @@ static const ProcessSpans processTextureSpansCallback[NBlendTypes][QImage::NImag
         blend_src_generic<CallbackSpans>,   // RGB32
         blend_src_generic<CallbackSpans>,   // ARGB32
         blend_src_generic<CallbackSpans>, // ARGB32_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB16
+        blend_src_generic<CallbackSpans>,   // ARGB8565_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB666
+        blend_src_generic<CallbackSpans>,   // ARGB6666_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB555
+        blend_src_generic<CallbackSpans>,   // ARGB8555_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB888
+        blend_src_generic<CallbackSpans>,   // RGB444
+        blend_src_generic<CallbackSpans>    // ARGB4444_Premultiplied
+    },
+    // HighQuiltyBilinear
+    {
+        0,
+        blend_src_generic<CallbackSpans>,   // Mono
+        blend_src_generic<CallbackSpans>,   // MonoLsb
+        blend_src_generic<CallbackSpans>,   // Indexed8
+        blend_src_generic<CallbackSpans>,   // RGB32
+        blend_src_generic<CallbackSpans>,   // ARGB32
+        blend_src_generic<CallbackSpans>,   // ARGB32_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB16
+        blend_src_generic<CallbackSpans>,   // ARGB8565_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB666
+        blend_src_generic<CallbackSpans>,   // ARGB6666_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB555
+        blend_src_generic<CallbackSpans>,   // ARGB8555_Premultiplied
+        blend_src_generic<CallbackSpans>,   // RGB888
+        blend_src_generic<CallbackSpans>,   // RGB444
+        blend_src_generic<CallbackSpans>    // ARGB4444_Premultiplied
+    },
+    // HighQuiltyBilinearTiled
+    {
+        0,
+        blend_src_generic<CallbackSpans>,   // Mono
+        blend_src_generic<CallbackSpans>,   // MonoLsb
+        blend_src_generic<CallbackSpans>,   // Indexed8
+        blend_src_generic<CallbackSpans>,   // RGB32
+        blend_src_generic<CallbackSpans>,   // ARGB32
+        blend_src_generic<CallbackSpans>,   // ARGB32_Premultiplied
         blend_src_generic<CallbackSpans>,   // RGB16
         blend_src_generic<CallbackSpans>,   // ARGB8565_Premultiplied
         blend_src_generic<CallbackSpans>,   // RGB666

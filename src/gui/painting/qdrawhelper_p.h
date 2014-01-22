@@ -298,6 +298,7 @@ struct QSpanData
     AlphaRGBBlitFunc alphaRGBBlit;
     RectFillFunc fillRect;
     qreal m11, m12, m13, m21, m22, m23, m33, dx, dy;   // inverse xform matrix
+    qreal scale_w, scale_h;
     const QClipData *clip;
     QImageEffectsPrivate *effects; 
     enum Type {
@@ -312,6 +313,7 @@ struct QSpanData
     int txop : 8;
     int fast_matrix : 1;
     bool bilinear;
+    bool highQulityBilinear;
     QImage *tempImage;
     union {
         QSolidData solid;

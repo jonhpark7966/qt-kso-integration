@@ -1098,6 +1098,7 @@ void QRasterPaintEngine::renderHintsChanged()
 
     s->flags.antialiased = bool(s->renderHints & QPainter::Antialiasing);
     s->flags.bilinear = bool(s->renderHints & QPainter::SmoothPixmapTransform);
+    s->flags.highQulityBilinear = bool(s->renderHints & QPainter::SmoothHighQualityBilinear);
 
     if (was_aa != s->flags.antialiased)
         s->strokeFlags |= DirtyHints;
@@ -1258,10 +1259,11 @@ void QRasterPaintEnginePrivate::updateMatrixData(QSpanData *spanData, const QBru
         return;
 
     Q_Q(QRasterPaintEngine);
-    bool bilinear = q->state()->flags.bilinear;
+    int bilinear = q->state()->flags.bilinear;
+    int highQulityBilinear = q->state()->flags.highQulityBilinear;
 
     if (b.d->transform.type() > QTransform::TxNone) { // FALCON: optimize
-        spanData->setupMatrix(trans * b.transform() * m, bilinear);
+        spanData->setupMatrix(trans * b.transform() * m, bilinear | (highQulityBilinear << 1));
     } else {
         if (m.type() <= QTransform::TxTranslate && trans == QTransform()) {
             // specialize setupMatrix for translation matrices
@@ -1280,7 +1282,7 @@ void QRasterPaintEnginePrivate::updateMatrixData(QSpanData *spanData, const QBru
             spanData->fast_matrix = qAbs(m.dx()) < 1e4 && qAbs(m.dy()) < 1e4;
             spanData->adjustSpanMethods();
         } else {
-            spanData->setupMatrix(trans * m, bilinear);
+            spanData->setupMatrix(trans * m, bilinear | (highQulityBilinear << 1));
         }
     }
 }
@@ -2968,7 +2970,7 @@ void QRasterPaintEngine::drawImage(const QRectF &r, const QImage &img, const QRe
         d->image_filler_xform.initTexture(&img, s->intOpacity, QTextureData::Plain, toAlignedRect_positive(sr));
         if (!d->image_filler_xform.blend)
             return;
-        d->image_filler_xform.setupMatrix(copy, s->flags.bilinear);
+        d->image_filler_xform.setupMatrix(copy, s->flags.bilinear | (s->flags.highQulityBilinear << 1));
 
         if (!s->flags.antialiased && s->matrix.type() == QTransform::TxScale) {
             QRectF rr = s->matrix.mapRect(r);
@@ -3130,7 +3132,7 @@ void QRasterPaintEngine::drawImage(const QRectF &r, const QImage &img, const QRe
         d->image_filler_xform.initTexture(&img, s->intOpacity, QTextureData::Plain, toAlignedRect_positive(sr));
         if (!d->image_filler_xform.blend)
             goto Exit;
-        d->image_filler_xform.setupMatrix(copy, s->flags.bilinear);        
+        d->image_filler_xform.setupMatrix(copy, s->flags.bilinear | (s->flags.highQulityBilinear << 1));
 
         if (!s->flags.antialiased && s->matrix.type() <= QTransform::TxScale) {
             QRectF rr = s->matrix.mapRect(r);
@@ -3230,7 +3232,7 @@ void QRasterPaintEngine::drawTiledPixmap(const QRectF &r, const QPixmap &pixmap,
         d->image_filler_xform.initTexture(&image, s->intOpacity, QTextureData::Tiled);
         if (!d->image_filler_xform.blend)
             return;
-        d->image_filler_xform.setupMatrix(copy, s->flags.bilinear);
+        d->image_filler_xform.setupMatrix(copy, s->flags.bilinear | (s->flags.highQulityBilinear << 1));
 
 #ifdef QT_FAST_SPANS
         ensureState();
@@ -5555,9 +5557,18 @@ void QSpanData::init(QRasterBuffer *rb, const QRasterPaintEngine *pe)
     type = None;
     txop = 0;
     bilinear = false;
+    highQulityBilinear = false;
     m11 = m22 = m33 = 1.;
     m12 = m13 = m21 = m23 = dx = dy = 0.0;
+    scale_w = 1.0;
+    scale_h = 1.0;
     clip = pe ? pe->d_func()->clip() : 0;
+    blend = NULL;
+    unclipped_blend = NULL;
+    bitmapBlit = NULL;
+    alphamapBlit = NULL;
+    alphaRGBBlit = NULL;
+    fillRect = NULL;;
 }
 
 Q_GUI_EXPORT extern QImage qt_imageForBrush(int brushStyle, bool invert);
@@ -5833,7 +5844,13 @@ void QSpanData::setupMatrix(const QTransform &matrix, int bilin)
     dx = inv.dx();
     dy = inv.dy();
     txop = inv.type();
-    bilinear = bilin;
+    bilinear = bilin & 0x01;
+    highQulityBilinear = bilin & 0x02;
+
+    if (highQulityBilinear) {
+        scale_w = 1 / sqrt(matrix.m11() * matrix.m11() + matrix.m12() * matrix.m12());
+        scale_h = 1 / sqrt(matrix.m21() * matrix.m21() + matrix.m22() * matrix.m22());
+    }
 
     const bool affine = !m13 && !m23;
     fast_matrix = affine
