@@ -165,6 +165,7 @@ public:
     bool isGray;
     bool hasRecolor;
     bool hasAlpha;
+    bool hasShadow;
 
     bool checkBound;
 
@@ -184,6 +185,9 @@ public:
     QRgb alphaValue;
     qreal brightness;
     qreal contrast;
+    quint8 shadowLow;
+    quint8 shadowHight;
+
     typedef void (QImageEffectsPrivate::*TransformProc)(QRgb *buffer, int length) const;
     TransformProc m_pTransformProc;
 

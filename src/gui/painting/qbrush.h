@@ -110,6 +110,9 @@ public:
     QImage textureImage() const;
     void setTextureImage(const QImage &image);
 
+    const QImageEffects colorEffect() const;
+    void setColorEffect(const QImageEffects &imageEffect);
+
     //for TexturePattern brush
     Qt::TextureWrapMode textureWrapMode() const;
     void setTextureWrapMode(Qt::TextureWrapMode wrapMode);
@@ -193,6 +196,7 @@ struct QBrushData
     Qt::BrushStyle style;
     QColor color;
     QTransform transform;
+    QImageEffects colorEffect;
 };
 
 inline Qt::BrushStyle QBrush::style() const { return d->style; }

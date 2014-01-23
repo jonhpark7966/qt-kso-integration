@@ -415,6 +415,11 @@ public:
     bool hasAlpha() const;
     QRgb alpha() const;
 
+    void setShadow(quint8 low, quint8 hight);
+    void unsetShadow();
+    bool hasShadow() const;
+    void getShadow(quint8 &low, quint8 &hight) const;
+
     bool hasEffects() const;
     void resetState();
 

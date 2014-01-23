@@ -50,6 +50,7 @@
 #include <QtCore/qcoreapplication.h>
 #include "private/qstylehelper_p.h"
 #include <QtCore/qnumeric.h>
+#include "private/qimage_p.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -695,6 +696,7 @@ void QBrush::detach(Qt::BrushStyle newStyle)
                 tbd->setImage(data->image());
 
             tbd->m_wrapMode = data->m_wrapMode;
+            tbd->m_textureDestRect = data->m_textureDestRect;
             memcpy(&(tbd->m_data), &(data->m_data), sizeof(tbd->m_data));
         }
         x.reset(tbd);
@@ -716,6 +718,7 @@ void QBrush::detach(Qt::BrushStyle newStyle)
     x->style = newStyle;
     x->color = d->color;
     x->transform = d->transform;
+    x->colorEffect = d->colorEffect;
     d.reset(x.take());
 }
 
@@ -870,6 +873,16 @@ void QBrush::setTexture(const QPixmap &pixmap)
     }
 }
 
+void QBrush::setColorEffect(const QImageEffects &effect)
+{
+    detach(d->style);
+    d->colorEffect = effect;
+}
+
+const QImageEffects QBrush::colorEffect() const
+{
+    return d->colorEffect;
+}
 
 /*!
     \since 4.2
@@ -1082,14 +1095,12 @@ void QBrush::setTextureScale(qreal scaleX, qreal scaleY)
 
 void QBrush::setTextureDestRect(const QRectF& rct)
 {
-	//m_textureDestRect = rct;
 	if (d->style != Qt::TexturePattern)
 	{
 		qWarning("Not a TexturePattern with tile mode");
 		return;
 	}
 
-	int a=0;
 	detach(Qt::TexturePattern);
 
 	QTexturedBrushData *data  = static_cast<QTexturedBrushData*>(d.data());
@@ -1098,7 +1109,6 @@ void QBrush::setTextureDestRect(const QRectF& rct)
 
 void QBrush::getTextureDestRect(QRectF& rct) const
 {
-	//rct = m_textureDestRect;
 	if (d->style != Qt::TexturePattern)
 	{
 		qWarning("Not a TexturePattern with tile mode");
@@ -1433,6 +1443,9 @@ QDataStream &operator<<(QDataStream &s, const QBrush &b)
             b.getTextureScale(sx, sy);
             s << double(sx) << double(sy);
         }
+        QRectF rcTextureDest;
+        b.getTextureDestRect(rcTextureDest);
+        s << rcTextureDest;
     } else if (s.version() >= QDataStream::Qt_4_0 && gradient_style) {
         const QGradient *gradient = b.gradient();
         int type_as_int = int(gradient->type());
@@ -1517,6 +1530,9 @@ QDataStream &operator>>(QDataStream &s, QBrush &b)
             b.setTextureOffset(dx, dy);
             b.setTextureScale(sx, sy);
         }
+        QRectF rcTextureDest;
+        s >> rcTextureDest;
+        b.setTextureDestRect(rcTextureDest);
     } else if (style == Qt::LinearGradientPattern
                || style == Qt::RadialGradientPattern
                || style == Qt::ConicalGradientPattern 

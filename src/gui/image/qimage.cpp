@@ -6662,6 +6662,7 @@ QImageEffectsPrivate::QImageEffectsPrivate()
     , isGray(0)
     , hasRecolor(0)
     , hasAlpha(0)
+    , hasShadow(0)
     , checkBound(1)
     , colorKey(0)
     , tolerance(0)
@@ -6673,6 +6674,8 @@ QImageEffectsPrivate::QImageEffectsPrivate()
     , alphaValue(0)
     , brightness(0)
     , contrast(1)
+    , shadowLow(0)
+    , shadowHight(255)
     , m_pTransformProc(&QImageEffectsPrivate::transform_cpp)
 {   
     memset(colorMatrixInt[0], 0, sizeof(colorMatrixInt));
@@ -6693,6 +6696,7 @@ void QImageEffectsPrivate::resetState()
 	isGray = false;
 	hasRecolor = false;
 	hasAlpha = false;
+	hasShadow = false;
 	checkBound = true;
 
 	brightness = 0;
@@ -7146,6 +7150,7 @@ bool QImageEffects::hasEffects() const
                 || d->isGray
                 || d->hasRecolor
                 || d->hasAlpha
+                || d->hasShadow
                 || d->brightness != 0
                 || d->contrast != 1
                 || !d->colorMap.isEmpty()
@@ -7314,6 +7319,34 @@ QRgb QImageEffects::alpha() const
 	return d->alphaValue;
 }
 
+void QImageEffects::setShadow(quint8 low,quint8 hight)
+{
+	Q_ASSERT(hight > low);
+	detach();
+
+	d->hasShadow = true;
+	d->shadowLow = low;
+	d->shadowHight = hight;
+}
+
+void QImageEffects::unsetShadow()
+{
+	detach();
+
+	d->hasShadow = false;
+}
+
+bool QImageEffects::hasShadow() const
+{
+	return d->hasShadow;
+}
+
+void QImageEffects::getShadow(quint8 &low,quint8 &hight) const
+{
+	low = d->shadowLow;
+	hight = d->shadowHight;
+}
+
 #if !defined(QT_NO_DATASTREAM)
 
 QDataStream &operator<<(QDataStream &s, const QImageEffects &effects)
@@ -7327,6 +7360,7 @@ QDataStream &operator<<(QDataStream &s, const QImageEffects &effects)
 		<< d->isGray
 		<< d->hasRecolor
 		<< d->hasAlpha
+		<< d->hasShadow
 		<< d->checkBound
 		<< d->colorKey
 		<< d->tolerance
@@ -7337,7 +7371,9 @@ QDataStream &operator<<(QDataStream &s, const QImageEffects &effects)
 		<< d->recolorValue
 		<< d->alphaValue
 		<< d->brightness
-		<< d->contrast;
+		<< d->contrast
+		<< d->shadowLow
+		<< d->shadowHight;
 
 	int colorCount = d->colorMap.size();
 	s << colorCount;
@@ -7363,6 +7399,7 @@ QDataStream &operator>>(QDataStream &s, QImageEffects &effects)
 		>> d->isGray
 		>> d->hasRecolor
 		>> d->hasAlpha
+		>> d->hasShadow
 		>> d->checkBound
 		>> d->colorKey
 		>> d->tolerance
@@ -7373,7 +7410,9 @@ QDataStream &operator>>(QDataStream &s, QImageEffects &effects)
 		>> d->recolorValue
 		>> d->alphaValue
 		>> d->brightness
-		>> d->contrast;
+		>> d->contrast
+		>> d->shadowLow
+		>> d->shadowHight;
 
 	int colorCount = d->colorMap.size();
 	s >> colorCount;

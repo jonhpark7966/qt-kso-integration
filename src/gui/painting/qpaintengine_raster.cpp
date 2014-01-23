@@ -2009,6 +2009,10 @@ void QRasterPaintEngine::fill(const QVectorPath &path, const QBrush &brush)
     else
         ensureBrush(brush);
 
+    QImageEffectsPrivate tmpEffect = *(brush.colorEffect().data_ptr());
+    tmpEffect.prepare();
+    s->brushData.effects = &tmpEffect;
+
     if (!s->brushData.blend)
         return;
 
@@ -2129,6 +2133,10 @@ void QRasterPaintEngine::fillRect(const QRectF &r, const QBrush &brush)
         ensureBrush(brush);
     else
         ensureBrush(brush, r);
+
+    QImageEffectsPrivate tmpEffect = *(brush.colorEffect().data_ptr());
+    tmpEffect.prepare();
+    s->brushData.effects = &tmpEffect;
 
     if (!s->brushData.blend)
         return;
@@ -5572,6 +5580,7 @@ void QSpanData::init(QRasterBuffer *rb, const QRasterPaintEngine *pe)
 }
 
 Q_GUI_EXPORT extern QImage qt_imageForBrush(int brushStyle, bool invert);
+Q_GUI_EXPORT extern inline void qt_shadowTransform(const QImageEffectsPrivate *effects, uint *buffer, int length);
 
 static path_gradient_span_gen* qt_createPGSpanGenerator(const QSpanData *data
                                                         ,const QPathGradient *pg)
@@ -5605,6 +5614,9 @@ void QSpanData::setup(const QBrush &brush, int alpha, QPainter::CompositionMode 
         type = Solid;
         QColor c = qbrush_color(brush);
         solid.color = PREMUL(ARGB_COMBINE_ALPHA(c.rgba(), alpha));
+        const QImageEffects brushEffect = brush.colorEffect();
+        if (brushEffect.hasShadow())
+            qt_shadowTransform(brushEffect.data_ptr(), &solid.color, 1);
         if ((solid.color & 0xff000000) == 0
             && compositionMode == QPainter::CompositionMode_SourceOver) {
             type = None;

@@ -621,6 +621,23 @@ inline void qt_handleColorMap(const QImageEffectsPrivate *effects, uint *buffer,
     }
 }
 
+// red' = (low + ((high - low) / 255.0) * (red * 255.0 / alpha)) * (alpha / 255.0)
+inline void qt_shadowTransform(const QImageEffectsPrivate *effects, uint *buffer, int length)
+{
+    if (NULL != effects && effects->hasShadow) {
+        Q_ASSERT(effects->shadowHight > effects->shadowLow);
+        uint grayRange = effects->shadowHight - effects->shadowLow;
+
+        for (int i = 0; i < length; i++) {
+            quint8* pChannel = (quint8*)(&buffer[i]);
+            uint alphaLowGray = effects->shadowLow * pChannel[3];
+            pChannel[0] = (alphaLowGray + (grayRange * pChannel[0])) >> 8;
+            pChannel[1] = (alphaLowGray + (grayRange * pChannel[1])) >> 8;
+            pChannel[2] = (alphaLowGray + (grayRange * pChannel[2])) >> 8;
+        }
+    }
+}
+
 inline void qt_makeEffects(const QImageEffectsPrivate *effects, uint *buffer, int length)
 {
     Q_ASSERT(NULL != effects && NULL != buffer);
@@ -634,6 +651,9 @@ inline void qt_makeEffects(const QImageEffectsPrivate *effects, uint *buffer, in
     if (effects->hasBilevel) {
         qt_setbilevel(buffer, length, effects->bilevelThreshold);
     }
+
+     qt_shadowTransform(effects, buffer, length);
+
 }
 
 template <QImage::Format format>
@@ -1922,7 +1942,7 @@ static void QT_FASTCALL getLinearGradientValues(LinearGradientValues *v, const Q
 static const uint * QT_FASTCALL fetchLinearGradient(uint *buffer, const Operator *op, const QSpanData *data,
                                                     int y, int x, int length)
 {
-    const uint *b = buffer;
+    uint *b = buffer;
     qreal t, inc;
 
     bool affine = true;
@@ -1984,6 +2004,7 @@ static const uint * QT_FASTCALL fetchLinearGradient(uint *buffer, const Operator
         }
     }
 
+    qt_shadowTransform(data->effects, b, length);
     return b;
 }
 
@@ -2013,7 +2034,7 @@ static void QT_FASTCALL getRadialGradientValues(RadialGradientValues *v, const Q
 static const uint * QT_FASTCALL fetchRadialGradient(uint *buffer, const Operator *op, const QSpanData *data,
                                                     int y, int x, int length)
 {
-    const uint *b = buffer;
+    uint *b = buffer;
     qreal rx = data->m21 * (y + 0.5)
                + data->dx + data->m11 * (x + 0.5);
     qreal ry = data->m22 * (y + 0.5)
@@ -2086,13 +2107,14 @@ static const uint * QT_FASTCALL fetchRadialGradient(uint *buffer, const Operator
         }
     }
 
+    qt_shadowTransform(data->effects, b, length);
     return b;
 }
 
 static const uint * QT_FASTCALL fetchConicalGradient(uint *buffer, const Operator *, const QSpanData *data,
                                                      int y, int x, int length)
 {
-    const uint *b = buffer;
+    uint *b = buffer;
     qreal rx = data->m21 * (y + 0.5)
                + data->dx + data->m11 * (x + 0.5);
     qreal ry = data->m22 * (y + 0.5)
@@ -2133,6 +2155,8 @@ static const uint * QT_FASTCALL fetchConicalGradient(uint *buffer, const Operato
             ++buffer;
         }
     }
+
+    qt_shadowTransform(data->effects, b, length);
     return b;
 }
 
@@ -2163,6 +2187,7 @@ static const uint * QT_FASTCALL fetchPathGradient(uint *buffer, const Operator *
 
     qt_premul(buffer, length);
 
+    qt_shadowTransform(data->effects, buffer, length);
     return buffer;
 }
 
