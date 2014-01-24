@@ -1589,7 +1589,7 @@ HRESULT WINAPI QAxClientSite::ActivateMe(IOleDocumentView *pViewToActivate)
 
 QSize QAxClientSite::minimumSizeHint() const
 {
-    if (!m_spOleObject)
+    /* if (!m_spOleObject)
         return QSize();
 
     SIZE sz = { 0, 0 };
@@ -1598,7 +1598,7 @@ QSize QAxClientSite::minimumSizeHint() const
     if (SUCCEEDED(res)) {
         return QSize(MAP_LOGHIM_TO_PIX(sz.cx, widget->logicalDpiX()),
             MAP_LOGHIM_TO_PIX(sz.cy, widget->logicalDpiY()));
-    }
+    } */
     return QSize();
 }
 

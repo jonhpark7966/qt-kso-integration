@@ -640,6 +640,13 @@ void QPaintEngine::drawImage(const QRectF &r, const QImage &image, const QRectF 
     drawPixmap(r, pm, QRectF(QPointF(0, 0), pm.size()));
 }
 
+void QPaintEngine::drawRawImage(const QRectF &/*targetRect*/, const QByteArray &/*bytes*/, const QRectF &/*sourceRect*/,
+                            const QImageEffects * /*userData*/,
+                            Qt::ImageConversionFlags /*flags = Qt::AutoColor*/)
+{
+    Q_ASSERT(false);
+}
+
 drawMetafileFunc* QPaintEngine::pDrawMetafileFunc = NULL;
 
 void QPaintEngine::drawMetafile(const QRectF &r, const QByteArray &mf, const QRectF &sr, const QImageEffects &effects)
