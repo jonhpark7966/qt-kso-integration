@@ -39,6 +39,7 @@
 **
 ****************************************************************************/
 
+#define QT_GUI_LIB
 
 #include <QtTest/QtTest>
 
@@ -134,6 +135,46 @@ void tst_QBrush::operator_eq_eq_data()
 
     pg2.setCenter(1, 1);
     QTest::newRow("pg vs diff pg") << QBrush(pg) << QBrush(pg2) << false;
+
+    QImageEffects colorEffect;
+    colorEffect.setShadow(10, 50);
+
+    QBrush clrBrush1(Qt::blue);
+    clrBrush1.setColorEffect(colorEffect);
+
+    QBrush clrBrush2(Qt::blue);
+    clrBrush2.setColorEffect(colorEffect);
+
+    QTest::newRow("color effect vs same color effect") << clrBrush1 << clrBrush2 << true;
+
+    colorEffect.setShadow(10, 200);
+    QBrush clrBrush3 = clrBrush2;
+    clrBrush3.setColorEffect(colorEffect);
+    QTest::newRow("color effect vs diff color effect") << clrBrush1 << clrBrush3 << false;
+
+    QTest::newRow("color effect vs no effect") << clrBrush1 << QBrush(Qt::blue) << false;
+
+    QBrush emptyEffectBrush(Qt::blue);
+    emptyEffectBrush.setColorEffect(QImageEffects());
+
+    QTest::newRow("empty color effect vs no effect") << emptyEffectBrush << QBrush(Qt::blue) << true;
+
+    QImage img(100, 200, QImage::Format_RGB32);
+    img.fill(0xffff0000);
+
+    QBrush textureBrush1(img);
+    QBrush textureBrush2(img);
+
+    QTest::newRow("texture brush vs texture brush") << textureBrush1 << textureBrush2 << true;
+
+    QBrush textureBrush3(img);
+    textureBrush1.setTextureDestRect(QRectF(0, 0, 100, 100));
+    textureBrush3.setTextureDestRect(QRectF(10, 20, 300, 300));
+    QTest::newRow("texture brush vs texture brush with diff texture rect") << textureBrush1 << textureBrush3 << false;
+
+    QBrush textureBrush4(img);
+    textureBrush4.setTextureDestRect(QRectF(10, 20, 300, 300));
+    QTest::newRow("texture brush vs texture brush with same texture rect") << textureBrush3 << textureBrush4 << true;
 }
 
 void tst_QBrush::operator_eq_eq()
@@ -164,6 +205,16 @@ void tst_QBrush::stream_data()
     QTest::newRow("rad") << QBrush(QRadialGradient(0, 0, 0, 0, 0));
     QTest::newRow("con") << QBrush(QConicalGradient(0, 0, 0));
     QTest::newRow("pg") << QBrush(pg);
+
+    QBrush noEffectBrush(Qt::blue);
+    noEffectBrush.setColorEffect(QImageEffects());
+    QTest::newRow("noEffectBrush") << noEffectBrush;
+
+    QImageEffects colorEffect;
+    colorEffect.setShadow(10, 50);
+    QBrush clrBrush(Qt::blue);
+    clrBrush.setColorEffect(colorEffect);
+    QTest::newRow("clrBrush") << clrBrush;
 }
 
 void tst_QBrush::stream()

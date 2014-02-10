@@ -427,6 +427,9 @@ public:
 
     void detach();
 
+    bool operator==(const QImageEffects &e) const;
+    inline bool operator!=(const QImageEffects &e) const { return !(operator==(e)); }
+
 private:
     QImageEffectsPrivate *d;
 

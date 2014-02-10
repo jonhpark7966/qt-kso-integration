@@ -1303,6 +1303,9 @@ bool QBrush::operator==(const QBrush &b) const
         return true;
     if (b.d->style != d->style || b.d->color != d->color || b.d->transform != d->transform)
         return false;
+    if (b.d->colorEffect != d->colorEffect)
+        return false;
+
     switch (d->style) {
     case Qt::TexturePattern:
         {
@@ -1331,6 +1334,12 @@ bool QBrush::operator==(const QBrush &b) const
                 if (x1 != x2 || y1 != y2)
                     return false; 
             }
+            QRectF textureRect1, textureRect2;
+            getTextureDestRect(textureRect1);
+            b.getTextureDestRect(textureRect2);
+            if (textureRect1 != textureRect2)
+                return false;
+
             const QPixmap &us = (static_cast<QTexturedBrushData *>(d.data()))->pixmap();
             const QPixmap &them = (static_cast<QTexturedBrushData *>(b.d.data()))->pixmap();
             return ((us.isNull() && them.isNull()) || us.cacheKey() == them.cacheKey());
@@ -1489,6 +1498,9 @@ QDataStream &operator<<(QDataStream &s, const QBrush &b)
     }
     if (s.version() >= QDataStream::Qt_4_3)
         s << b.transform();
+
+    s << b.colorEffect();
+
     return s;
 }
 
@@ -1626,6 +1638,10 @@ QDataStream &operator>>(QDataStream &s, QBrush &b)
         s >> transform;
         b.setTransform(transform);
     }
+    QImageEffects effect;
+    s >> effect;
+    b.setColorEffect(effect);
+
     return s;
 }
 #endif // QT_NO_DATASTREAM
