@@ -2009,9 +2009,6 @@ void QRasterPaintEngine::fill(const QVectorPath &path, const QBrush &brush)
     else
         ensureBrush(brush);
 
-    QImageEffectsPrivate tmpEffect = *(brush.colorEffect().data_ptr());
-    tmpEffect.prepare();
-    s->brushData.effects = &tmpEffect;
 
     if (!s->brushData.blend)
         return;
@@ -2134,9 +2131,6 @@ void QRasterPaintEngine::fillRect(const QRectF &r, const QBrush &brush)
     else
         ensureBrush(brush, r);
 
-    QImageEffectsPrivate tmpEffect = *(brush.colorEffect().data_ptr());
-    tmpEffect.prepare();
-    s->brushData.effects = &tmpEffect;
 
     if (!s->brushData.blend)
         return;
@@ -5554,6 +5548,9 @@ QSpanData::~QSpanData()
         if (gradient.path.ownGenerator)
             delete gradient.path.pSpanGenerotor;//allocated in setup()
     }
+
+    if (has_effect_ownership)
+        delete effects;
 }
 
 void QSpanData::init(QRasterBuffer *rb, const QRasterPaintEngine *pe)
@@ -5564,6 +5561,7 @@ void QSpanData::init(QRasterBuffer *rb, const QRasterPaintEngine *pe)
 #endif
     type = None;
     txop = 0;
+    has_effect_ownership = false;
     bilinear = false;
     highQulityBilinear = false;
     m11 = m22 = m33 = 1.;
@@ -5605,7 +5603,20 @@ void QSpanData::setup(const QBrush &brush, int alpha, QPainter::CompositionMode 
 {
     if (type == PathGradient && gradient.path.ownGenerator) {
         delete gradient.path.pSpanGenerotor;
+        gradient.path.pSpanGenerotor = NULL;
         gradient.path.ownGenerator = false;
+    }
+
+    if (has_effect_ownership) {
+        delete effects;
+        effects = NULL;
+        has_effect_ownership = false;
+    }
+    const QImageEffects brushEffect = brush.colorEffect();
+    if (brushEffect.hasEffects()) {
+        effects = new QImageEffectsPrivate(*(brushEffect.data_ptr()));
+        effects->prepare();
+        has_effect_ownership = true;
     }
 
     Qt::BrushStyle brushStyle = qbrush_style(brush);
@@ -5614,7 +5625,6 @@ void QSpanData::setup(const QBrush &brush, int alpha, QPainter::CompositionMode 
         type = Solid;
         QColor c = qbrush_color(brush);
         solid.color = PREMUL(ARGB_COMBINE_ALPHA(c.rgba(), alpha));
-        const QImageEffects brushEffect = brush.colorEffect();
         if (brushEffect.hasShadow())
             qt_shadowTransform(brushEffect.data_ptr(), &solid.color, 1);
         if ((solid.color & 0xff000000) == 0
