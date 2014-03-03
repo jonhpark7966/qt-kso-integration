@@ -136,8 +136,8 @@ private:
 
 
 class QPathDasher
-{	
-public:	
+{
+public:
 	QPathDasher();
 
 	qreal GetWidth() const;
@@ -148,6 +148,9 @@ public:
 	bool SetDashPattern(const qreal* dasharray, int count);
 	void SetDashOffset(qreal dashoffset);
 	void SetWidth(qreal width);
+
+	QRectF GetClipRect() const;
+	void SetClipRect(const QRectF& rc);
 	
 	void GetDashedPath(const QPainterPath& path2dash,  QPainterPath& dashedPath, const qreal flatness) const;
 	void GetDashedPath(const QPainterPath& path2dash,  QPainterPath& openStartPath,
@@ -158,16 +161,20 @@ private:
 
 	void GenerateDash(const QVertices& vertices, QPainterPath& outPath) const;
 	
-	static void CalcDashStart(qreal& currentDashLen, int& currentDashIndex, const QVector<qreal>& pattern, qreal dashOffset, qreal width);
-	static void IncCurrentDash(int& currentDashIndex, qreal& currentDashLen, const QVector<qreal>& pattern, qreal width);
-	static void AddStart(const vertex_dist& v0, const vertex_dist& v1, qreal dist, QPainterPath& outPath);
-	static void AddPoint(const vertex_dist& v0, const vertex_dist& v1, qreal dist, QPainterPath& outPath);
-	
+	void CalcDashStart(qreal& currentDashLen, int& currentDashIndex, const QVector<qreal>& pattern, qreal dashOffset, qreal width) const;
+	void IncCurrentDash(int& currentDashIndex, qreal& currentDashLen, const QVector<qreal>& pattern, qreal width) const;
+	void AddStart(const vertex_dist& v0, const vertex_dist& v1, qreal dist, QPainterPath& outPath) const;
+	void AddPoint(const vertex_dist& v0, const vertex_dist& v1, qreal dist, QPainterPath& outPath) const;
+
+	void CheckClip(QPainterPath& outPath) const;
+
 private:
-	qreal m_dashOffset;	
+	qreal m_dashOffset;
 	QVector<qreal> m_dashPattern;
 
 	qreal m_width;
+	mutable int m_lastMoveIndex;
+	QRectF m_clipRect;
 };
 
 class QComplexStrokerPrivate
@@ -195,6 +202,7 @@ public:
     Qt::PenCapStyle startCap;
     Qt::PenCapStyle endCap;
     Qt::PenCapStyle dashCap;
+    QRectF clipRect;
 };
 
 QT_END_NAMESPACE

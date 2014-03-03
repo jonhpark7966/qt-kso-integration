@@ -420,6 +420,13 @@ void QPaintEngineEx::stroke(const QVectorPath &path, const QPen &pen)
     if (qpen_is_complex(pen))
     {
         QComplexStroker stroker = createStrokerFromPen(pen);
+        QRectF clippedDevRect(d->exDeviceRect);
+        qreal penWidthDev = pen.widthF();
+        if (!pen.isCosmetic())
+            penWidthDev = state()->matrix.map(QLineF(0, 0, penWidthDev, 0)).length();
+        clippedDevRect.adjust(-penWidthDev, -penWidthDev, penWidthDev, penWidthDev);
+        QRectF clipRect = state()->matrix.inverted().mapRect(clippedDevRect);
+        stroker.setClipRect(clipRect);
         QPainterPath path2stroke = path.convertToPainterPath();
         if (path.hasImplicitClose())
             path2stroke.closeSubpath();
