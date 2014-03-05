@@ -424,12 +424,13 @@ int QWin32PrintEngine::metric(QPaintDevice::PaintDeviceMetric m) const
         return 0;
 
     int val;
-    int res = d->resolution;
+    int res_x = d->resolution.width();
+    int res_y = d->resolution.height();
 
     switch (m) {
     case QPaintDevice::PdmWidth:
         if (d->has_custom_paper_size) {
-            val =  qRound(d->paper_size.width() * res / 72.0);
+            val =  qRound(d->paper_size.width() * res_x / 72.0);
         } else {
             int logPixelsX = GetDeviceCaps(d->hdc, LOGPIXELSX);
             if (logPixelsX == 0) {
@@ -437,17 +438,17 @@ int QWin32PrintEngine::metric(QPaintDevice::PaintDeviceMetric m) const
                         "might be a driver problem");
                 logPixelsX = 600; // Reasonable default
             }
-            val = res
+            val = res_x
                   * GetDeviceCaps(d->hdc, d->fullPage ? PHYSICALWIDTH : HORZRES)
                   / logPixelsX;
         }
         if (d->pageMarginsSet)
             val -= int(mmToInches((d->previousDialogMargins.left() +
-                                   d->previousDialogMargins.width()) / 100.0) * res);
+                                   d->previousDialogMargins.width()) / 100.0) * res_x);
         break;
     case QPaintDevice::PdmHeight:
         if (d->has_custom_paper_size) {
-            val = qRound(d->paper_size.height() * res / 72.0);
+            val = qRound(d->paper_size.height() * res_y / 72.0);
         } else {
             int logPixelsY = GetDeviceCaps(d->hdc, LOGPIXELSY);
             if (logPixelsY == 0) {
@@ -455,19 +456,19 @@ int QWin32PrintEngine::metric(QPaintDevice::PaintDeviceMetric m) const
                         "might be a driver problem");
                 logPixelsY = 600; // Reasonable default
             }
-            val = res
+            val = res_y
                   * GetDeviceCaps(d->hdc, d->fullPage ? PHYSICALHEIGHT : VERTRES)
                   / logPixelsY;
         }
         if (d->pageMarginsSet)
             val -= int(mmToInches((d->previousDialogMargins.top() +
-                                   d->previousDialogMargins.height()) / 100.0) * res);
+                                   d->previousDialogMargins.height()) / 100.0) * res_y);
         break;
     case QPaintDevice::PdmDpiX:
-        val = res;
+        val = res_x;
         break;
     case QPaintDevice::PdmDpiY:
-        val = res;
+        val = res_y;
         break;
     case QPaintDevice::PdmPhysicalDpiX:
         val = GetDeviceCaps(d->hdc, LOGPIXELSX);
@@ -1118,13 +1119,14 @@ void QWin32PrintEnginePrivate::initHDC()
 
     switch(mode) {
     case QPrinter::ScreenResolution:
-        resolution = dpi_display;
+        resolution.rwidth() = resolution.rheight() = dpi_display;
         stretch_x = dpi_x / double(dpi_display);
         stretch_y = dpi_y / double(dpi_display);
         break;
     case QPrinter::PrinterResolution:
     case QPrinter::HighResolution:
-        resolution = dpi_y;
+        resolution.rwidth() = dpi_x;
+        resolution.rheight() = dpi_y;
         stretch_x = 1;
         stretch_y = 1;
         break;
@@ -1317,6 +1319,8 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
             d->devMode->dmOrientation = orientation;
             if (d->has_custom_paper_size && old_orientation != orientation)
                 d->paper_size = QSizeF(d->paper_size.height(), d->paper_size.width());
+            if (old_orientation != orientation)
+                d->resolution = QSize(d->resolution.height(), d->resolution.width());
             d->doReinit();
         }
         break;
@@ -1362,10 +1366,11 @@ void QWin32PrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &
 
     case PPK_Resolution:
         {
-            d->resolution = value.toInt();
+            int res = value.toInt();
+            d->resolution = QSize(res, res);
 
-            d->stretch_x = d->dpi_x / double(d->resolution);
-            d->stretch_y = d->dpi_y / double(d->resolution);
+            d->stretch_x = d->dpi_x / double(res);
+            d->stretch_y = d->dpi_y / double(res);
         }
         break;
 
@@ -1587,10 +1592,13 @@ QVariant QWin32PrintEngine::property(PrintEnginePropertyKey key) const
         break;
 
     case PPK_Resolution:
-        if (d->resolution || !d->name.isEmpty())
+        if (d->resolution.height() || !d->name.isEmpty())
+            value = d->resolution.height();
+        break;
+    case PPK_ResolutionXY:
+        if (!d->resolution.isNull() || !d->name.isEmpty())
             value = d->resolution;
         break;
-
     case PPK_SupportedResolutions:
         value = d->queryResolutions();
         break;

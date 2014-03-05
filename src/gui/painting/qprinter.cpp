@@ -1470,6 +1470,17 @@ void QPrinter::setResolution(int dpi)
     d->addToManualSetList(QPrintEngine::PPK_Resolution);
 }
 
+QSize QPrinter::resolutionXY() const
+{
+    Q_D(const QPrinter);
+    QVariant value = d->printEngine->property(QPrintEngine::PPK_ResolutionXY);
+    if (value.type() == QVariant::Size)
+        return value.toSize();
+    else {
+        int res = resolution();
+        return QSize(res, res);
+    }
+}
 
 /*!
   Returns the current assumed resolution of the printer, as set by
@@ -1624,18 +1635,22 @@ QPrinter::DuplexMode QPrinter::duplex() const
 QRectF QPrinter::pageRect(Unit unit) const
 {
     Q_D(const QPrinter);
-    int res = resolution();
-    const qreal multiplier = qt_multiplierForUnit(unit, res);
+    const QSize res = resolutionXY();
+    const int res_x = res.width();
+    const int res_y = res.height();
+    const qreal multiplier_x = qt_multiplierForUnit(unit, res_x);
+    const qreal multiplier_y = qt_multiplierForUnit(unit, res_y);
     // the page rect is in device pixels
     QRect devRect(d->printEngine->property(QPrintEngine::PPK_PageRect).toRect());
     if (unit == DevicePixel)
         return devRect;
-    QRectF diRect(devRect.x()*72.0/res,
-                  devRect.y()*72.0/res,
-                  devRect.width()*72.0/res,
-                  devRect.height()*72.0/res);
-    return QRectF(diRect.x()/multiplier, diRect.y()/multiplier,
-                  diRect.width()/multiplier, diRect.height()/multiplier);
+
+    QRectF diRect(devRect.x()*72.0/res_x,
+                  devRect.y()*72.0/res_y,
+                  devRect.width()*72.0/res_x,
+                  devRect.height()*72.0/res_y);
+    return QRectF(diRect.x()/multiplier_x, diRect.y()/multiplier_y,
+                  diRect.width()/multiplier_x, diRect.height()/multiplier_y);
 }
 
 
@@ -1650,18 +1665,22 @@ QRectF QPrinter::pageRect(Unit unit) const
 QRectF QPrinter::paperRect(Unit unit) const
 {
     Q_D(const QPrinter);
-    int res = resolution();
-    const qreal multiplier = qt_multiplierForUnit(unit, resolution());
+    const QSize res = resolutionXY();
+    const int res_x = res.width();
+    const int res_y = res.height();
+    const qreal multiplier_x = qt_multiplierForUnit(unit, res_x);
+    const qreal multiplier_y = qt_multiplierForUnit(unit, res_y);
     // the page rect is in device pixels
     QRect devRect(d->printEngine->property(QPrintEngine::PPK_PaperRect).toRect());
     if (unit == DevicePixel)
         return devRect;
-    QRectF diRect(devRect.x()*72.0/res,
-                  devRect.y()*72.0/res,
-                  devRect.width()*72.0/res,
-                  devRect.height()*72.0/res);
-    return QRectF(diRect.x()/multiplier, diRect.y()/multiplier,
-                  diRect.width()/multiplier, diRect.height()/multiplier);
+
+    QRectF diRect(devRect.x()*72.0/res_x,
+                  devRect.y()*72.0/res_y,
+                  devRect.width()*72.0/res_x,
+                  devRect.height()*72.0/res_y);
+    return QRectF(diRect.x()/multiplier_x, diRect.y()/multiplier_y,
+                  diRect.width()/multiplier_x, diRect.height()/multiplier_y);
 }
 
 /*!

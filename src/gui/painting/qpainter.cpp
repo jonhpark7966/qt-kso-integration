@@ -6140,16 +6140,6 @@ void QPainter::drawText(const QPointF &p, const QString &str,unsigned int flags,
             Q_ASSERT_X(false, Q_FUNC_INFO, "stringToCMap shouldn't fail twice");
     }
 
-    QTransform oldTrans;
-    bool transChanged = !qFuzzyIsNull(font().escapementAngle());
-    if (transChanged) {
-
-        oldTrans = this->worldTransform();
-        this->translate(p);
-        this->rotate(-font().escapementAngle());
-        this->translate(-p);
-    }
-
     QFixed width = QFixed::fromReal(0.0);
     for (int i = 0; i < len; ++i) {
         glyphs.advances_x[i] = QFixed::fromReal(advanceWidths[i]);
@@ -6164,9 +6154,6 @@ void QPainter::drawText(const QPointF &p, const QString &str,unsigned int flags,
     gf.flags |= QTextItem::CustomAdvanceWidths;
     gf.width = width;
     drawTextItem(p, gf);
-
-    if (transChanged)
-        this->setWorldTransform(oldTrans);
 }
 /*!
    \internal

@@ -126,7 +126,7 @@ public:
         hdc(0),
         mode(QPrinter::ScreenResolution),
         state(QPrinter::Idle),
-        resolution(0),
+        resolution(0, 0),
         pageMarginsSet(false),
         num_copies(1),
         printToFile(false),
@@ -213,7 +213,7 @@ public:
     QString fileName;
 
     QPrinter::PrinterState state;
-    int resolution;
+    QSize resolution;
 
     // This QRect is used to store the exact values
     // entered into the PageSetup Dialog because those are

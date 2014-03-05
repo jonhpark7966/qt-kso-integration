@@ -74,6 +74,7 @@ public:
         PPK_PrinterName,
         PPK_PrinterProgram,
         PPK_Resolution,
+        PPK_ResolutionXY,
         PPK_SelectionOption,
         PPK_SupportedResolutions,
 

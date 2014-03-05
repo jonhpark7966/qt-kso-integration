@@ -293,7 +293,7 @@ protected:
 
 private:
     void init(PrinterMode mode);
-
+    QSize resolutionXY() const;
     Q_DISABLE_COPY(QPrinter)
 
     QScopedPointer<QPrinterPrivate> d_ptr;
