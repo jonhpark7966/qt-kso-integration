@@ -300,7 +300,8 @@ struct QSpanData
     qreal m11, m12, m13, m21, m22, m23, m33, dx, dy;   // inverse xform matrix
     qreal scale_w, scale_h;
     const QClipData *clip;
-    QImageEffectsPrivate *effects; 
+    QImageEffectsPrivate *effects;
+    bool has_effect_ownership;
     enum Type {
         None,
         Solid,

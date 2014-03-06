@@ -7187,6 +7187,28 @@ void QImageEffects::detach()
 	d = x;
 }
 
+bool QImageEffects::operator==(const QImageEffects &e) const
+{
+	if (d == e.d)
+		return true;
+
+	const QImageEffectsPrivate* lhs = d;
+	const QImageEffectsPrivate* rhs = e.d;
+
+	return (lhs->hasBilevel && rhs->hasBilevel && lhs->bilevelThreshold == rhs->bilevelThreshold || (!lhs->hasBilevel && !rhs->hasBilevel))
+		&& (lhs->isGray == rhs->isGray)
+		&& lhs->brightness == rhs->brightness
+		&& (lhs->hasColorKey && rhs->hasColorKey && lhs->colorKey == rhs->colorKey && lhs->tolerance == rhs->tolerance || (!lhs->hasColorKey && !rhs->hasColorKey))
+		&& (lhs->hasColorMatirx && rhs->hasColorMatirx && lhs->colorMatrix == rhs->colorMatrix) || (!lhs->hasColorMatirx && !rhs->hasColorMatirx)
+		&& lhs->colorMap == rhs->colorMap
+		&& lhs->brushColorMap == rhs->brushColorMap
+		&& lhs->contrast == rhs->contrast
+		&& (lhs->hasDuotone && rhs->hasDuotone && lhs->duotoneColor1 == rhs->duotoneColor1 && lhs->duotoneColor2 == rhs->duotoneColor2 || (!lhs->hasDuotone && !lhs->hasDuotone))
+		&& (lhs->hasSubstColor && rhs->hasSubstColor && lhs->substColor == rhs->substColor || (!lhs->hasSubstColor && !rhs->hasSubstColor))
+		&& (lhs->hasAlpha && rhs->hasAlpha && lhs->alphaValue == rhs->alphaValue || (!lhs->hasAlpha && !rhs->hasAlpha))
+		&& (lhs->hasShadow && rhs->hasShadow && lhs->shadowLow == rhs->shadowLow && lhs->shadowHight == rhs->shadowHight || (!lhs->hasShadow && !rhs->hasShadow));
+}
+
 bool QImageEffects::hasColorKey() const
 {
 	return d->hasColorKey;
