@@ -296,7 +296,11 @@ void QImageEffectsPrivate::setTransformFunc()
 {
 #ifdef QT_HAVE_SSE2
     if (!hasColorMatirx && contrast <= 50) {
-        if (false) {
+        const int *p = colorMatrixInt[0];
+        bool sseOverflow = (p[0] < 0 || p[1] < 0 || p[2] < 0 || p[4] < 0 || p[5] < 0 || p[6] < 0
+                         || p[8] < 0 || p[9] < 0 || p[10] < 0 || p[12] < 0 || p[13] < 0 || p[14] < 0);
+        if (sseOverflow) {
+            return;
 #ifdef QT_HAVE_SSE4_1
         }
         else if (qDetectCPUFeatures() & SSE4_1) {
@@ -305,7 +309,6 @@ void QImageEffectsPrivate::setTransformFunc()
         } else if (qDetectCPUFeatures() & SSE2)
             m_pTransformProc = &QImageEffectsPrivate::transform_sse2;
 
-        const int *p = colorMatrixInt[0];
         __m128i * cast_mtxs = (__m128i*)d.m_mmtxs;
         cast_mtxs[0] = _mm_set_epi16(p[0], p[4], p[1], p[5], p[2], p[6], p[3], p[7]);
         cast_mtxs[1] = _mm_set_epi16(p[8], p[12], p[9], p[13], p[10], p[14], p[11], p[15]);
