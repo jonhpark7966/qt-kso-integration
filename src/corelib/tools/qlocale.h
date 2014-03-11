@@ -62,6 +62,9 @@ class QTextStreamPrivate;
 class QLocale;
 
 #ifndef QT_NO_SYSTEMLOCALE
+class QSystemLocale;
+static QSystemLocale *QSystemLocale_globalSystemLocale();
+
 class Q_CORE_EXPORT QSystemLocale
 {
 public:

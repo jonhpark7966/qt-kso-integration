@@ -143,7 +143,7 @@ static QDataStream &operator<<(QDataStream &s, const BMP_INFOHDR &bi)
     return s;
 }
 
-static int calc_shift(int mask)
+static int calc_shift(uint mask)
 {
     int result = 0;
     while (mask && !(mask & 1)) {
@@ -207,9 +207,9 @@ static bool read_dib_body(QDataStream &s, const BMP_INFOHDR &bi, int offset, int
 #endif
     int w = bi.biWidth,         h = bi.biHeight,  nbits = bi.biBitCount;
     int t = bi.biSize,         comp = bi.biCompression;
-    int red_mask = 0;
-    int green_mask = 0;
-    int blue_mask = 0;
+    uint red_mask = 0;
+    uint green_mask = 0;
+    uint blue_mask = 0;
     int red_shift = 0;
     int green_shift = 0;
     int blue_shift = 0;
@@ -819,7 +819,7 @@ bool QBmpHandler::write(const QImage &img)
     memcpy(bf.bfType, "BM", 2);
 
     // write file header
-    bf.bfReserved1 = 0;
+	bf.bfReserved1 = 0;
     bf.bfReserved2 = 0;
     bf.bfOffBits = BMP_FILEHDR_SIZE + BMP_WIN + image.colorCount() * 4;
     bf.bfSize = bf.bfOffBits + bpl_bmp*image.height();

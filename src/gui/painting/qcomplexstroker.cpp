@@ -2,6 +2,7 @@
 #include "qcomplexstroker.h"
 #include "qcomplexstroker_p.h"
 #include "qcustomlineanchor_p.h"
+#include "qpainterpath_p.h"
 
 #include <QtCore/qmath.h>
 #include <algorithm>
@@ -1366,10 +1367,11 @@ void QPathZoomer::ZoomPath(const QPainterPath& path2zoom, QPainterPath& pathAfte
     }
 }
 
-QPathDasher::QPathDasher() 
+QPathDasher::QPathDasher()
 : m_dashOffset(0)
 , m_dashPattern()
 , m_width(1)
+, m_lastMoveIndex(-1)
 {
 }
 
@@ -1439,6 +1441,16 @@ void QPathDasher::SetWidth(qreal width)
     m_width = width <= 0 ? 1 : width; 
 }
 
+QRectF QPathDasher::GetClipRect() const
+{
+    return m_clipRect;
+}
+
+void QPathDasher::SetClipRect(const QRectF& rc)
+{
+    m_clipRect = rc;
+}
+
 void QPathDasher::GetDashedPath(const QPainterPath& path2dash, 
                                 QPainterPath& dashedPath, const qreal flatness) const
 {
@@ -1495,12 +1507,13 @@ void QPathDasher::GenerateDash(const QVertices& vertices,
     Q_ASSERT_X(m_dashPattern.size() > 0,"","");
     Q_ASSERT_X((m_dashPattern.size() & 1) == 0, "", "必须是偶数个");
     Q_ASSERT_X(m_width > 0,"", "");
+    Q_ASSERT_X(outPath.isEmpty(),"", "");
 
     qreal currentDashLen = 0;
     int currentDashIndex = 0;
     CalcDashStart(currentDashLen, currentDashIndex, m_dashPattern, m_dashOffset, m_width);
-    bool bConnect = FALSE;
-    const bool& bClosed = vertices.isclosed();	
+    bool bConnect = false;
+    const bool bClosed = vertices.isclosed();
     if (bClosed)
     {
         qreal current_strt = 0;
@@ -1513,9 +1526,9 @@ void QPathDasher::GenerateDash(const QVertices& vertices,
                 if ((currentDashIndex | 1) != currentDashIndex) // ----
                 {
                     AddStart(vertices.last(), vertices.first(), current_strt, outPath);
-                    AddPoint(vertices.last(), vertices.first(), current_strt + current_rest, outPath);							
+                    AddPoint(vertices.last(), vertices.first(), current_strt + current_rest, outPath);
                 }
-                bConnect = TRUE;
+                bConnect = true;
                 currentDashLen -= current_rest;
                 break;
             }
@@ -1524,7 +1537,7 @@ void QPathDasher::GenerateDash(const QVertices& vertices,
                 if ((currentDashIndex | 1) != currentDashIndex) // ----
                 {
                     AddStart(vertices.last(), vertices.first(), current_strt, outPath);
-                    AddPoint(vertices.last(), vertices.first(), current_strt + currentDashLen, outPath);							
+                    AddPoint(vertices.last(), vertices.first(), current_strt + currentDashLen, outPath);
                 }
                 current_strt += currentDashLen;
                 current_rest -= currentDashLen;
@@ -1549,11 +1562,11 @@ void QPathDasher::GenerateDash(const QVertices& vertices,
                     {
                         AddStart(vertices[i], vertices[i+1], current_strt, outPath);
                     }
-                    AddPoint(vertices[i], vertices[i+1], current_strt + current_rest, outPath);							
+                    AddPoint(vertices[i], vertices[i+1], current_strt + current_rest, outPath);
                 }
-                bConnect = TRUE;
+                bConnect = true;
                 currentDashLen -= current_rest;
-                break;					
+                break;
             }
             else
             {
@@ -1565,7 +1578,7 @@ void QPathDasher::GenerateDash(const QVertices& vertices,
                     }
                     AddPoint(vertices[i], vertices[i+1], current_strt + currentDashLen, outPath);
                 }
-                bConnect = FALSE;
+                bConnect = false;
                 current_strt += currentDashLen;
                 current_rest -= currentDashLen;
                 IncCurrentDash(currentDashIndex, currentDashLen, m_dashPattern, m_width);
@@ -1575,13 +1588,12 @@ void QPathDasher::GenerateDash(const QVertices& vertices,
     }
 }
 
-// static
 void QPathDasher::CalcDashStart(qreal& currentDashLen,
                                 int& currentDashIndex, 
                                 const QVector<qreal>& pattern,
                                 qreal dashOffset,
-                                qreal width)
-{	
+                                qreal width) const
+{
     qreal dashLen = 0;
     const int& s = pattern.size();
     for (int i = 0; i < s; ++i)
@@ -1609,11 +1621,10 @@ void QPathDasher::CalcDashStart(qreal& currentDashLen,
     Q_ASSERT_X(0, "", "Should never run here");
 }
 
-// static 
 void QPathDasher::IncCurrentDash(int& currentDashIndex,
                                  qreal& currentDashLen,
                                  const QVector<qreal>& pattern,
-                                 qreal width)
+                                 qreal width) const
 {
     ++currentDashIndex;
 
@@ -1624,25 +1635,45 @@ void QPathDasher::IncCurrentDash(int& currentDashIndex,
     currentDashLen = pattern[currentDashIndex] * width;
 }
 
-// static
 void QPathDasher::AddStart(const vertex_dist& v0,
                            const vertex_dist& v1,
                            qreal dist,
-                           QPainterPath& outPath)
+                           QPainterPath& outPath) const
 {
+    if (!m_clipRect.isEmpty())
+    {
+        if (m_lastMoveIndex != -1)
+            CheckClip(outPath);
+
+        m_lastMoveIndex = outPath.elementCount();
+    }
     outPath.moveTo(v0.pt.x() + dist / v0.dist * (v1.pt.x() - v0.pt.x()),
         v0.pt.y() + dist / v0.dist * (v1.pt.y() - v0.pt.y()));
 }
 
-// static
 void QPathDasher::AddPoint(const vertex_dist& v0,
                            const vertex_dist& v1,
                            qreal dist,
-                           QPainterPath& outPath)
+                           QPainterPath& outPath) const
 {
     QPointF pt(v0.pt.x() + dist / v0.dist * (v1.pt.x() - v0.pt.x()),
         v0.pt.y() + dist / v0.dist * (v1.pt.y() - v0.pt.y()));
     outPath.lineTo(pt);
+}
+
+void QPathDasher::CheckClip(QPainterPath& outPath) const
+{
+    QPainterPathData *pData = reinterpret_cast<QPainterPathData *>(outPath.d_func());
+    QVector<QPainterPath::Element> &elements = pData->elements;
+    Q_ASSERT(elements.at(m_lastMoveIndex).isMoveTo());
+    for (int i = m_lastMoveIndex; i < elements.count(); i++)
+        if (m_clipRect.contains(elements.at(i)))
+            return;
+
+    if (m_lastMoveIndex == 0)
+        outPath = QPainterPath();
+    else
+        elements.resize(m_lastMoveIndex);
 }
 
 QComplexStrokerPrivate::QComplexStrokerPrivate()
@@ -1954,6 +1985,20 @@ void QComplexStroker::setDashCapStyle(Qt::PenCapStyle s)
     d_ptr->dashCap = s;
 }
 
+QRectF QComplexStroker::getClipRect() const
+{
+    return d_ptr->clipRect;
+}
+
+void QComplexStroker::setClipRect(const QRectF& rc)
+{
+    if (d_ptr->clipRect == rc)
+        return;
+
+    detach();
+    d_ptr->clipRect = rc;
+}
+
 QPainterPath QComplexStroker::createStroke(const QPainterPath &path, const qreal flatness/* = 0.25*/) const
 {
     QPainterPath result;
@@ -1974,6 +2019,7 @@ QPainterPath QComplexStroker::createStroke(const QPainterPath &path, const qreal
         mathStroker->StrokePath(pathAfterZoom, result, flatness);
     } else {
         QScopedPointer<QPathDasher> dasher(d_ptr->prepareDasher());
+        dasher->SetClipRect(d_ptr->clipRect);
 
         Qt::PenCapStyle dc = dashCapStyle();
         Qt::PenCapStyle slc = startCapStyle();
