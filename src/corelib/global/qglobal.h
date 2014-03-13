@@ -58,9 +58,6 @@
 
 #define QT_PACKAGE_TAG ""
 
-//disable the suport for tablet
-#define QT_NO_TABLETEVENT
-
 #if !defined(QT_BUILD_MOC)
 #include <QtCore/qconfig.h>
 #endif
