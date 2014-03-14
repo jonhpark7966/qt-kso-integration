@@ -1559,7 +1559,6 @@ void QPathDasher::GenerateDash(const QVertices& vertices,
     Q_ASSERT_X(m_dashPattern.size() > 0,"","");
     Q_ASSERT_X((m_dashPattern.size() & 1) == 0, "", "必须是偶数个");
     Q_ASSERT_X(m_width > 0,"", "");
-    Q_ASSERT_X(outPath.isEmpty(),"", "");
 
     qreal currentDashLen = 0;
     int currentDashIndex = 0;
