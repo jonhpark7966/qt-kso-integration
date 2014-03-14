@@ -3961,7 +3961,7 @@ static inline Operator getOperator(const QSpanData *data, const QSpan *spans, in
         op.src_fetch = fetchRadialGradient;
         break;
     case QSpanData::PathGradient:
-        solidSource = !data->gradient.alphaColor;
+        //solidSource = !data->gradient.alphaColor;
         op.src_fetch = fetchPathGradient;
         break;
     case QSpanData::ConicalGradient:
