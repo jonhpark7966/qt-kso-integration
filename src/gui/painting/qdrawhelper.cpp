@@ -7788,6 +7788,7 @@ static void qt_gradient_quint32(int count, const QSpan *spans, void *userData)
             quint32 color =
                 qt_gradient_pixel_fixed(&data->gradient, yinc * y + off);
 
+            qt_shadowTransform(data->effects, &color, 1);
             funcSolid(dst, spans->len, color, spans->coverage);
             ++spans;
         }
