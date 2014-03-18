@@ -1348,6 +1348,7 @@ void QPathZoomer::ZoomPath(const QPainterPath& path2zoom, QPainterPath& pathAfte
 
                     // 判断扩大之后的顶点顺序是否和原来相同
                     if (bClockWise == IsPolygonClockWise(&zoomedPts[0], ps)) {
+                        pathAfterZoom.moveTo(zoomedPts[0]);
                         pathAfterZoom.connectPolygon(zoomedPts);
                         if (sp.IsClosed())
                             pathAfterZoom.closeSubpath();
