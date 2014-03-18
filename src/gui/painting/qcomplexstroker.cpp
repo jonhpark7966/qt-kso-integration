@@ -1372,7 +1372,6 @@ QPathDasher::QPathDasher()
 : m_dashOffset(0)
 , m_dashPattern()
 , m_width(1)
-, m_lastMoveIndex(-1)
 {
 }
 
@@ -1502,121 +1501,134 @@ void QPathDasher::GetDashedPath(const QPolygonF& subPath, QPainterPath& outPath)
     }
 }
 
+//梁友栋-Barsky裁剪算法, 返回false表示线完全不在裁剪区内
+static bool clipLine(QLineF& line, const QRectF& clipRect)
+{
+    double u1 = 0, u2 = 1.0;
+    const double x1 = line.p1().x();
+    const double y1 = line.p1().y();
+    const double x2 = line.p2().x();
+    const double y2 = line.p2().y();
+    double p[4] = {
+        x1 - x2, x2 - x1,
+        y1 - y2, y2 - y1
+    };
+    double q[4] = {
+        x1 - clipRect.left(), clipRect.right() - x1,
+        y1 - clipRect.top(),  clipRect.bottom() - y1
+    };
+
+    for (int i = 0; i < 4; ++i)
+    {
+        if (qFuzzyIsNull(p[i]))
+        {
+            if (q[i] < 0)
+            {
+                return false;
+            }
+            continue;
+        }
+
+        double r = q[i] / p[i];
+        if (p[i] < 0)
+        {
+            u1 = qMax(u1, r);
+            if (u1 > u2)
+                return false;
+        }
+        else
+        {
+            u2 = qMin(u2, r);
+            if (u1 > u2)
+                return false;
+        }
+    }
+
+    double sx = x1 + u1 * p[1];
+    double ex = x1 + u2 * p[1];
+    double sy = y1 + u1 * p[3];
+    double ey = y1 + u2 * p[3];
+
+    line.setP1(QPointF(sx, sy));
+    line.setP2(QPointF(ex, ey));
+    return true;
+}
+
 void QPathDasher::GenerateDash(const QVertices& vertices,
                                QPainterPath& outPath) const
 {
     Q_ASSERT_X(m_dashPattern.size() > 0,"","");
     Q_ASSERT_X((m_dashPattern.size() & 1) == 0, "", "必须是偶数个");
     Q_ASSERT_X(m_width > 0,"", "");
-    Q_ASSERT_X(outPath.isEmpty(),"", "");
 
     qreal currentDashLen = 0;
     int currentDashIndex = 0;
-    CalcDashStart(currentDashLen, currentDashIndex, m_dashPattern, m_dashOffset, m_width);
-    bool bConnect = false;
     const bool bClosed = vertices.isclosed();
+    double totalLen = 0;
+
+    int si = 0, ei = 1; //start index, end index
     if (bClosed)
     {
-        qreal current_strt = 0;
-        qreal current_rest = vertices.last().dist;
-
-        while (current_rest > 0)
-        {
-            if (currentDashLen > current_rest)
-            {
-                if ((currentDashIndex | 1) != currentDashIndex) // ----
-                {
-                    AddStart(vertices.last(), vertices.first(), current_strt, outPath);
-                    AddPoint(vertices.last(), vertices.first(), current_strt + current_rest, outPath);
-                }
-                bConnect = true;
-                currentDashLen -= current_rest;
-                break;
-            }
-            else
-            {
-                if ((currentDashIndex | 1) != currentDashIndex) // ----
-                {
-                    AddStart(vertices.last(), vertices.first(), current_strt, outPath);
-                    AddPoint(vertices.last(), vertices.first(), current_strt + currentDashLen, outPath);
-                }
-                current_strt += currentDashLen;
-                current_rest -= currentDashLen;
-                IncCurrentDash(currentDashIndex, currentDashLen, m_dashPattern, m_width);
-            }
-        }
+        si = vertices.size() - 1;
+        ei = 0;
     }
-
-    int i = 0;
-    while (i < vertices.size() - 1)
+    while (ei < vertices.size())
     {
+        QLineF curLine = QLineF(vertices[si].pt, vertices[ei].pt);
+        if (!m_clipRect.isEmpty() && !clipLine(curLine, m_clipRect))
+        {
+            totalLen += vertices[si].dist;
+            si = ei++;
+            continue;
+        }
+        CalcDashStart(currentDashLen, currentDashIndex, totalLen + QLineF(vertices[si].pt, curLine.p1()).length());
         qreal current_strt = 0;
-        qreal current_rest = vertices[i].dist;
+        qreal current_rest = curLine.length();
 
         while (current_rest > 0)
         {
-            if (currentDashLen > current_rest)
+            if ((currentDashIndex | 1) != currentDashIndex)
             {
-                if ((currentDashIndex | 1) != currentDashIndex)
-                {
-                    if (!bConnect)
-                    {
-                        AddStart(vertices[i], vertices[i+1], current_strt, outPath);
-                    }
-                    AddPoint(vertices[i], vertices[i+1], current_strt + current_rest, outPath);
-                }
-                bConnect = true;
-                currentDashLen -= current_rest;
-                break;
+                AddStart(vertex_dist(curLine.p1(), curLine.p2()), vertex_dist(curLine.p2(), curLine.p1()), current_strt, outPath);
+                AddPoint(vertex_dist(curLine.p1(), curLine.p2()), vertex_dist(curLine.p2(), curLine.p1()), current_strt + qMin(currentDashLen, current_rest), outPath);
             }
-            else
-            {
-                if ((currentDashIndex | 1) != currentDashIndex)
-                {
-                    if (!bConnect)
-                    {
-                        AddStart(vertices[i], vertices[i+1], current_strt, outPath);
-                    }
-                    AddPoint(vertices[i], vertices[i+1], current_strt + currentDashLen, outPath);
-                }
-                bConnect = false;
-                current_strt += currentDashLen;
-                current_rest -= currentDashLen;
-                IncCurrentDash(currentDashIndex, currentDashLen, m_dashPattern, m_width);
-            }
+     
+            current_strt += currentDashLen;
+            current_rest -= currentDashLen;
+            IncCurrentDash(currentDashIndex, currentDashLen, m_dashPattern, m_width);
         }
-        ++i;
+        totalLen += vertices[si].dist;
+        si = ei++;
     }
 }
 
 void QPathDasher::CalcDashStart(qreal& currentDashLen,
-                                int& currentDashIndex, 
-                                const QVector<qreal>& pattern,
-                                qreal dashOffset,
-                                qreal width) const
+                                int& currentDashIndex,
+                                double totalLen //折线段起点到当前线段生成起点的拉直距离
+                                ) const
 {
     qreal dashLen = 0;
-    const int& s = pattern.size();
+    const int& s = m_dashPattern.size();
     for (int i = 0; i < s; ++i)
     {
-        dashLen = dashLen + pattern[i];
+        dashLen = dashLen + m_dashPattern[i] * m_width;
     }
 
-    qreal offset = dashOffset;
-    while (offset >= dashLen)
-    {
-        offset -= dashLen;
-    }
+    Q_ASSERT(!qFuzzyIsNull(dashLen) && !qFuzzyIsNull(m_width));
+    double offset = totalLen - qFloor(totalLen / dashLen) * dashLen;
+    offset += m_dashOffset * m_width;
+    offset -= qFloor(offset / dashLen) * dashLen;
+    offset /= m_width;
 
     for (int j = 0; j < s; ++j)
     {
-        if (offset < pattern[j])
+        if (offset < m_dashPattern[j])
         {
-            currentDashLen = (pattern[j] - offset) * width;
+            currentDashLen = (m_dashPattern[j] - offset) * m_width;
             currentDashIndex = j;
             return;
         }
-        offset = offset - pattern[j];
+        offset = offset - m_dashPattern[j];
     }
 
     Q_ASSERT_X(0, "", "Should never run here");
@@ -1641,15 +1653,12 @@ void QPathDasher::AddStart(const vertex_dist& v0,
                            qreal dist,
                            QPainterPath& outPath) const
 {
-    if (!m_clipRect.isEmpty())
-    {
-        if (m_lastMoveIndex != -1)
-            CheckClip(outPath);
-
-        m_lastMoveIndex = outPath.elementCount();
-    }
-    outPath.moveTo(v0.pt.x() + dist / v0.dist * (v1.pt.x() - v0.pt.x()),
+    QPointF curPoint(v0.pt.x() + dist / v0.dist * (v1.pt.x() - v0.pt.x()),
         v0.pt.y() + dist / v0.dist * (v1.pt.y() - v0.pt.y()));
+    int count = outPath.elementCount();
+    if (count > 0 && curPoint == outPath.elementAt(count - 1))
+        return;
+    outPath.moveTo(curPoint);
 }
 
 void QPathDasher::AddPoint(const vertex_dist& v0,
@@ -1660,21 +1669,6 @@ void QPathDasher::AddPoint(const vertex_dist& v0,
     QPointF pt(v0.pt.x() + dist / v0.dist * (v1.pt.x() - v0.pt.x()),
         v0.pt.y() + dist / v0.dist * (v1.pt.y() - v0.pt.y()));
     outPath.lineTo(pt);
-}
-
-void QPathDasher::CheckClip(QPainterPath& outPath) const
-{
-    QPainterPathData *pData = reinterpret_cast<QPainterPathData *>(outPath.d_func());
-    QVector<QPainterPath::Element> &elements = pData->elements;
-    Q_ASSERT(elements.at(m_lastMoveIndex).isMoveTo());
-    for (int i = m_lastMoveIndex; i < elements.count(); i++)
-        if (m_clipRect.contains(elements.at(i)))
-            return;
-
-    if (m_lastMoveIndex == 0)
-        outPath = QPainterPath();
-    else
-        elements.resize(m_lastMoveIndex);
 }
 
 QComplexStrokerPrivate::QComplexStrokerPrivate()

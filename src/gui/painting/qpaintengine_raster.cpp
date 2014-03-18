@@ -998,10 +998,11 @@ void QRasterPaintEngine::updateBrush(const QBrush &brush, const QRectF &rc/* = Q
         // must set matrix prior to setup, as the path gradient brush uses it...
         s->brushData.setup(brush, s->intOpacity, s->composition_mode);
     } else {
-		QRectF destRct;
-		brush.getTextureDestRect(destRct);
-		if (destRct.isEmpty())
-			destRct = rc;
+        QRectF destRct;
+        if (brush.style() == Qt::TexturePattern)
+            brush.getTextureDestRect(destRct);
+        if (destRct.isEmpty())
+            destRct = rc;
         QMatrix mtx = qt_getAdjustMatrix(brush, destRct);
 
         s->brushData.setup(brush, s->intOpacity, s->composition_mode);

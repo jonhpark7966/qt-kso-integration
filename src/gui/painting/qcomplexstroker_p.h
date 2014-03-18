@@ -161,19 +161,17 @@ private:
 
 	void GenerateDash(const QVertices& vertices, QPainterPath& outPath) const;
 	
-	void CalcDashStart(qreal& currentDashLen, int& currentDashIndex, const QVector<qreal>& pattern, qreal dashOffset, qreal width) const;
+	//totalLen是要生成虚线的折线段的起点到当前生成线起点的拉直距离
+	void CalcDashStart(qreal& currentDashLen, int& currentDashIndex, double totalLen) const;
 	void IncCurrentDash(int& currentDashIndex, qreal& currentDashLen, const QVector<qreal>& pattern, qreal width) const;
 	void AddStart(const vertex_dist& v0, const vertex_dist& v1, qreal dist, QPainterPath& outPath) const;
 	void AddPoint(const vertex_dist& v0, const vertex_dist& v1, qreal dist, QPainterPath& outPath) const;
-
-	void CheckClip(QPainterPath& outPath) const;
 
 private:
 	qreal m_dashOffset;
 	QVector<qreal> m_dashPattern;
 
 	qreal m_width;
-	mutable int m_lastMoveIndex;
 	QRectF m_clipRect;
 };
 

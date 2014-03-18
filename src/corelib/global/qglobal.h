@@ -58,9 +58,6 @@
 
 #define QT_PACKAGE_TAG ""
 
-//disable the suport for tablet
-#define QT_NO_TABLETEVENT
-
 #if !defined(QT_BUILD_MOC)
 #include <QtCore/qconfig.h>
 #endif
@@ -2683,6 +2680,12 @@ QT_LICENSED_MODULE(DBus)
 #  define QT_NO_SHAREDMEMORY
 // QNX currently doesn't support forking in a thread, so disable QProcess
 #  define QT_NO_PROCESS
+#endif
+
+#ifdef Q_OS_WIN
+// disable the suport for tablet
+// on UNIX this should be disabled from configure
+#  define QT_NO_TABLETEVENT
 #endif
 
 QT_END_NAMESPACE
