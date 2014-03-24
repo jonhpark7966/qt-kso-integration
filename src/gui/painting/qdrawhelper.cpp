@@ -5890,7 +5890,8 @@ Q_STATIC_TEMPLATE_FUNCTION void blend_tiled_argb(int count, const QSpan *spans, 
 {
     QSpanData *data = reinterpret_cast<QSpanData *>(userData);
     if (data->texture.format != QImage::Format_ARGB32_Premultiplied
-        && data->texture.format != QImage::Format_RGB32) {
+        && data->texture.format != QImage::Format_RGB32
+        || data->effects != NULL) {
         blend_tiled_generic<spanMethod>(count, spans, userData);
         return;
     }
@@ -6940,7 +6941,8 @@ Q_STATIC_TEMPLATE_FUNCTION void blend_transformed_tiled_argb(int count, const QS
 {
     QSpanData *data = reinterpret_cast<QSpanData *>(userData);
     if (data->texture.format != QImage::Format_ARGB32_Premultiplied
-        && data->texture.format != QImage::Format_RGB32) {
+        && data->texture.format != QImage::Format_RGB32
+        || data->effects != NULL) {
         blend_src_generic<spanMethod>(count, spans, userData);
         return;
     }
