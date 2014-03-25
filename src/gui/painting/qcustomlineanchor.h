@@ -42,7 +42,7 @@ public:
     qreal baseInset() const;
     void setBaseInset(qreal inset);
 
-    qreal widthScale() const;	
+    qreal widthScale() const;
     void setWidthScale(qreal widthScale);
 
     void setFlatness(qreal flatness);

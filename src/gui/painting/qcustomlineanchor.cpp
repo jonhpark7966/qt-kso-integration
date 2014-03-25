@@ -1,6 +1,6 @@
 #include "qcustomlineanchor.h"
-#include "qcomplexstroker_p.h"
 #include "qcustomlineanchor_p.h"
+#include "qcomplexstroker_p.h"
 
 #include <QtCore/qmath.h>
 #include <algorithm>
@@ -25,15 +25,15 @@ inline qreal calc_line_point_distance(qreal x1, qreal y1,
     return ((x - x2) * dy - (y - y2) * dx) / d;
 }
 
-inline qreal calc_line_point_distance(QPointF pt1, QPointF pt2, QPointF pt)
+inline qreal calc_line_point_distance(const QPointF& pt1, const QPointF& pt2, const QPointF& pt)
 {
-    return calc_line_point_distance(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), pt.rx(), pt.ry());
+    return calc_line_point_distance(pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt.x(), pt.y());
 }
 
 inline void CalcScalePointOnSegment(const QPointF& pt1, const QPointF& pt2, qreal scale, QPointF& pt)
 {
-    const qreal& dx = pt2.x() - pt1.x();
-    const qreal& dy = pt2.y() - pt1.y();
+    const qreal dx = pt2.x() - pt1.x();
+    const qreal dy = pt2.y() - pt1.y();
     pt.rx() = pt1.x() + dx * scale;
     pt.ry() = pt1.y() + dy * scale;
 }
@@ -54,20 +54,19 @@ inline void CalcSegmentCrossRound(const QPointF& centerPt, qreal radiu,
         return;
     }
 
-    const qreal& distc3 = calc_line_point_distance(pt1, pt2, centerPt);
+    const qreal distc3 = calc_line_point_distance(pt1, pt2, centerPt);
     if (qFuzzyIsNull(distc3))
     {
         CalcScalePointOnSegment(centerPt, pt2, radiu / distc2, pt);
         return;
     }
 
-    const qreal& dist12 = calc_distance(pt1, pt2);
-    const qreal& dist32 = qSqrt(distc2 * distc2 - distc3 * distc3);
-    const qreal& dist34 = qSqrt(radiu * radiu - distc3 * distc3);
-    const qreal& dist42 = dist32 - dist34;
+    const qreal dist12 = calc_distance(pt1, pt2);
+    const qreal dist32 = qSqrt(distc2 * distc2 - distc3 * distc3);
+    const qreal dist34 = qSqrt(radiu * radiu - distc3 * distc3);
+    const qreal dist42 = dist32 - dist34;
 
     CalcScalePointOnSegment(pt2, pt1, dist42 / dist12, pt);
-    return;
 }
 
 
@@ -83,36 +82,33 @@ QCustomLineAnchor::QCustomLineAnchor(Qt::PenAnchorStyle anchor)
 {
     QPainterPath capPath;
     switch (anchor) {
-case Qt::ArrowAnchor: {
+case Qt::ArrowAnchor:
     capPath.moveTo(1.0, -1.732051);
     capPath.lineTo(0, 0);
     capPath.lineTo(-1.0, -1.732051);
     capPath.closeSubpath();
     break;
-                      }
 
-case Qt::RoundAnchor: {
+case Qt::RoundAnchor:
     capPath.addEllipse(-1, -1, 2, 2);
     break;
-                      }
 
-case Qt::DiamondAnchor: {
+case Qt::DiamondAnchor:
     capPath.moveTo(0, -1);
     capPath.lineTo(1, 0);
     capPath.lineTo(0, 1);
     capPath.lineTo(-1, 0);
     capPath.closeSubpath();
     break;
-                        }
 
-case Qt::SquareAnchor: {
+case Qt::SquareAnchor:
     capPath.moveTo(1, -1);
     capPath.lineTo(1, 1);
     capPath.lineTo(-1, 1); 
     capPath.lineTo(-1, -1);
     capPath.closeSubpath();
     break;
-                       }
+
 case Qt::CustomAnchor:
     break;
 default:
@@ -192,8 +188,8 @@ void QCustomLineAnchor::setStrokeEndCap(Qt::PenCapStyle endCap)
     return m_cap->setStrokeEndCap(endCap);
 }
 
-Qt::PenCapStyle QCustomLineAnchor::baseCap() const	
-{ 
+Qt::PenCapStyle QCustomLineAnchor::baseCap() const
+{
     if (isValid())
     {
         return m_cap->baseCap();
@@ -210,7 +206,7 @@ qreal QCustomLineAnchor::baseInset() const
     return 0;
 }
 
-Qt::PenJoinStyle QCustomLineAnchor::strokeJoin() const	
+Qt::PenJoinStyle QCustomLineAnchor::strokeJoin() const
 {
     if (isValid())
     {
@@ -219,7 +215,7 @@ Qt::PenJoinStyle QCustomLineAnchor::strokeJoin() const
     return Qt::MiterJoin;
 }
 
-qreal QCustomLineAnchor::widthScale() const	
+qreal QCustomLineAnchor::widthScale() const
 {
     if (isValid())
     {
@@ -228,14 +224,13 @@ qreal QCustomLineAnchor::widthScale() const
     return 1;
 }
 
-void QCustomLineAnchor::setBaseCap(Qt::PenCapStyle baseCap)	
+void QCustomLineAnchor::setBaseCap(Qt::PenCapStyle baseCap)
 {
     if (isValid())
     {
         m_cap->setBaseCap(baseCap);
         return;
     }
-
 }
 
 void QCustomLineAnchor::setBaseInset(qreal inset)
@@ -245,7 +240,6 @@ void QCustomLineAnchor::setBaseInset(qreal inset)
         m_cap->setBaseInset(inset);
         return;
     }
-
 }
 
 void QCustomLineAnchor::setStrokeJoin(Qt::PenJoinStyle lineJoin)
@@ -255,7 +249,6 @@ void QCustomLineAnchor::setStrokeJoin(Qt::PenJoinStyle lineJoin)
         m_cap->setStrokeJoin(lineJoin);
         return;
     }
-    return;
 }
 
 void QCustomLineAnchor::setWidthScale(qreal widthScale)
@@ -265,7 +258,6 @@ void QCustomLineAnchor::setWidthScale(qreal widthScale)
         m_cap->setWidthScale(widthScale);
         return;
     }
-    return;
 }
 
 void QCustomLineAnchor::setFlatness(qreal flatness)
@@ -275,7 +267,6 @@ void QCustomLineAnchor::setFlatness(qreal flatness)
         m_cap->setFlatness(flatness);
         return;
     }
-    return;
 }
 
 QPainterPath QCustomLineAnchor::capPath() const
@@ -289,14 +280,7 @@ QPainterPath QCustomLineAnchor::capPath() const
 
 bool QCustomLineAnchor::isValid() const
 {
-    if (m_cap)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (m_cap != NULL);
 }
 
 bool QCustomLineAnchor::operator==(const QCustomLineAnchor &p) const
@@ -342,7 +326,7 @@ QAnchorGenerator::QAnchorGenerator(const QCustomLineAnchor& startCap,
                                    : m_width(width < 1 ? 1 : width)
                                    , m_pCustomStartCap(startCap.data_ptr())
                                    , m_pCustomEndCap(endCap.data_ptr())
-{	
+{
 }
 
 void QAnchorGenerator::Generate(const QPainterPath& path2generate,
@@ -350,16 +334,16 @@ void QAnchorGenerator::Generate(const QPainterPath& path2generate,
                                 QPainterPath& generatedCapPath,
                                 const qreal flatness) const
 {
-    QList<QPolygonF> polygons = path2generate.toSubpathPolygons(QTransform(), flatness);
+    const QList<QPolygonF> polygons = path2generate.toSubpathPolygons(QTransform(), flatness);
     for (int i = 0; i < polygons.size(); ++i) {
         if (polygons[i].isClosed())
             pathAfterGenerate.addPolygon(polygons[i]);
-		else {
-			if (m_pCustomStartCap || m_pCustomEndCap)
-				GenerateCap(polygons[i].constData(), polygons[i].count(), pathAfterGenerate, generatedCapPath);
-			else
-				pathAfterGenerate.addPolygon(polygons[i]);
-		}
+        else {
+            if (m_pCustomStartCap || m_pCustomEndCap)
+                GenerateCap(polygons[i].constData(), polygons[i].count(), pathAfterGenerate, generatedCapPath);
+            else
+                pathAfterGenerate.addPolygon(polygons[i]);
+        }
     }
 }
 
@@ -383,7 +367,7 @@ void QAnchorGenerator::GenerateCap(const QPointF *pts, const unsigned count,
             m_pCustomStartCap->GenerateCap(m_width, devidePt, centerPt, centerPt, capPath);
 
             QPointF insetPt;
-            const qreal& insetScale = m_pCustomStartCap->calcInsetScale(m_width);
+            const qreal insetScale = m_pCustomStartCap->calcInsetScale(m_width);
             CalcScalePointOnSegment(centerPt, devidePt, insetScale, insetPt);
             strokePts.erase(strokePts.begin(), strokePts.begin() + prevDevide + 1);
             strokePts.insert(strokePts.begin(), insetPt);
@@ -443,13 +427,13 @@ void QAnchorGenerator::GenerateCap(const QPointF *pts, const unsigned count,
             }
 
             QPointF insetPt;
-            const qreal& insetScale = 
+            const qreal insetScale = 
                 m_pCustomStartCap->baseInset() * m_pCustomStartCap->widthScale();
             CalcScalePointOnSegment(pts[0], pts[count-1], insetScale, insetPt);
             innerPts.push_back(insetPt);
 
             QPointF devidePt;
-            int prevDevide;
+            int prevDevide = 0;
             if (m_pCustomEndCap->GetDevidePoint(m_width, &innerPts[0], innerPts.size(), devidePt, prevDevide))
             {
                 m_pCustomEndCap->GenerateCap(m_width, devidePt, insetPt, pts[count-1], capPath);
@@ -519,7 +503,6 @@ void QCustomLineAnchorState::setStrokeEndCap(Qt::PenCapStyle endCap)
 Qt::PenJoinStyle QCustomLineAnchorState::strokeJoin() const
 {
     return m_strokeLineJoin;
-    /*		return m_mathStroke.GetLineJoin();*/
 }
 
 Qt::PenCapStyle QCustomLineAnchorState::baseCap() const
@@ -530,7 +513,7 @@ Qt::PenCapStyle QCustomLineAnchorState::baseCap() const
 void QCustomLineAnchorState::setBaseInset(qreal inset)
 {
     m_baseInset = inset;
-}	
+}
 
 void QCustomLineAnchorState::setWidthScale(qreal widthScale)
 {
@@ -540,7 +523,6 @@ void QCustomLineAnchorState::setWidthScale(qreal widthScale)
 void QCustomLineAnchorState::setStrokeJoin(Qt::PenJoinStyle lineJoin)
 {
     m_strokeLineJoin = lineJoin;
-    /*		m_mathStroke.SetLineJoin(lineJoin);*/
 }
 
 void QCustomLineAnchorState::setBaseCap(Qt::PenCapStyle baseCap)
@@ -555,12 +537,12 @@ qreal QCustomLineAnchorState::calcInsetScale(qreal penWidth) const
 
 bool QCustomLineAnchorState::GetDevidePoint(qreal width, const QPointF *pts, unsigned count, QPointF &devidePt, int &prevPtOffset) const
 {
-    const qreal& devideDist = GetDevideDistance(width);
+    const qreal devideDist = GetDevideDistance(width);
     qreal prevDist = 0;
     for (unsigned i = 1; i < count; ++i)
     {
         const QPointF& centerPt = pts[0];
-        const qreal& dist = calc_distance(centerPt, pts[i]);
+        const qreal dist = calc_distance(centerPt, pts[i]);
         if (dist >= devideDist)
         {
             prevPtOffset = i - 1;
@@ -581,11 +563,11 @@ void QCustomLineAnchorState::setFlatness(qreal flatness)
 void QCustomLineAnchorState::CalcTransform(qreal width, const QPointF& fromPt, const QPointF& toPt,
                                            const QPointF& centerPt, QMatrix& mtx) const
 {
-    const qreal& len = calc_distance(fromPt, toPt);
-    const qreal& dy = toPt.y() - fromPt.y();
-    const qreal& dx = toPt.x() - fromPt.x();
-    const qreal& ctheta = dy / len;
-    const qreal& stheta = -dx / len;
+    const qreal len = calc_distance(fromPt, toPt);
+    const qreal dy = toPt.y() - fromPt.y();
+    const qreal dx = toPt.x() - fromPt.x();
+    const qreal ctheta = dy / len;
+    const qreal stheta = -dx / len;
 
     mtx.setMatrix(ctheta, stheta, -stheta, ctheta, 0, 0);
     QMatrix scaleMatrix(width * m_widthScale, 0.0, 0.0, width * m_widthScale, 0.0, 0.0);
@@ -599,22 +581,25 @@ bool QCustomLineAnchorState::CalcCrossYPts(const QPainterPath& path, QUnshareVec
                                            qreal width) const
 {
     QMatrix mtx;
-    const qreal& scale = width * widthScale();
+    const qreal scale = width * widthScale();
     QMatrix scaleMatrix(scale, 0.0, 0.0, scale, 0.0, 0.0);
     mtx = scaleMatrix * mtx;
-    QList<QPolygonF> polygons = path.toSubpathPolygons(QTransform(mtx), m_flatness);
+    const QList<QPolygonF> polygons = path.toSubpathPolygons(QTransform(mtx), m_flatness);
     for (int subIndex = 0; subIndex < polygons.size(); ++subIndex) {
         const QPolygonF &poly = polygons[subIndex];
-		const int count = poly.count();
-		const QPointF *pPoints = poly.constData();
+        const int count = poly.count();
+        const QPointF *pPoints = poly.constData();
         static QUnshareVector<int> flags;
-		flags.resize(count);
-		int *pFlags = flags.data();
+        flags.resize(count);
+        int *pFlags = flags.data();
         for (int i = 0; i < count; ++i) {
-            const qreal& x = pPoints[i].x();
-            if (x > 0) pFlags[i] = 1;
-            else if (x < 0) pFlags[i] = -1;
-            else pFlags[i] = 0;
+            const qreal x = pPoints[i].x();
+            if (x > 0)
+                pFlags[i] = 1;
+            else if (x < 0)
+                pFlags[i] = -1;
+            else
+                pFlags[i] = 0;
         }
         for (int i = 0; i < count - 1; ++i)
             CalcCrossYPt(pPoints[i], pPoints[i+1], pFlags[i], pFlags[i+1], dists);
@@ -639,7 +624,7 @@ void QCustomLineAnchorState::CopyTo(QCustomLineAnchorState& capState) const
 void QCustomLineAnchorState::CalcCrossYPt(const QPointF& pt1, const QPointF& pt2, int flag1,
                                           int flag2, QUnshareVector<qreal>& dists)
 {
-    const int& f = flag1 * flag2;		
+    const int f = flag1 * flag2;
     if (f < 0)
     {
         const qreal& dist = (pt2.x() * pt1.y() - pt1.x() * pt2.y()) / (pt2.x() - pt1.x());
@@ -680,7 +665,7 @@ QCustomLineAnchorState *QCustomFillAnchor::Clone() const
 qreal QCustomFillAnchor::GetDevideDistance(qreal width) const
 {
     static QUnshareVector<qreal> dists;
-	dists.resize(0);
+    dists.resize(0);
     if (CalcCrossYPts(m_capPath, dists, width)) {
         if (dists[0] >= 0)
             return 0;
@@ -703,14 +688,14 @@ void QCustomFillAnchor::GenerateCap(qreal width, const QPointF& fromPt, const QP
 qreal QCustomFillAnchor::GetMaxDistance(qreal width) const
 {
     QMatrix mtx;
-    const qreal& scale = widthScale() * width;
+    const qreal scale = widthScale() * width;
 
     QMatrix scaleMatrix(scale, 0.0, 0.0, scale, 0.0, 0.0);
     mtx = scaleMatrix * mtx;
 
     qreal maxDist = 0;
     QPointF origin(0.0, 0.0);
-    QList<QPolygonF> polygons = m_capPath.toSubpathPolygons(QTransform(), m_flatness);
+    const QList<QPolygonF> polygons = m_capPath.toSubpathPolygons(QTransform(), m_flatness);
     for (int i = 0; i < polygons.size(); ++i) {
         const QPolygonF &poly = polygons[i];
         foreach(QPointF pt, poly) {
@@ -741,7 +726,7 @@ QCustomLineAnchorState *QCustomStrokeAnchor::Clone() const
 qreal QCustomStrokeAnchor::GetDevideDistance(qreal width) const
 {
     static QUnshareVector<qreal> dists;
-	dists.resize(0);
+    dists.resize(0);
     if (CalcCrossYPts(m_capPath, dists, width)) {
         if (dists[0] >= 0)
             return width;
@@ -767,13 +752,12 @@ void QCustomStrokeAnchor::GenerateCap(qreal width, const QPointF& fromPt, const 
 
 qreal QCustomStrokeAnchor::GetMaxDistance(qreal width) const
 {
-    QMatrix mtx;
-    const qreal& scale = widthScale() * width;
+    const qreal scale = widthScale() * width;
 
     QMatrix scaleMatrix(scale, 0.0, 0.0, scale, 0.0, 0.0);
-    mtx = scaleMatrix * mtx;
+    QMatrix mtx = scaleMatrix * mtx;
 
-    QList<QPolygonF> polygons = m_capPath.toSubpathPolygons(QTransform(), m_flatness);
+    const QList<QPolygonF>& polygons = m_capPath.toSubpathPolygons(QTransform(), m_flatness);
 
     QMathStroker mathStroker;
     mathStroker.SetWidth(width);
@@ -787,7 +771,7 @@ qreal QCustomStrokeAnchor::GetMaxDistance(qreal width) const
     for (int i = 0; i < s; ++i)
     {
         const QPainterPath::Element &e = widenPath.elementAt(i);
-        const qreal& dist = calc_distance(e.x, e.y, 0.0, 0.0);
+        const qreal dist = calc_distance(e.x, e.y, 0.0, 0.0);
         if (dist > maxDist)
         {
             maxDist = dist;
@@ -809,8 +793,8 @@ QDataStream &operator<<(QDataStream &s, const QCustomLineAnchor &anchor)
         s << quint8(d->GetAnchorType());
         s << d->GetCapPath();
         s << double(d->baseInset()) << double(d->widthScale());
-        s << quint16(d->strokeStartCap()) << quint16(d->strokeEndCap()) 
-            << quint16(d->strokeJoin()) << quint16(d->baseCap());        
+        s << quint16(d->strokeStartCap()) << quint16(d->strokeEndCap())
+            << quint16(d->strokeJoin()) << quint16(d->baseCap());
     }
     return s;
 }
