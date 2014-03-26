@@ -76,6 +76,7 @@ public:
     int loopCount() const;
     int nextImageDelay() const;
     int currentImageNumber() const;
+	bool isAnimation() const;
 
 private:
     bool imageIsComing() const;

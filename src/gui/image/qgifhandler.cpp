@@ -73,9 +73,11 @@ public:
     int decode(QImage *image, const uchar* buffer, int length,
                int *nextFrameDelay, int *loopCount);
     static void scan(QIODevice *device, QVector<QSize> *imageSizes, int *loopCount);
+    static void scan(QIODevice *device, QVector<QSize> *imageSizes, int *loopCount, bool *isAnimation);
 
     bool newFrame;
     bool partialNewFrame;
+    bool hasAnimation;
 
 private:
     void fillRect(QImage *image, int x, int y, int w, int h, QRgb col);
@@ -165,6 +167,7 @@ QGIFFormat::QGIFFormat()
     table[0] = 0;
     table[1] = 0;
     stack = 0;
+    hasAnimation = false;
 }
 
 /*!
@@ -207,15 +210,14 @@ void QGIFFormat::disposePrevious(QImage *image)
             fillRect(image, l, t, r-l+1, b-t+1, color(bgcol));
         } else {
             // Impossible:  We don't know of a bgcol - use pixel 0
-            QRgb *bits = (QRgb*)image->bits();
-            fillRect(image, l, t, r-l+1, b-t+1, bits[0]);
+            fillRect(image, l, t, r-l+1, b-t+1, QRgb(0xffffffff));
         }
         // ### Changed: QRect(l, t, r-l+1, b-t+1)
         break;
       case RestoreImage: {
         if (frame >= 0) {
             for (int ln=t; ln<=b; ln++) {
-                memcpy(image->scanLine(ln)+l,
+                memcpy(image->scanLine(ln)+ l * sizeof(QRgb),
                     backingstore.scanLine(ln-t),
                     (r-l+1)*sizeof(QRgb));
             }
@@ -410,13 +412,15 @@ int QGIFFormat::decode(QImage *image, const uchar *buffer, int length,
                         backingstore = QImage(qMax(backingstore.width(), w),
                                               qMax(backingstore.height(), h),
                                               QImage::Format_RGB32);
-                        memset(bits, 0, image->byteCount());
+                        for (int ln = 0; ln < h; ln++) {
+                            memset(FAST_SCAN_LINE(bits, bpl, t+ln) + l * sizeof(QRgb), 0, w*sizeof(QRgb));
+                        }
                     }
                     const int dest_bpl = backingstore.bytesPerLine();
                     unsigned char *dest_data = backingstore.bits();
                     for (int ln=0; ln<h; ln++) {
                         memcpy(FAST_SCAN_LINE(dest_data, dest_bpl, ln),
-                               FAST_SCAN_LINE(bits, bpl, t+ln) + l, w*sizeof(QRgb));
+                               FAST_SCAN_LINE(bits, bpl, t+ln) + l * sizeof(QRgb), w*sizeof(QRgb));
                     }
                 }
 
@@ -661,11 +665,16 @@ int QGIFFormat::decode(QImage *image, const uchar *buffer, int length,
     return initial-length;
 }
 
+void QGIFFormat::scan(QIODevice *device, QVector<QSize> *imageSizes, int *loopCount)
+{
+    scan(device, imageSizes, loopCount, NULL);
+}
+
 /*!
    Scans through the data stream defined by \a device and returns the image
    sizes found in the stream in the \a imageSizes vector.
 */
-void QGIFFormat::scan(QIODevice *device, QVector<QSize> *imageSizes, int *loopCount)
+void QGIFFormat::scan(QIODevice *device, QVector<QSize> *imageSizes, int *loopCount, bool *isAnimation)
 {
     if (!device)
         return;
@@ -869,12 +878,16 @@ void QGIFFormat::scan(QIODevice *device, QVector<QSize> *imageSizes, int *loopCo
                 }
                 break;
             case GraphicControlExtension:
-                if (count < 5)
-                    hold[count] = ch;
-                ++count;
-                if (count == hold[0] + 1) {
-                    count = 0;
-                    state = SkipBlockSize;
+				if (count < 5)
+					hold[count]=ch;
+				++count;
+				if (count==hold[0]+1) {
+                    int delay = count>3 ? LM(hold[2], hold[3]) : 1;
+                    if (isAnimation)
+                       *isAnimation = (*isAnimation) || delay;
+
+                    count=0;
+                    state=SkipBlockSize;
                 }
                 break;
             case NetscapeExtensionBlockSize:
@@ -891,6 +904,10 @@ void QGIFFormat::scan(QIODevice *device, QVector<QSize> *imageSizes, int *loopCo
                 count++;
                 if (count == blockSize) {
                     *loopCount = LM(hold[1], hold[2]);
+
+                if (isAnimation)
+                   *isAnimation = (*isAnimation) || (*loopCount != 1);
+
                     state = SkipBlockSize;
                 }
                 break;
@@ -1105,8 +1122,12 @@ bool QGifHandler::canRead(QIODevice *device)
 bool QGifHandler::read(QImage *image)
 {
     const int GifChunkSize = 4096;
+    bool needFullImage(false);
 
-    while (!gifFormat->newFrame) {
+    if (!isAnimation())
+        needFullImage = true;
+
+    while (!gifFormat->newFrame || needFullImage) {
         if (buffer.isEmpty()) {
             buffer += device()->read(GifChunkSize);
             if (buffer.isEmpty())
@@ -1211,4 +1232,14 @@ QByteArray QGifHandler::name() const
     return "gif";
 }
 
+bool QGifHandler::isAnimation() const
+{
+    bool bAnmation = gifFormat->hasAnimation;
+    if (!scanIsCached)
+    {
+        gifFormat->scan(device(), &imageSizes, &loopCnt, &bAnmation);
+        gifFormat->hasAnimation = bAnmation;
+    }
+    return bAnmation;
+}
 QT_END_NAMESPACE
