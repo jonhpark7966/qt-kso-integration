@@ -96,12 +96,26 @@ SOURCES += \
         $$PWD/qxbmhandler.cpp \
         $$PWD/qxpmhandler.cpp
 
+!contains(QT_CONFIG, no-jpeg):!contains(QT_CONFIG, jpeg){
+	include($$PWD/../../3rdparty/libjpeg.pri)
+}
+
+!contains(QT_CONFIG, no-tiff):!contains(QT_CONFIG, tiff){
+	!include($$PWD/../../3rdparty/libjpeg.pri):include($$PWD/../../3rdparty/libjpeg.pri)
+}
+
 !contains(QT_CONFIG, no-png):include($$PWD/qpnghandler.pri)
 else:DEFINES *= QT_NO_IMAGEFORMAT_PNG
 
-contains(QT_CONFIG, jpeg):include($$PWD/qjpeghandler.pri)
+contains(QT_CONFIG, jpeg){
+	include($$PWD/qjpeghandler.pri)
+	!include($$PWD/../../3rdparty/libjpeg.pri):include($$PWD/../../3rdparty/libjpeg.pri)
+}
 contains(QT_CONFIG, mng):include($$PWD/qmnghandler.pri)
-contains(QT_CONFIG, tiff):include($$PWD/qtiffhandler.pri)
+contains(QT_CONFIG, tiff){
+	include($$PWD/qtiffhandler.pri)
+	!include($$PWD/../../3rdparty/libjpeg.pri):include($$PWD/../../3rdparty/libjpeg.pri)
+}
 contains(QT_CONFIG, gif):include($$PWD/qgifhandler.pri)
 
 # SIMD

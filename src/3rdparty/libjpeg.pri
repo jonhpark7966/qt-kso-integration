@@ -14,6 +14,7 @@ symbian: {
 
 
 INCLUDEPATH += $$PWD/libjpeg
+HEADERS += $$PWD/libjpeg/jpeglib.h
 SOURCES += \
     $$PWD/libjpeg/jaricom.c \
     $$PWD/libjpeg/jcapimin.c \

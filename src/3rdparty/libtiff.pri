@@ -1,4 +1,6 @@
-INCLUDEPATH += $$PWD/libtiff/libtiff
+INCLUDEPATH += $$PWD/libtiff/libtiff \
+        $$PWD/libjpeg
+
 SOURCES += \
     $$PWD/libtiff/libtiff/tif_aux.c \
     $$PWD/libtiff/libtiff/tif_close.c \
@@ -32,6 +34,7 @@ SOURCES += \
     $$PWD/libtiff/libtiff/tif_version.c \
     $$PWD/libtiff/libtiff/tif_warning.c \
     $$PWD/libtiff/libtiff/tif_write.c \
+	$$PWD/libtiff/libtiff/tif_jpeg.c \
     $$PWD/libtiff/libtiff/tif_zip.c
 
 wince*:       SOURCES += $$PWD/../corelib/kernel/qfunctions_wince.cpp \

@@ -6,5 +6,5 @@ contains(QT_CONFIG, system-jpeg) {
     if(unix|win32-g++*): LIBS += -ljpeg
     else:win32:          LIBS += libjpeg.lib
 } else {
-    include($$PWD/../../3rdparty/libjpeg.pri)
+	INCLUDEPATH += $$PWD/../../3rdparty/libjpeg
 }
