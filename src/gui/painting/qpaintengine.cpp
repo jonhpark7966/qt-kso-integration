@@ -640,6 +640,42 @@ void QPaintEngine::drawImage(const QRectF &r, const QImage &image, const QRectF 
     drawPixmap(r, pm, QRectF(QPointF(0, 0), pm.size()));
 }
 
+void QPaintEngine::drawImage(const QRectF &targetRect, const QImage &image, const QRectF &sourceRect,
+                             const QImageEffects *userData,
+                             Qt::ImageConversionFlags flags/* = Qt::AutoColor*/)
+{
+    QPainter *originPainter = painter();
+    Q_ASSERT(originPainter);
+
+    QPaintDevice *pdev = originPainter->device();
+    if (!pdev) {
+        qWarning("QPaintEngine::drawImage: PaintDevice is null!");
+        return;
+    }
+
+    QRect targetRectDev = originPainter->combinedTransform().mapRect(targetRect).toRect();
+    QRect rcDev(0, 0, pdev->width(), pdev->height());
+    targetRectDev.adjust(-2, -2, 2, 2);
+    targetRectDev = targetRectDev.intersected(rcDev);
+    if (!targetRectDev.isValid())
+        return;
+
+    QImage effectImg(targetRectDev.width(), targetRectDev.height(), QImage::Format_ARGB32_Premultiplied);
+    effectImg.fill(0);
+    QPainter imgPainter(&effectImg);
+    QRect vp = originPainter->viewport();
+    vp.translate(-targetRectDev.left(), -targetRectDev.top());
+    imgPainter.setViewport(vp);
+    imgPainter.setWindow(originPainter->window());
+    imgPainter.setWorldTransform(originPainter->worldTransform());
+    imgPainter.drawImage(targetRect, image, sourceRect, userData, flags);
+
+    originPainter->save();
+    originPainter->resetTransform();
+    originPainter->drawImage(targetRectDev, effectImg, effectImg.rect(), flags);
+    originPainter->restore();
+}
+
 void QPaintEngine::drawRawImage(const QRectF &/*targetRect*/, const QByteArray &/*bytes*/, const QRectF &/*sourceRect*/,
                             const QImageEffects * /*userData*/,
                             Qt::ImageConversionFlags /*flags = Qt::AutoColor*/)
