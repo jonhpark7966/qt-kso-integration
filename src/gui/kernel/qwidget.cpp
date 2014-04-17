@@ -8626,7 +8626,12 @@ bool QWidget::event(QEvent *event)
         changeEvent(event);
         break;
     case QEvent::UpdateRequest:
-        d->syncBackingStore();
+        {
+            QEvent e(QEvent::Type(QEvent::User + 32767));
+            QApplication::sendEvent(this, &e);
+
+            d->syncBackingStore();
+        }
         break;
     case QEvent::UpdateLater:
         update(static_cast<QUpdateLaterEvent*>(event)->region());

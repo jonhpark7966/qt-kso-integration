@@ -3771,6 +3771,9 @@ bool QETWidget::translatePaintEvent(const MSG &msg)
     if (msg.message == WM_ERASEBKGND)
         return true;
 
+    QEvent e(QEvent::Type(QEvent::User + 32767));
+    QApplication::sendEvent(this, &e);
+
     setAttribute(Qt::WA_PendingUpdate, false);
 
     if (d_func()->isGLWidget) {
