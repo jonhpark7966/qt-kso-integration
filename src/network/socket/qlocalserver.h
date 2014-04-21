@@ -72,6 +72,7 @@ public:
     virtual bool hasPendingConnections() const;
     bool isListening() const;
     bool listen(const QString &name);
+	bool listen(const QString &name, bool bEveryoneAccess);
     int maxPendingConnections() const;
     virtual QLocalSocket *nextPendingConnection();
     QString serverName() const;

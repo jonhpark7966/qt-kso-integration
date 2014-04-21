@@ -82,6 +82,9 @@ public:
 #endif
             maxPendingConnections(30), error(QAbstractSocket::UnknownSocketError)
     {
+#ifdef Q_OS_WIN
+		m_bEveryoneAccess = false;
+#endif
     }
 
     void init();
@@ -104,10 +107,12 @@ public:
 
     void setError(const QString &function);
     bool addListener();
+	void setEveryoneAccess(bool bEnabled);
 
     QList<Listener> listeners;
     HANDLE eventHandle;
     QWinEventNotifier *connectionEventNotifier;
+	bool m_bEveryoneAccess;
 #else
     void setError(const QString &function);
 
