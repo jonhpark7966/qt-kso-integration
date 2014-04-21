@@ -240,6 +240,8 @@ bool QLocalServer::listen(const QString &name, bool bEveryoneAccess)
 #ifdef Q_OS_WIN
 	Q_D(QLocalServer);
 	d->setEveryoneAccess(bEveryoneAccess);
+#else
+	bEveryoneAccess = false;
 #endif
 	return listen(name);
 }
