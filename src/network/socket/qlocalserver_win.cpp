@@ -62,18 +62,42 @@ bool QLocalServerPrivate::addListener()
     listeners << Listener();
     Listener &listener = listeners.last();
 
-    listener.handle = CreateNamedPipe(
-                 (const wchar_t *)fullServerName.utf16(), // pipe name
-                 PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,       // read/write access
-                 PIPE_TYPE_BYTE |          // byte type pipe
-                 PIPE_READMODE_BYTE |      // byte-read mode
-                 PIPE_WAIT,                // blocking mode
-                 PIPE_UNLIMITED_INSTANCES, // max. instances
-                 BUFSIZE,                  // output buffer size
-                 BUFSIZE,                  // input buffer size
-                 3000,                     // client time-out
-                 NULL);
+	if (m_bEveryoneAccess)
+	{
+		SECURITY_DESCRIPTOR sd = {0};
+		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+		::SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
+		SECURITY_ATTRIBUTES sa = {0};
+		sa.bInheritHandle = FALSE;
+		sa.lpSecurityDescriptor = &sd;
+		sa.nLength = sizeof(sa);
 
+		listener.handle = CreateNamedPipe(
+			(const wchar_t *)fullServerName.utf16(), // pipe name
+			PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,       // read/write access
+			PIPE_TYPE_BYTE |          // byte type pipe
+			PIPE_READMODE_BYTE |      // byte-read mode
+			PIPE_WAIT,                // blocking mode
+			PIPE_UNLIMITED_INSTANCES, // max. instances
+			BUFSIZE,                  // output buffer size
+			BUFSIZE,                  // input buffer size
+			3000,                     // client time-out
+			&sa);
+	}
+	else
+	{
+		listener.handle = CreateNamedPipe(
+			(const wchar_t *)fullServerName.utf16(), // pipe name
+			PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,       // read/write access
+			PIPE_TYPE_BYTE |          // byte type pipe
+			PIPE_READMODE_BYTE |      // byte-read mode
+			PIPE_WAIT,                // blocking mode
+			PIPE_UNLIMITED_INSTANCES, // max. instances
+			BUFSIZE,                  // output buffer size
+			BUFSIZE,                  // input buffer size
+			3000,                     // client time-out
+			NULL);
+	}
     if (listener.handle == INVALID_HANDLE_VALUE) {
         setError(QLatin1String("QLocalServerPrivate::addListener"));
         listeners.removeLast();
@@ -102,6 +126,11 @@ bool QLocalServerPrivate::addListener()
         SetEvent(eventHandle);
     }
     return true;
+}
+
+void QLocalServerPrivate::setEveryoneAccess(bool bEnabled)
+{
+	m_bEveryoneAccess = bEnabled;
 }
 
 void QLocalServerPrivate::setError(const QString &function)
@@ -183,6 +212,7 @@ void QLocalServerPrivate::_q_onNewConnection()
 
 void QLocalServerPrivate::closeServer()
 {
+	m_bEveryoneAccess = false;
     connectionEventNotifier->setEnabled(false); // Otherwise, closed handle is checked before deleter runs
     connectionEventNotifier->deleteLater();
     connectionEventNotifier = 0;

@@ -192,7 +192,7 @@ TIFFReadRawStrip1(TIFF* tif,
 			    (unsigned long) tif->tif_row,
 			    (unsigned long) cc,
 			    (unsigned long) size);
-			return (-1);
+			//return (-1); //<DP> To decode some nasty images
 		}
 	} else {
 		if (td->td_stripoffset[strip] + size > tif->tif_size) {

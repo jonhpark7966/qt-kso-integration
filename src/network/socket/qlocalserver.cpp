@@ -235,6 +235,17 @@ bool QLocalServer::listen(const QString &name)
     return true;
 }
 
+bool QLocalServer::listen(const QString &name, bool bEveryoneAccess)
+{
+#ifdef Q_OS_WIN
+	Q_D(QLocalServer);
+	d->setEveryoneAccess(bEveryoneAccess);
+#else
+	bEveryoneAccess = false;
+#endif
+	return listen(name);
+}
+
 /*!
     Returns the maximum number of pending accepted connections.
     The default is 30.
